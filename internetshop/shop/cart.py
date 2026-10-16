@@ -8,6 +8,7 @@
 from .models import ColorOption, Product
 
 CART_SESSION_ID = 'cart'
+CART_UNDO_SESSION_ID = 'cart_undo'
 
 
 def _line_id(product_id, colors):
@@ -55,6 +56,26 @@ class Cart:
         if line_id in self._cart:
             del self._cart[line_id]
             self.save()
+
+    def stash_removed(self, line_id):
+        """Запомнить позицию перед удалением, чтобы её можно было вернуть (undo)."""
+        item = self._cart.get(line_id)
+        if item is not None:
+            self.session[CART_UNDO_SESSION_ID] = {'line_id': line_id, 'item': dict(item)}
+            self.session.modified = True
+
+    def undo_remove(self):
+        """Вернуть последнюю удалённую позицию. Возвращает line_id или None."""
+        stashed = self.session.pop(CART_UNDO_SESSION_ID, None)
+        if not stashed:
+            return None
+        line_id, item = stashed['line_id'], stashed['item']
+        if line_id in self._cart:
+            self._cart[line_id]['quantity'] += item['quantity']
+        else:
+            self._cart[line_id] = item
+        self.save()
+        return line_id
 
     def clear(self):
         self.session[CART_SESSION_ID] = self._cart = {}

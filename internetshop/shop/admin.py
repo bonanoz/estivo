@@ -11,7 +11,10 @@ from .models import (
 class SiteSettingsAdmin(admin.ModelAdmin):
     """Синглтон: список сразу ведёт на единственную запись, добавление/удаление запрещены."""
 
-    fields = ('hero_image', 'b2b_image', 'designers_image', 'about_image')
+    fields = (
+        'hero_image', 'b2b_image', 'designers_image', 'about_image',
+        'promo_enabled', 'promo_text', 'promo_url',
+    )
 
     def has_add_permission(self, request):
         return not SiteSettings.objects.exists()
@@ -61,8 +64,9 @@ class ProductImageInline(admin.TabularInline):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'material', 'category', 'price', 'is_available', 'is_featured')
-    list_filter = ('material', 'category', 'collection', 'is_available', 'is_featured')
+    list_display = ('name', 'material', 'category', 'price', 'is_available', 'is_featured', 'is_new', 'is_bestseller')
+    list_editable = ('is_new', 'is_bestseller')
+    list_filter = ('material', 'category', 'collection', 'is_available', 'is_featured', 'is_new', 'is_bestseller')
     search_fields = ('name', 'sku', 'description')
     prepopulated_fields = {'slug': ('name',)}
     filter_horizontal = ('available_colors',)

@@ -35,6 +35,17 @@ def cart(request):
     return {'cart': Cart(request)}
 
 
+def wishlist(request):
+    """Избранное — счётчик в шапке и состояние сердечек на карточках.
+
+    ``wishlist`` поддерживает ``{% if product.id in wishlist %}``,
+    ``wishlist.count`` и ``wishlist.ids``.
+    """
+    from .wishlist import Wishlist
+    wl = Wishlist(request)
+    return {'wishlist': wl, 'wishlist_ids': wl.ids}
+
+
 def site_settings(request):
     """Редактируемые из админки фото страниц (hero, B2B, дизайнерам) —
     доступны в любом шаблоне без передачи из каждого view."""

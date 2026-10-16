@@ -1,0 +1,23 @@
+{% load humanize %}
+{% if products %}
+<ul class="search-suggestions">
+    {% for product in products %}
+    <li>
+        <a href="{{ product.get_absolute_url }}">
+            <span>{{ product.name }}</span>
+            <span>{{ product.price|intcomma }} ₽</span>
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+<a href="{% url 'catalog_list' %}?search={{ query|urlencode }}">Все результаты</a>
+{% else %}
+<p>Ничего не найдено</p>
+{% if recommendations %}
+<ul class="search-suggestions">
+    {% for product in recommendations %}
+    <li><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endif %}

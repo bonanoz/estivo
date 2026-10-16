@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Lead, Order
+from .models import Lead, Order, Review
 from .utils import clean_phone_number
 
 
@@ -40,3 +40,29 @@ class LeadForm(forms.ModelForm):
             return clean_phone_number(self.cleaned_data['phone'])
         except ValueError as exc:
             raise forms.ValidationError(str(exc))
+
+
+class ReviewForm(forms.ModelForm):
+    """Отзыв с PDP. Сохраняется неопубликованным (модерация в админке).
+
+    ``website`` — honeypot: человек его не видит и не заполняет, бот заполняет.
+    """
+
+    website = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'tabindex': '-1', 'autocomplete': 'off'}),
+    )
+
+    class Meta:
+        model = Review
+        fields = ['author', 'rating', 'usage_duration', 'text']
+        widgets = {
+            'author': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Ваше имя'}),
+            'rating': forms.NumberInput(attrs={'class': 'form-input', 'min': 1, 'max': 5}),
+            'usage_duration': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Срок использования (необязательно)'}),
+            'text': forms.Textarea(attrs={'class': 'form-input', 'rows': 4, 'placeholder': 'Ваш отзыв'}),
+        }
+
+    @property
+    def is_spam(self):
+        return bool(self.cleaned_data.get('website'))
