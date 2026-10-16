@@ -7,7 +7,7 @@ from .utils import ru_slugify
 
 # Только относительные пути (/catalog/) или http(s)-ссылки: никаких javascript:, data: и //host.
 validate_promo_url = RegexValidator(
-    r'^(/(?!/)\S*|https?://\S+)$',
+    r'^(/(?![/\\])\S*|https?://\S+)$',
     'Укажите путь вида /catalog/ или ссылку, начинающуюся с http:// или https://.',
 )
 

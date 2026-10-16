@@ -20,7 +20,7 @@ Alpine.js + TypeScript built with Vite (`internetshop/frontend/`), django-vite i
 
 ```bash
 cd internetshop
-python -m venv venv && venv\Scriptsctivate   # Windows
+python -m venv venv && venv\Scripts\activate   # Windows
 pip install -r ../requirements.txt
 cd frontend && npm ci && npm run build && cd ..   # Vite build -> shop/static/dist/ (before collectstatic!)
 python manage.py migrate
@@ -55,7 +55,7 @@ python manage.py runserver
 - `CHAT_ID` — Telegram chat/user id that receives order/lead notifications (the recipient must have
   sent `/start` to the bot first, or the Telegram API returns "chat not found")
 - `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT` — PostgreSQL connection (PostgreSQL >=12 is required
-  by Django 5.2; locally the server runs on `DB_PORT=5433`)
+  by Django 5.2; set `DB_PORT` to your server's port, e.g. 5433 if a second PostgreSQL already uses 5432)
 - `SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS` — standard Django settings, read via `os.environ` with dev-friendly defaults
 - `VITE_DEV_MODE=1` — optional, use the Vite dev server instead of the built manifest
 - `SITE_URL` — public domain, used for sitemap/canonical/OG absolute URLs (defaults to `https://estivo63.ru`)

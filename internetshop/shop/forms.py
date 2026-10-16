@@ -7,15 +7,18 @@ from .utils import clean_phone_number
 class AriaErrorsMixin:
     """Поля с ошибками получают aria-invalid и aria-describedby="<id поля>-error".
 
-    Элемент с таким id рисуют шаблоны (partials/_lead_form.html, checkout.html).
+    Элемент с таким id рисуют шаблоны (partials/_lead_form.html, checkout.html), поэтому
+    атрибуты ставятся только полям из ``aria_error_fields`` (у остальных нет элемента ошибки).
     """
+
+    aria_error_fields = ()
 
     def full_clean(self):
         super().full_clean()
         if not self.is_bound:
             return
         for name in self.errors:
-            if name not in self.fields:
+            if name not in self.aria_error_fields or name not in self.fields:
                 continue
             attrs = self.fields[name].widget.attrs
             attrs['aria-invalid'] = 'true'
@@ -23,6 +26,8 @@ class AriaErrorsMixin:
 
 
 class OrderForm(AriaErrorsMixin, forms.ModelForm):
+    aria_error_fields = ('customer_name', 'customer_phone', 'customer_email')
+
     class Meta:
         model = Order
         fields = ['customer_name', 'customer_phone', 'customer_email', 'delivery_address', 'comment']
@@ -42,6 +47,8 @@ class OrderForm(AriaErrorsMixin, forms.ModelForm):
 
 
 class LeadForm(AriaErrorsMixin, forms.ModelForm):
+    aria_error_fields = ('name', 'phone', 'email', 'message')
+
     class Meta:
         model = Lead
         fields = ['name', 'phone', 'email', 'lead_type', 'message']

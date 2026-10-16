@@ -582,7 +582,7 @@ def lead_create(request):
                 lead.telegram_notified = True
                 lead.save(update_fields=['telegram_notified'])
             messages.success(request, 'Заявка отправлена! Мы свяжемся с вами в ближайшее время.')
-    return redirect(request.POST.get('next', 'home'))
+    return redirect(_safe_redirect_target(request, request.POST.get('next'), reverse('home')))
 
 
 def handler404(request, exception=None):

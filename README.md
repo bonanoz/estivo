@@ -13,7 +13,7 @@ Django 5.2 (LTS) + PostgreSQL, Tailwind CSS v4 + htmx + Alpine.js + TypeScript (
 
 ```bash
 cd internetshop
-python -m venv venv && venv\Scriptsctivate     # Windows
+python -m venv venv && venv\Scripts\activate     # Windows
 pip install -r ../requirements.txt
 # создайте internetshop/.env (BOT_TOKEN, CHAT_ID, DB_*, SECRET_KEY, ...) — см. CLAUDE.md
 cd frontend && npm ci && npm run build && cd ..
