@@ -36,3 +36,10 @@ def footer_data():
     stats = Review.objects.filter(is_published=True).aggregate(avg=Avg('rating'), count=Count('id'))
     reviews = {'avg': stats['avg'], 'count': stats['count']} if stats['count'] else None
     return {'categories': categories, 'reviews': reviews}
+
+
+@register.simple_tag
+def review_stats(reviews):
+    """Средняя оценка и число отзывов из queryset опубликованных отзывов (PDP). None, если отзывов нет."""
+    stats = reviews.aggregate(avg=Avg('rating'), count=Count('id'))
+    return {'avg': stats['avg'], 'count': stats['count']} if stats['count'] else None

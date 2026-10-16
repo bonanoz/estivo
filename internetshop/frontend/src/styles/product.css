@@ -1,1 +1,485 @@
 /* Product page styles. Owned by the product epic. */
+
+/* ---- Gallery ---- */
+.pdp-gallery__main {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-alt);
+}
+.pdp-gallery__main img,
+.pdp-gallery__main model-viewer {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.pdp-gallery__hint {
+  margin: var(--space-2) 0 0;
+  font-size: 0.9rem;
+  color: var(--color-ink-soft);
+}
+.pdp-gallery__thumbs {
+  margin-top: var(--space-3);
+}
+.pdp-gallery__strip {
+  display: flex;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0 0 var(--space-2);
+  list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+}
+.pdp-gallery__strip::-webkit-scrollbar {
+  display: none;
+}
+.pdp-gallery__strip li {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+.pdp-gallery__strip button {
+  display: block;
+  width: 96px;
+  min-height: 44px;
+  border: 2px solid transparent;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--color-surface-alt);
+  transition: border-color var(--dur-fast) var(--ease), opacity var(--dur-fast) var(--ease);
+  opacity: 0.75;
+}
+.pdp-gallery__strip button:hover {
+  opacity: 1;
+}
+.pdp-gallery__strip button[aria-current='true'] {
+  border-color: var(--color-ink);
+  opacity: 1;
+}
+.pdp-gallery__strip img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+.pdp-gallery__progress {
+  height: 2px;
+  background: var(--color-line);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+.pdp-gallery__progress span {
+  display: block;
+  height: 100%;
+  width: 100%;
+  background: var(--color-ink);
+  transition: margin-left var(--dur-press) linear;
+}
+
+/* ---- Buy column ---- */
+.pdp-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-bottom: var(--space-2);
+}
+.pdp-badges:empty {
+  display: none;
+}
+.pdp-meta {
+  margin: 0 0 var(--space-1);
+  font-size: 0.95rem;
+  color: var(--color-ink-soft);
+}
+.pdp-titlebar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.pdp-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.5vw, 2.75rem);
+  font-weight: 500;
+  line-height: 1.1;
+  color: var(--color-ink);
+}
+.pdp-heart {
+  position: relative;
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+}
+/* the shared card heart is absolutely positioned; inside the PDP it sits in its own 44px box */
+.pdp-heart .product-card__heart {
+  position: static;
+  background: var(--color-surface-alt);
+}
+.pdp-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  color: var(--color-ink);
+  text-decoration: none;
+}
+.pdp-rating:hover .pdp-rating__count {
+  color: var(--color-accent-text);
+  text-decoration: underline;
+}
+.pdp-rating__count {
+  color: var(--color-ink-soft);
+}
+.stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--color-accent-text);
+}
+.star {
+  fill: currentColor;
+}
+.star-off {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+.pdp-price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-3);
+  margin: var(--space-2) 0 var(--space-3);
+}
+.pdp-price__now {
+  font-family: var(--font-display);
+  font-size: 2.25rem;
+  font-weight: 600;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+.pdp-price__now small {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: var(--weight-body-regular);
+  color: var(--color-ink-soft);
+}
+.pdp-price__old {
+  font-size: 1.1rem;
+  font-weight: var(--weight-body-regular);
+  color: var(--color-ink-soft);
+}
+.pdp-lead {
+  margin: 0 0 var(--space-4);
+  color: var(--color-ink-soft);
+  line-height: 1.6;
+  max-width: 60ch;
+}
+
+/* ---- Colour groups ---- */
+.pdp-colors {
+  margin: 0 0 var(--space-3);
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.pdp-colors legend {
+  padding: 0;
+  margin-bottom: var(--space-1);
+  font-weight: var(--weight-body-bold);
+}
+.pdp-colors legend [data-color-label] {
+  font-weight: var(--weight-body-regular);
+  color: var(--color-ink-soft);
+}
+.pdp-colors__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+/* ---- Actions ---- */
+.pdp-actions {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+@media (min-width: 640px) {
+  .pdp-actions {
+    grid-template-columns: 1.4fr 1fr;
+  }
+}
+
+/* ---- Trust block ---- */
+.pdp-trust {
+  display: grid;
+  gap: var(--space-2);
+  margin: var(--space-4) 0;
+  padding: var(--space-3);
+  list-style: none;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-alt);
+}
+.pdp-trust li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 24px;
+}
+.pdp-trust svg {
+  flex: 0 0 auto;
+  color: var(--color-accent-text);
+}
+
+/* ---- Accordions (native <details>: works without JS, keyboard-operable) ---- */
+.pdp-accordions {
+  display: grid;
+  gap: var(--space-2);
+}
+.pdp-acc {
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+.pdp-acc > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 56px;
+  font-weight: var(--weight-body-bold);
+  cursor: pointer;
+  list-style: none;
+}
+.pdp-acc > summary::-webkit-details-marker {
+  display: none;
+}
+.pdp-acc > summary::after {
+  content: '';
+  flex: 0 0 auto;
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform var(--dur-fast) var(--ease);
+}
+.pdp-acc[open] > summary::after {
+  transform: rotate(-135deg);
+}
+.pdp-acc > summary:hover {
+  color: var(--color-accent-text);
+}
+.pdp-acc__body {
+  padding-bottom: var(--space-3);
+  color: var(--color-ink-soft);
+  line-height: 1.6;
+}
+.pdp-acc__body p {
+  margin: 0 0 var(--space-2);
+}
+.pdp-acc__body a {
+  color: var(--color-accent-text);
+  text-decoration: underline;
+}
+.pdp-acc .spec-list {
+  margin: 0 0 var(--space-3);
+  padding: 0;
+  list-style: none;
+}
+.pdp-acc .spec-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+}
+.pdp-acc .spec-list li span:first-child {
+  color: var(--color-ink-soft);
+}
+
+/* ---- Sections below the fold ---- */
+.pdp-section {
+  margin-top: var(--space-6);
+}
+.pdp-h2 {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-weight: 500;
+  line-height: 1.15;
+}
+.pdp-description {
+  max-width: 70ch;
+  margin: 0;
+  white-space: pre-line;
+  line-height: 1.7;
+  color: var(--color-ink-soft);
+}
+
+/* ---- Related carousel ---- */
+.pdp-carousel {
+  display: flex;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0 0 var(--space-2);
+  list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+}
+.pdp-carousel > li {
+  flex: 0 0 min(72vw, 280px);
+  scroll-snap-align: start;
+}
+@media (min-width: 1024px) {
+  .pdp-carousel > li {
+    flex-basis: calc((100% - 3 * var(--space-3)) / 4);
+  }
+}
+
+/* ---- Reviews ---- */
+.reviews-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  color: var(--color-ink-soft);
+}
+.reviews-summary__score {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+.reviews-list {
+  display: grid;
+  gap: var(--space-3);
+  margin: var(--space-4) 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 768px) {
+  .reviews-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.review-item {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+.review-item__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+.review-item__author {
+  font-weight: var(--weight-body-bold);
+}
+.review-item__meta {
+  margin: var(--space-1) 0 0;
+  font-size: 0.9rem;
+  color: var(--color-ink-soft);
+}
+.review-item__text {
+  margin: var(--space-2) 0 0;
+  line-height: 1.6;
+}
+
+.review-write {
+  margin-top: var(--space-4);
+}
+.review-write > summary {
+  display: inline-flex;
+  list-style: none;
+  cursor: pointer;
+}
+.review-write > summary::-webkit-details-marker {
+  display: none;
+}
+.review-write__body {
+  max-width: 640px;
+  margin-top: var(--space-3);
+}
+.review-form__row {
+  display: grid;
+  gap: var(--space-3);
+}
+@media (min-width: 640px) {
+  .review-form__row {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+.review-form__trap {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px; /* taste-skill-ignore: honeypot box, not a rule */
+  overflow: hidden;
+}
+.review-form .btn {
+  margin-bottom: var(--space-2);
+}
+.review-success {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-accent-soft);
+}
+.review-success p {
+  margin: 0;
+}
+.review-success__title {
+  font-weight: var(--weight-body-bold);
+  margin-bottom: var(--space-1) !important;
+}
+
+/* ---- Sticky mobile buy bar ---- */
+.pdp-sticky {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--z-sticky);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3) calc(var(--space-2) + env(safe-area-inset-bottom));
+  background: var(--color-surface);
+  visibility: hidden;
+  transform: translateY(100%);
+  transition:
+    transform var(--dur-base) var(--ease),
+    visibility 0s linear var(--dur-base);
+}
+.pdp-sticky.is-visible {
+  visibility: visible;
+  transform: none;
+  transition: transform var(--dur-base) var(--ease);
+}
+.pdp-sticky__info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.pdp-sticky__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.9rem;
+  color: var(--color-ink-soft);
+}
+.pdp-sticky__price {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+@media (min-width: 1024px) {
+  .pdp-sticky {
+    display: none;
+  }
+}
