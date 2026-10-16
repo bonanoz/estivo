@@ -1,29 +1,34 @@
-<form method="post" action="{% url 'review_create' product.slug %}" hx-post="{% url 'review_create' product.slug %}" hx-target="this" hx-swap="outerHTML" class="review-form">
+<form method="post" action="{% url 'review_create' product.slug %}"
+      hx-post="{% url 'review_create' product.slug %}" hx-target="this" hx-swap="outerHTML"
+      hx-disabled-elt="find button[type=submit]" class="review-form" novalidate>
     {% csrf_token %}
-    {{ review_form.non_field_errors }}
-    <div>
-        <label for="id_author">Имя</label>
-        {{ review_form.author }}
-        {{ review_form.author.errors }}
+    {% if review_form.non_field_errors %}<div class="form-errors" role="alert">{{ review_form.non_field_errors }}</div>{% endif %}
+    <div class="review-form__row">
+        <div class="form-field">
+            <label for="{{ review_form.author.id_for_label }}">Имя</label>
+            {{ review_form.author }}
+            {% if review_form.author.errors %}<div class="form-error" role="alert">{{ review_form.author.errors|join:" " }}</div>{% endif %}
+        </div>
+        <div class="form-field">
+            <label for="{{ review_form.rating.id_for_label }}">Оценка от 1 до 5</label>
+            {{ review_form.rating }}
+            {% if review_form.rating.errors %}<div class="form-error" role="alert">{{ review_form.rating.errors|join:" " }}</div>{% endif %}
+        </div>
     </div>
-    <div>
-        <label for="id_rating">Оценка (1–5)</label>
-        {{ review_form.rating }}
-        {{ review_form.rating.errors }}
-    </div>
-    <div>
-        <label for="id_usage_duration">Срок использования</label>
+    <div class="form-field">
+        <label for="{{ review_form.usage_duration.id_for_label }}">Срок использования</label>
         {{ review_form.usage_duration }}
-        {{ review_form.usage_duration.errors }}
+        {% if review_form.usage_duration.errors %}<div class="form-error" role="alert">{{ review_form.usage_duration.errors|join:" " }}</div>{% endif %}
     </div>
-    <div>
-        <label for="id_text">Отзыв</label>
+    <div class="form-field">
+        <label for="{{ review_form.text.id_for_label }}">Отзыв</label>
         {{ review_form.text }}
-        {{ review_form.text.errors }}
+        {% if review_form.text.errors %}<div class="form-error" role="alert">{{ review_form.text.errors|join:" " }}</div>{% endif %}
     </div>
-    <div style="position:absolute;left:-9999px;" aria-hidden="true">
-        <label for="id_website">Сайт</label>
+    <div class="review-form__trap" aria-hidden="true">
+        <label for="{{ review_form.website.id_for_label }}">Сайт</label>
         {{ review_form.website }}
     </div>
     <button type="submit" class="btn btn-primary">Отправить отзыв</button>
+    <p class="form-note">Отзыв появится на странице после проверки модератором.</p>
 </form>
