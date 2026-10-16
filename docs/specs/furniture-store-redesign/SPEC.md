@@ -1,0 +1,340 @@
+# SPEC: ESTIVO storefront redesign (visuals, page structure, navigation, shopping UX)
+
+- **slug:** `furniture-store-redesign`
+- **branch:** `feat/furniture-store-redesign` (from `feat/session-cart-checkout-3d` @ `0143b33`)
+- **created:** 2026-10-16
+- **test command:** from `internetshop/`: `python manage.py test` + from `internetshop/frontend/`: `npm run build` (includes `tsc --noEmit`)
+- **spec status:** draft, awaiting user approval. No code is written before approval.
+
+## Task
+
+Redesign the visual identity, layout, page structure, navigation and UX of the ESTIVO store according to `DESIGN.md`
+and `UX.md` (repo root), preserving business logic, models, routes and integrations. Evaluate Vite + TS, Tailwind v4,
+HTMX + django-htmx, Alpine.js. Full wording is in the session's first message.
+
+## Sources of truth and their precedence
+
+| Document | What we take from it |
+|---|---|
+| `UX.md` | page structure, block order, user journeys, behavior (section 8 "Cross-cutting rules" is mandatory) |
+| `DESIGN.md` | **rules, not the palette**: WCAG 2.2 AA, required component states (default/hover/focus-visible/active/disabled/loading/error), pill controls ≥ 44px, "no shadows by default", motion duration scale, writing tone, Do/Don't |
+| `docs/design-system.md` + `shop/static/css/variables.css` | ESTIVO brand **visual values**: colors (warm background, terracotta accent, incl. the corrected 🆕 tokens `accent-text`, `line-strong`, `error`), fonts Cormorant Garamond + Gilroy (300/800 only), spacing, radii |
+
+Conflicts found during the audit and how they are resolved (user decisions below):
+
+1. **DESIGN.md (Muuto palette/font: Inter, neutral grays, no accent) ↔ ESTIVO brand.** Resolved: ESTIVO brand.
+   From DESIGN.md we do not take `color.*`, `font.family.*`, or the Muuto type scale; we do take the rules,
+   `radius.pill` and `motion.duration.*`.
+2. **docs/design-system.md and CLAUDE.md say "no Bootstrap/Tailwind, no bundler" ↔ chosen stack Vite + Tailwind.**
+   Resolved: the user's stack. E7 updates the stack line in `docs/design-system.md` §1 and the "Templates and
+   static"/"Setup" sections of `CLAUDE.md` (token values and rules in design-system.md stay unchanged).
+   DESIGN.md/UX.md are not touched.
+3. **UX.md relies on accounts, payment, ZIP logistics, promo codes** — ESTIVO's business model is lead generation.
+   What is in and out — see "Decisions" and "Non-goals".
+
+## Goal and scope
+
+The storefront gets the new structure and behavior from UX.md in ESTIVO's visual language, built on Tailwind v4
+(ESTIVO tokens via `@theme`), HTMX (server fragments: filters, search suggestions, cart drawer, wishlist) and Alpine.js
+(local UI state: menu, panels, overlays). Backend stays Django templates; models, URLs and order/lead persistence
+(Postgres → Telegram best-effort) are preserved. Only agreed features are added: session wishlist, promo bar, contact
+button, moderated review form, New/Bestseller badges, filters/sorting, search with suggestions.
+
+## Decisions (from the interview)
+
+| Question | Decision |
+|---|---|
+| Visual source of truth | ESTIVO brand (colors/fonts from design-system.md); from DESIGN.md — rules, a11y, states, pill, no shadows; structure — from UX.md |
+| Extra UX.md features | Wishlist (session, no accounts); promo bar (text from admin, dismissible, no promo codes/countdown); floating contact button (Telegram/WhatsApp/phone from `site_info`); review form on PDP (saved with `is_published=False`) |
+| Product model | Add `is_new`, `is_bestseller` (migration + admin + seed_demo); badges New / Bestseller / Sale (Sale = `old_price > price`) |
+| Frontend stack | HTMX + django-htmx + Alpine.js **and** Vite + TypeScript + Tailwind v4 (via `django-vite`) |
+| Uncommitted work | Committed to `feat/session-cart-checkout-3d` (`0143b33`); `feat/furniture-store-redesign` branched from it |
+| Test DB | User fixes `DB_PASSWORD` in `internetshop/.env` before the test phase (Postgres currently rejects password auth for user `postgres`) |
+| Checkout | Single page: existing `OrderForm` + cart summary; reduced header (logo only) and "Need help?" footer (phone, messengers); URL `/cart/checkout/` unchanged |
+| Search | Header icon → overlay with HTMX suggestions (up to 6 products, debounced), Enter → `/catalog/?search=…`; empty result shows recommendations |
+
+## Assumptions (made without asking)
+
+- **Frontend build.** Sources in `internetshop/frontend/` (`package.json`, `vite.config.ts`, `src/main.ts`,
+  `src/styles/main.css`). Build → `internetshop/shop/static/dist/` with `manifest.json`; `dist/` is in `.gitignore`.
+  `django-vite`: `dev_mode = True` when `VITE_DEV_MODE=1` **or when running tests** (`'test' in sys.argv`), otherwise
+  the manifest is read. So `python manage.py test` doesn't need Node. Deploy / local run without the dev server:
+  `npm ci && npm run build` → `collectstatic`.
+- htmx and Alpine are installed via npm and bundled by Vite (no CDN). `model-viewer` stays a vendored ES module loaded
+  only on PDPs with `model_3d` (as today). Fonts: Google Fonts for Cormorant stays; Gilroy via `@font-face` with the
+  current files/placeholders.
+- Tailwind v4 `@theme` mirrors the tokens in `variables.css` (colors incl. 🆕 tokens, fonts, spacing, radii,
+  durations). Repeated components (`btn`, `pill`, `swatch`, `form-input`, `badge`, `product-card`) are classes in
+  `@layer components`, not copy-pasted utilities. Body font weights — 300/800 only (design-system.md rule).
+- While pages migrate, `base.html` loads **both** the Vite bundle and the legacy CSS; legacy `css/*.css` and
+  `js/*.js` are removed in E7 once all templates are converted.
+- Catalog: 24 products per page, numbered pagination with ellipsis, all filter GET params preserved.
+  Filters are GET params on top of the existing `/catalog/…/…/` routes (routes unchanged):
+  `material` (multi, slug; only on `/catalog/`), `category` (multi, slug), `color` (multi, `ColorOption` id),
+  `price_min`/`price_max`, `length_min`/`length_max` (cm), `flag` (multi: `new`, `bestseller`, `sale`), `sort`
+  (`recommended` default = current model ordering, `price_asc`, `price_desc`, `new`), `search`, `page`.
+  Invalid values are silently ignored (no 500).
+- The filter panel applies only on "Apply" (UX.md §3, §8.9), shows a live "N found" count via an HTMX endpoint and a
+  "Reset" button. Full-screen on mobile, side panel on desktop.
+- PDP color variants are written to the URL (`?weave=<id>&cushion=<id>&frame=<id>`, `history.replaceState`) and read
+  by the server to preselect swatches; invalid/foreign ids are ignored.
+- The PDP buy button shows the price: «В корзину — 45 000 ₽». Next to it, a trust block from real fields:
+  `warranty_years`, delivery across Russia from 3 days, handmade (UX.md §8.1). Sticky mobile bar with name, price and
+  a compact button.
+- "Add to cart" → HTMX request, button in loading state, then a right-side drawer "Item added" slides in with lines,
+  total, "Checkout" and "Continue shopping" + "You may also like" (up to 4 products from the same category).
+  The header cart icon goes to the full `/cart/` page (UX.md §8.4). Without JS the old POST-redirect still works.
+- Removing a line on `/cart/` shows a toast "… removed" with an "Undo" link (last removed line kept in the session).
+  Empty cart: message, "Continue shopping", trust blocks, bestseller picks.
+- Wishlist — `request.session['wishlist']` (list of product ids), a class modeled on `Cart`. Heart on card and PDP
+  (HTMX toggle, `aria-pressed`), header counter, `/wishlist/` page. Unavailable/deleted products are filtered out.
+- Review: name, rating 1–5, usage duration (optional), text; honeypot field against bots; after submit —
+  "Review sent for moderation". No Telegram notification for reviews (not in requirements).
+- Promo bar: fields `SiteSettings.promo_enabled`, `promo_text`, `promo_url`; dismissal remembered in `localStorage`
+  keyed by a hash of the text (new text shows again).
+- Home page in UX.md §2 order: hero (photo from `SiteSettings.hero_image`) with one CTA → quick category/material
+  CTAs → featured collections with "View all" → service blocks (current `HOME_SEGMENTS`: home / business / custom
+  project) → reviews (instead of an Instagram UGC feed — no data) → brand story block "About us" → SEO text + FAQ.
+- Footer (UX.md §1): popular categories (SEO links to `/catalog/<material>/<category>/`), about, "For customers"
+  (delivery, warranty, FAQ, contacts), average rating and count of published reviews, legal details. Instead of a
+  newsletter — the existing `_cta_section` (lead form); the business has no newsletter.
+- 404: short message + bestseller carousel (`is_bestseller`, else `is_featured`) + footer (UX.md §1, §8.6).
+- SEO text under the catalog grid — `Material.description` (on material/category pages) + shared FAQ.
+- Tests: existing `shop/tests.py` moves into a `shop/tests/` package (`test_smoke.py` etc.) without changing test
+  logic; new tests — one file per epic.
+- Workers: `.env` is not in git — copy `internetshop/.env` from the main checkout into the worktree before running
+  tests; run `npm ci` in the worktree.
+- Site copy (UI labels, headings, messages) stays in Russian.
+
+## Non-goals
+
+Region/country picker, accounts and login (checkout "account" step), ZIP/shipping and tax calculation, free-shipping
+progress, promo codes and coupons, installments, online payment (`payment_status` stays an extension point),
+Instagram UGC feed, AR, video in the gallery, review "Top mentions"/sorting/country filter, newsletter, React/Next.js,
+changing existing URLs or the `Order`/`OrderItem`/`Lead` schema, rewriting `DESIGN.md`/`UX.md`.
+
+## Do not touch
+
+- `Cart` logic (line key = product + colors), `_parse_colors`, `Order`/`OrderItem` creation/`recalc_total`,
+  `notify_telegram` and the `telegram_notified` flag, `_lead_page`/`lead_create`. Adding HTMX response branches is fine.
+- Existing URL names and paths, `sitemap.xml`, `robots.txt`, canonical/OG/meta blocks of `base.html` (carried over 1:1).
+- `ru_slugify`, `STORAGES` (both keys), `PGCLIENTENCODING`, `CompressedManifestStaticFilesStorage`, Gilroy placeholders.
+- `DESIGN.md`, `UX.md` — read only.
+
+## Audit findings (current state)
+
+- Django 5.0.6, single `shop` app, function views, Postgres, whitenoise + `CompressedManifestStaticFilesStorage`.
+  Frontend: 5 hand-written CSS files (~710 lines), 5 vanilla JS files, templates ~1300 lines. No bundler, no npm.
+- Hook `.claude/hooks/collectstatic_hook.py` runs `collectstatic` after every edit — with Vite it must not fail when
+  `dist/` is missing (checked in E1).
+- Catalog: filtering only by material/category via path and `?search=` on name/description; 12 per page,
+  "Prev/Next" pagination. No sorting, no color/price/size filters, no badges except old_price.
+- PDP: gallery, grouped swatches, 3D, reviews (read-only), related products. Variants are not written to the URL.
+- Cart: AJAX `cart.js` with JSON, no drawer, no undo. Checkout has the full header/footer.
+- Missing: header search, wishlist, promo bar, contact button, bestsellers on 404.
+- Tests: 15 tests in `shop/tests.py` (smoke, cart, configurator). **Currently not runnable** — Postgres
+  authentication error (see Decisions).
+
+## Architecture and stack (rationale)
+
+- **Django templates + HTMX** cover every UX.md requirement (filters with live count, suggestions, drawer, wishlist
+  toggle, undo) with server fragments and no duplicated client logic; SEO preserved (full SSR). `django-htmx` provides
+  `request.htmx` to choose "fragment vs full page" in the same views.
+- **Alpine.js** — UI state with no server logic: mobile menu, search overlay, filter panel, drawer, accordions,
+  promo bar, sticky bar.
+- **Vite + TypeScript** — one bundle (htmx, Alpine, own modules: gallery, 3D recolor, phone mask, variant URL state),
+  typing, hashed filenames. **Tailwind v4** (`@tailwindcss/vite`) — brand tokens in `@theme`.
+- **React/Next.js not needed**: no requirement that SSR + HTMX/Alpine can't meet; a migration would break the SEO path
+  and double the stack.
+- New dependencies — Python: `django-htmx`, `django-vite`; npm: `vite`, `typescript`, `tailwindcss`,
+  `@tailwindcss/vite`, `htmx.org`, `alpinejs`, `@types/alpinejs`. Nothing else.
+
+## Epics
+
+| ID | Epic | Wave | Depends on | File zone | Model | Status | Branch |
+|---|---|---|---|---|---|---|---|
+| E1 | Foundation: build, tokens, shell | 1 | — | `internetshop/frontend/**`, `settings.py`, `requirements.txt`, `.gitignore`, `.claude/hooks/*`, `templates/base.html`, `templates/partials/_header.html`, `_footer.html`, `_promo_bar.html`, `_chat_button.html`, `_breadcrumbs.html`, `_product_card.html`, `_cta_section.html`, `_lead_form.html` | sonnet | todo | |
+| E2 | Backend: fields, filters, wishlist, reviews, search, HTMX responses | 1 | — | `shop/*.py` (except `settings.py`), `shop/migrations/**`, `shop/management/**`, new minimal fragment templates in `templates/partials/htmx/**` and `templates/wishlist.html` | sonnet | todo | |
+| E3 | Catalog and search (UI) | 2 | E1, E2 | `templates/catalog_list.html`, `partials/_filters.html`, `partials/_pagination.html`, `partials/htmx/_search_*.html`, `partials/htmx/_catalog_count.html`, `frontend/src/catalog/**`, `frontend/src/styles/catalog.css` | sonnet | todo | |
+| E4 | Product page (UI) | 2 | E1, E2 | `templates/product_detail.html`, `partials/_reviews.html`, `partials/htmx/_review_*.html`, `frontend/src/product/**`, `frontend/src/styles/product.css` | sonnet | todo | |
+| E5 | Cart, drawer, checkout, wishlist (UI) | 2 | E1, E2 | `templates/cart.html`, `checkout.html`, `order_success.html`, `wishlist.html`, `partials/htmx/_cart_*.html`, `partials/htmx/_wishlist_*.html`, `frontend/src/cart/**`, `frontend/src/styles/cart.css` | sonnet | todo | |
+| E6 | Home, content pages, 404/500 | 2 | E1, E2 | `templates/home.html`, `about.html`, `b2b.html`, `designers.html`, `delivery_payment.html`, `warranty.html`, `faq.html`, `contacts.html`, `404.html`, `500.html`, `frontend/src/styles/pages.css` | haiku | todo | |
+| E7 | Cleanup, docs, cross-cutting a11y/SEO | 3 | E3–E6 | delete `shop/static/css/*.css`, `shop/static/js/{main,forms,cart,product-gallery,product-3d}.js`, `base.html` (legacy static links only), `CLAUDE.md`, `docs/design-system.md` §1 and §7, `README.md` | sonnet | todo | |
+
+Statuses: `todo` → `in_progress` → `review` → `done` (or `blocked` + reason in the log).
+
+Wave 1 has no file overlap: E1 is the shell and infrastructure, E2 is all Python. In wave 2 each epic has its own
+templates, its own folder in `frontend/src/` and its own CSS file; E1 makes the shared `frontend/src/main.ts` a
+**registry with auto-import** (`import.meta.glob('./*/index.ts', { eager: true })`), and `main.css` `@import`s every
+`styles/*.css` file, which E1 creates as empty stubs — so wave-2 workers never edit a shared file. Minimal fragments
+created by E2 are restyled by wave 2 (different waves, no conflict).
+
+### E1. Foundation: build, tokens, shell
+
+- **What:** `frontend/` with Vite + TS + Tailwind v4 + htmx + Alpine; `django-vite` and `django-htmx` in settings and
+  requirements (`django_htmx.middleware.HtmxMiddleware`); `@theme` with ESTIVO tokens; `@layer components` for
+  btn/pill/swatch/form/badge/product-card with every DESIGN.md state; new `base.html` (meta/OG/canonical 1:1, skip
+  link, `header`/`footer` blocks for the reduced checkout, `{% vite_hmr_client %}`/`{% vite_asset %}`, CSRF for htmx
+  via `hx-headers` on `<body>`); header per UX.md §1 (hamburger + search on the left on mobile, centered logo,
+  wishlist and cart with counters on the right; horizontal menu on desktop), search overlay (markup + Alpine,
+  `hx-get` to the E2 endpoint), promo bar, footer, contact button, product card (badges, 2-image indicator when a
+  gallery exists, truncated descriptor, swatches + "+N", price/old price, heart). Collectstatic hook doesn't fail
+  without `dist/`.
+- **Acceptance criteria:**
+  - [ ] `npm ci && npm run build` in `internetshop/frontend/` exits 0, produces `shop/static/dist/.vite/manifest.json` (or `manifest.json` depending on Vite version), and `tsc --noEmit` reports no errors.
+  - [ ] `python manage.py test` renders any page without a built `dist/` (dev_mode in tests).
+  - [ ] GET `/` → HTML has `<a class="skip-link" href="#main">`, `<main id="main">`, `<link rel="canonical">`, `og:title`, the Vite bundle script tag.
+  - [ ] Header: search button with `aria-label="Поиск"` and `aria-expanded`, cart link with `data-cart-count`, link to `/wishlist/` with `data-wishlist-count`, hamburger with `aria-controls`.
+  - [ ] Promo bar renders only when `SiteSettings.promo_enabled=True` and text is non-empty; has a close button with `aria-label`.
+  - [ ] Contact button is present on every page (incl. `/cart/checkout/`) and contains Telegram, WhatsApp and `tel:` links from `site_info`.
+  - [ ] Product card: badge «Новинка»/«Хит»/«Скидка» from `is_new`/`is_bestseller`/`old_price>price`; with `old_price` there's an `<s>` with the old price; with >4 colors a "+N" is shown; the heart has `aria-pressed`.
+  - [ ] Footer contains catalog category links, average rating and count of published reviews (block hidden when there are no reviews).
+  - [ ] Existing smoke tests (home, static pages, PDP, 404) are green.
+- **Tests:** `shop/tests/test_shell.py`, `shop/tests/test_smoke.py`
+- **Manual check:** header/menu/search overlay at 375 / 768 / 1280 px; focus visible on all controls; promo bar closes and stays closed after reload.
+
+### E2. Backend: fields, filters, wishlist, reviews, search, HTMX responses
+
+- **What:** migration for `Product.is_new`, `is_bestseller`, `SiteSettings.promo_enabled/promo_text/promo_url`;
+  admin (list_filter/list_editable) and `seed_demo`; module `shop/catalog_filters.py` (pure function
+  `apply_filters(queryset, params) -> (queryset, active_filters)` + sorting); 24-per-page pagination preserving
+  params; count endpoint `GET /catalog/count/`; `GET /search/suggest/?q=`; `shop/wishlist.py` +
+  `POST /wishlist/toggle/<id>/`, `GET /wishlist/`; `wishlist` context processor; `POST /product/<slug>/review/`
+  (`ReviewForm` + honeypot); `cart_add` returns the drawer fragment for HTMX; `POST /cart/undo/`; PDP color
+  preselection from GET; 404 context with bestsellers; `Product.badges` (list of codes). Minimal unstyled templates
+  for the new fragments/pages.
+- **Acceptance criteria:**
+  - [ ] Migration applies on a clean DB; `seed_demo` runs twice in a row without errors; demo data has at least 1 `is_new` and 1 `is_bestseller` product.
+  - [ ] `/catalog/?color=<id>` → only products with that color; `?price_min=10000&price_max=50000` → prices in range; `?flag=sale` → only `old_price > price`; `?flag=new` → only `is_new`; `?category=a&category=b` → union of categories; `?price_min=abc` → 200 and the filter is ignored.
+  - [ ] `?sort=price_asc` / `price_desc` → ordered by `price`; unknown `sort` → default ordering.
+  - [ ] 30 products → page 1 has 24, `?page=2` has 6; pagination links preserve the other GET params.
+  - [ ] `/catalog/<material>/<category>/` works as before (smoke), filters apply on top.
+  - [ ] `GET /catalog/count/?…` (HTMX) → fragment with the number of matches for those params.
+  - [ ] `GET /search/suggest/?q=крес` → at most 6 products, matching on name/sku/description; `q` shorter than 2 chars → empty fragment; only `is_available=True`.
+  - [ ] `POST /wishlist/toggle/<id>/` twice → product added, then removed; HTMX response contains `aria-pressed="true"`/`"false"` and an updated counter (OOB); unknown id → 404; GET on toggle → 405.
+  - [ ] `/wishlist/` shows only added and available products; empty wishlist → message + link to the catalog.
+  - [ ] `POST /product/<slug>/review/` with valid data → `Review` with `is_published=False`, not shown on the PDP; with the honeypot filled → no review created; rating outside 1..5 → form error.
+  - [ ] HTMX `POST /cart/add/<id>/` → 200 with a drawer fragment containing the product name and total; without HTMX/AJAX — the old redirect; the old AJAX-JSON format is preserved.
+  - [ ] `POST /cart/remove/` then `POST /cart/undo/` → line restored with the same quantity and colors.
+  - [ ] `/product/<slug>/?weave=<id>` with an available color → that swatch is marked `checked`; a foreign id is ignored.
+  - [ ] Unknown URL → 404 with bestsellers in context (up to 8).
+  - [ ] All existing cart/checkout/lead tests are green (order and Telegram contract unchanged).
+- **Tests:** `shop/tests/test_catalog_filters.py`, `test_search.py`, `test_wishlist.py`, `test_reviews.py`, `test_cart_htmx.py`, `test_models.py`
+- **Manual check:** —
+
+### E3. Catalog and search (UI)
+
+- **What:** `catalog_list.html` per UX.md §3: breadcrumbs → banner with H1 and 1–2 sentences → sticky "Filters" /
+  "Sort" bar (dropdown, chevron) → grid (2 cols mobile, 3 tablet, 4 desktop) → numbered pagination → SEO text + FAQ
+  accordion. Filter panel: accordion groups (Category, Material, Color swatches, Price, Length, Picks), sticky footer
+  "N found" / "Reset" / "Apply". Empty result → message + bestsellers. Search suggestion fragments (row card: photo,
+  name, price; "All results").
+- **Acceptance criteria:**
+  - [ ] Catalog HTML contains a `method="get"` filter form with "Apply" (submit) and "Reset" (link to the path without params), and a count element with `hx-get` to `/catalog/count/` and `aria-live="polite"`.
+  - [ ] Active filters are reflected in markup (`checked` checkboxes, price field values) after applying.
+  - [ ] Sorting is a `<select name="sort">` or a button with `aria-haspopup="listbox"`, current value selected.
+  - [ ] Pagination is `<nav aria-label="Страницы">` with numbers; current page has `aria-current="page"`.
+  - [ ] Empty result → «Ничего не найдено» message and a bestsellers block.
+  - [ ] Without JS, filters and sorting work as a plain GET submit.
+- **Tests:** `shop/tests/test_catalog_ui.py`
+- **Manual check:** filter panel full-screen at 375 px, side panel at 1280 px; bar is sticky; focus is trapped in the panel and returns to the trigger on close (Esc closes); search suggestions appear after 2 characters.
+
+### E4. Product page (UI)
+
+- **What:** PDP per UX.md §4 within scope: gallery (main image + thumbnail strip with scroll progress, 3D as today),
+  breadcrumbs, badge, name, heart, rating link to `#reviews`, price/old price, swatch groups «Плетение: *Графит*»,
+  selection written to the URL, button «В корзину — <price> ₽» (loading state), «Оформить заявку», trust block,
+  sticky mobile bar, accordions (Dimensions & specs, Materials & care, Delivery & warranty), "More from the
+  collection"/related carousels with the same card, reviews (average score, list, "Write a review" button → HTMX form).
+- **Acceptance criteria:**
+  - [ ] The add button includes the product price in its text and `hx-post` to `cart_add`; the form also works without JS.
+  - [ ] Swatches are radio groups with `<fieldset><legend>` per group; the «Плетение: <name>» label updates (markup check: element with `data-color-label`).
+  - [ ] The rating link points to `#reviews`; section `id="reviews"` exists and shows the average score and number of published reviews.
+  - [ ] Review form is present with name/rating/text fields and a hidden honeypot; a successful HTMX submit returns the moderation message.
+  - [ ] Trust block next to the button shows the product's `warranty_years`.
+  - [ ] With `model_3d`, `model-viewer` is loaded; without it — not (existing configurator tests green).
+  - [ ] JSON-LD `Product` (name, offers.price, priceCurrency RUB, aggregateRating when reviews exist).
+- **Tests:** `shop/tests/test_product_ui.py`, existing `ProductConfiguratorTests`
+- **Manual check:** choosing a swatch changes the URL and survives reload; 3D recolors; sticky bar at 375 px; drawer after adding.
+
+### E5. Cart, drawer, checkout, wishlist (UI)
+
+- **What:** drawer (Alpine, dimmed backdrop, focus trap, Esc/X): «✓ Товар добавлен», lines (photo, name, color chips,
+  "Remove", stepper − 1 +, line total), total, «Оформить заявку», «Продолжить покупки», «Вам может понравиться».
+  `/cart/` page with the same blocks, toast with «Вернуть», empty state. `checkout.html`: reduced header (logo),
+  order summary, form, "Need help?" footer, contact button. `order_success.html` with a next step (to the catalog).
+  `wishlist.html` with a card grid.
+- **Acceptance criteria:**
+  - [ ] `/cart/checkout/` contains no main navigation (`nav[aria-label="Основная навигация"]`) and no search; contains the logo, phone and messenger links.
+  - [ ] Drawer fragment: `role="dialog"`, `aria-modal="true"`, `aria-labelledby`, close button with `aria-label`.
+  - [ ] Quantity stepper — buttons with `aria-label` «Уменьшить»/«Увеличить» and `hx-post` to `cart_update`; quantity 0 removes the line.
+  - [ ] After removal on `/cart/` the response contains a toast with a `POST /cart/undo/` form («Вернуть»).
+  - [ ] Empty cart → message, «Продолжить покупки» link to the catalog, recommendations block.
+  - [ ] `/wishlist/` renders cards via the shared `_product_card.html`.
+  - [ ] Existing checkout tests (Order + OrderItem creation, empty cart → redirect) are green.
+- **Tests:** `shop/tests/test_cart_ui.py`, existing `CartTests`
+- **Manual check:** drawer opens after "Add to cart", Tab stays inside, Esc closes, focus returns to the button; undo restores the line; checkout at 375 px.
+
+### E6. Home, content pages, 404/500
+
+- **What:** `home.html` in the order from "Assumptions"; content pages (about, B2B, designers, delivery, warranty,
+  FAQ, contacts) moved to the new grid/components without changing copy or forms; 404 with bestsellers; 500 —
+  static (no DB context).
+- **Acceptance criteria:**
+  - [ ] Home sections in `data-section` order: `hero`, `categories`, `collections`, `services`, `reviews`, `story`, `seo` (checked by order of occurrence).
+  - [ ] Hero contains exactly one primary CTA (`.btn-primary`) and an H1.
+  - [ ] Each content page has exactly one `<h1>` and breadcrumbs (except home).
+  - [ ] B2B/designers/contacts forms save leads as before (existing lead test green).
+  - [ ] 404 contains a heading, a link to the catalog and bestseller cards when available.
+  - [ ] 500.html uses no tags requiring the DB/context processors.
+- **Tests:** `shop/tests/test_pages_ui.py`, `test_smoke.py`
+- **Manual check:** visual match to the brand at 3 widths; images have `alt`, lazy-loading below the fold.
+
+### E7. Cleanup, docs, cross-cutting a11y/SEO
+
+- **What:** delete the legacy CSS/JS and their includes; ensure nothing references the deleted files; update
+  `CLAUDE.md` (setup with npm, stack, static layout), `docs/design-system.md` §1 (stack) and §7 (migration),
+  `README.md`; cross-cutting test for a single `<h1>`, `lang="ru"`, canonical and meta description on all public pages.
+- **Acceptance criteria:**
+  - [ ] `grep` over templates finds no `css/variables.css`, `css/base.css`, `js/main.js`, `js/cart.js`, etc.; files deleted.
+  - [ ] `npm run build` + `collectstatic --noinput` succeed.
+  - [ ] Test: every public page from the sitemap + cart/checkout/wishlist → 200, exactly one `<h1>`, has `meta name="description"` and `link rel="canonical"`.
+  - [ ] `CLAUDE.md` and `docs/design-system.md` describe the new stack; `DESIGN.md`/`UX.md` unchanged (`git diff` empty).
+- **Tests:** `shop/tests/test_seo_a11y.py` + full run
+- **Manual check:** —
+
+## Left for integration (orchestrator)
+
+- Resolve trivial merge conflicts, run `npm run build` + `collectstatic` in the main checkout.
+- Final app launch and browser check (375 / 768 / 1280 px): navigation, search, filters, PDP, drawer, cart,
+  checkout, wishlist, review, 404; no console errors; no 500s in server logs.
+- Contrast and focus check on key pairs (axe/manual) — report with actual results.
+
+## Risks and rollback
+
+| Risk | Mitigation / rollback |
+|---|---|
+| Node toolchain becomes mandatory for deploy (previously Python only) | `dist/` built by a command documented in README/CLAUDE.md; rollback — revert the branch; legacy CSS/JS stay in history until E7 |
+| Tailwind preflight breaks not-yet-migrated pages between waves | Acceptable inside the branch; final state verified at integration |
+| Conflicts in wave-2 shared files (`main.ts`, styles) | E1 sets up auto-import by folder; each epic writes only its own files |
+| `django-vite` in tests without a manifest | dev_mode in tests (E1 criterion) |
+| `CompressedManifestStaticFilesStorage` fails on missing `url()` in built CSS | `collectstatic` in E1/E7 criteria |
+| Tests can't run because of the Postgres password | Blocker before phase 3; user fixes it |
+| E2 size (all Python in one epic) | Clear criteria; after 3 failed attempts — split into E2a (filters/search) and E2b (wishlist/reviews/HTMX cart) |
+| Branch is based on `feat/session-cart-checkout-3d`, not fully merged into master (commits `5d34429`, `0143b33`) | A PR to master will include them; merge decision is the user's |
+
+Full rollback: the branch is isolated, master is untouched; `git switch feat/session-cart-checkout-3d`. The E2
+migration is reversible (`migrate shop 0005`).
+
+## Definition of done (whole task)
+
+- [ ] Full project test suite green (`python manage.py test`), `npm run build` without errors
+- [ ] App launched, all scenarios from "Left for integration" verified in the browser at three widths
+- [ ] No browser console errors, no 500s in the server log
+- [ ] Cart orders and leads are still written to the DB; Telegram stays best-effort
+- [ ] `DESIGN.md`, `UX.md` unchanged; master not touched without approval
+
+## Log
+
+- 2026-10-16 spec created (draft). Uncommitted work committed as `0143b33`, branch `feat/furniture-store-redesign`.
+- 2026-10-16 spec rewritten in English at the user's request.
