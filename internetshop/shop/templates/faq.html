@@ -4,19 +4,18 @@
 {% block meta_description %}Частые вопросы о плетёной мебели ESTIVO: как сделать заказ, какой вес выдерживает мебель, для какого климата подходит, из чего каркасы и мягкие элементы.{% endblock %}
 
 {% block content %}
-<section class="section">
-    <div class="container container-narrow">
+<section class="page-section pt-6 md:pt-8">
+    <div class="page-container page-container--narrow">
         {% include 'partials/_breadcrumbs.html' with crumbs=breadcrumbs %}
-        <div class="section-head center">
-            <span class="eyebrow">Вопросы и ответы</span>
-            <h1>Частые вопросы</h1>
+        <div class="page-head mt-6">
+            <h1 class="page-h1">Частые вопросы</h1>
         </div>
-        <div class="accordion">
+        <div class="grid gap-3">
             {% for question, answer in faq_items %}
-            <div class="accordion-item">
-                <button class="accordion-trigger" type="button">{{ question }}<span class="icon">+</span></button>
-                <div class="accordion-panel"><div class="accordion-panel-inner">{{ answer }}</div></div>
-            </div>
+            <details class="faq-item group">
+                <summary class="faq-item__summary">{{ question }}<span aria-hidden="true" class="faq-item__icon">+</span></summary>
+                <p class="faq-item__answer">{{ answer }}</p>
+            </details>
             {% endfor %}
         </div>
     </div>
