@@ -5,58 +5,56 @@
 {% block meta_description %}Плетёная мебель для отелей, ресторанов, кафе и гостевых домов от производителя ESTIVO. Объёмы, сроки, гарантия, коммерческое предложение под ваш проект.{% endblock %}
 
 {% block content %}
-<section class="section-sm">
-    <div class="container">
-        <div class="section-head">
-            <span class="eyebrow">Для бизнеса</span>
-            <h1>Оснащение отелей, ресторанов и кафе</h1>
-            <p class="lead">Партнёрство с ESTIVO — знак статуса. Комплексно оснащаем террасы, лаунж-зоны и общественные пространства мебелью, которая выдерживает интенсивную эксплуатацию.</p>
+<section class="page-section pt-6 md:pt-8">
+    <div class="page-container">
+        {% include 'partials/_breadcrumbs.html' with crumbs=breadcrumbs %}
+        <div class="page-head mt-6 max-w-[64ch]">
+            <h1 class="page-h1">Оснащение отелей, ресторанов и кафе</h1>
+            <p class="page-lead">Партнёрство с ESTIVO — знак статуса. Комплексно оснащаем террасы, лаунж-зоны и общественные пространства мебелью, которая выдерживает интенсивную эксплуатацию.</p>
         </div>
     </div>
 </section>
 
-<section class="section-sm">
-    <div class="container">
-        <div class="usp-grid">
-            <div class="usp"><div class="usp__value">Объёмы</div><div class="usp__label">производство под проект любого масштаба</div></div>
-            <div class="usp"><div class="usp__value">Сроки</div><div class="usp__label">прозрачный график изготовления</div></div>
-            <div class="usp"><div class="usp__value">Гарантия 3 года</div><div class="usp__label">на всю партию</div></div>
-            <div class="usp"><div class="usp__value">КП</div><div class="usp__label">коммерческое предложение под задачу</div></div>
-        </div>
+<section class="page-section pt-0">
+    <div class="page-container">
+        <ul class="page-grid page-grid--4">
+            <li class="grid gap-1"><span class="page-h3">Объёмы</span><span class="page-note">производство под проект любого масштаба</span></li>
+            <li class="grid gap-1"><span class="page-h3">Сроки</span><span class="page-note">прозрачный график изготовления</span></li>
+            <li class="grid gap-1"><span class="page-h3">Гарантия 3 года</span><span class="page-note">на всю партию</span></li>
+            <li class="grid gap-1"><span class="page-h3">КП</span><span class="page-note">коммерческое предложение под задачу</span></li>
+        </ul>
     </div>
 </section>
 
-<section class="section">
-    <div class="container">
-        <div class="split">
-            <div class="split__media">
-                {% if site_settings.b2b_image %}
-                <img src="{{ site_settings.b2b_image.url }}" alt="Мебель ESTIVO для бизнеса">
-                {% else %}
-                <img src="{% static 'img/placeholders/hero.svg' %}" alt="Мебель ESTIVO для бизнеса">
-                {% endif %}
-            </div>
+<section class="page-section">
+    <div class="page-container page-split">
+        <div class="page-media">
+            {% if site_settings.b2b_image %}
+            <img src="{{ site_settings.b2b_image.url }}" alt="Мебель ESTIVO для бизнеса" loading="lazy">
+            {% else %}
+            <img src="{% static 'img/placeholders/hero.svg' %}" alt="Мебель ESTIVO для бизнеса" loading="lazy">
+            {% endif %}
+        </div>
+        <div class="grid content-center gap-5">
+            <h2 class="page-h2">Мебель, которая становится частью вашего успеха</h2>
+            <ul class="page-prose">
+                <li>Производство полного цикла: плетение, сварка, порошковая окраска.</li>
+                <li>Материалы для улицы: −70…+70°C, влага, солнце, интенсивная нагрузка.</li>
+                <li>Индивидуальные размеры, цвета и брендирование под ваш интерьер.</li>
+                <li>Доставка и логистика по всей России.</li>
+            </ul>
             <div>
-                <span class="eyebrow">Почему ESTIVO</span>
-                <h2>Мебель, которая становится частью вашего успеха</h2>
-                <ul>
-                    <li>Производство полного цикла: плетение, сварка, порошковая окраска.</li>
-                    <li>Материалы для улицы: −70…+70°C, влага, солнце, интенсивная нагрузка.</li>
-                    <li>Индивидуальные размеры, цвета и брендирование под ваш интерьер.</li>
-                    <li>Доставка и логистика по всей России.</li>
-                </ul>
-                <a href="#zayavka" class="btn btn-primary btn-lg" style="margin-top:var(--space-3);">Запросить коммерческое предложение</a>
+                <a href="#zayavka" class="btn btn-primary btn-lg">Запросить коммерческое предложение</a>
             </div>
         </div>
     </div>
 </section>
 
-<section class="section section-alt" id="zayavka">
-    <div class="container container-narrow">
-        <div class="section-head center">
-            <span class="eyebrow">Заявка на КП</span>
-            <h2>Расскажите о вашем объекте</h2>
-            <p class="lead">Опишите задачу — рассчитаем стоимость и сроки под ваш проект.</p>
+<section class="page-section page-section--alt" id="zayavka">
+    <div class="page-container page-container--narrow">
+        <div class="page-head page-head--center text-center">
+            <h2 class="page-h2">Расскажите о вашем объекте</h2>
+            <p class="page-lead">Опишите задачу — рассчитаем стоимость и сроки под ваш проект.</p>
         </div>
         {% include 'partials/_lead_form.html' %}
     </div>

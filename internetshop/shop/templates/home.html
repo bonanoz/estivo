@@ -2,144 +2,140 @@
 {% load static %}
 
 {% block content %}
-<!-- HERO -->
-<section class="hero">
-    <div class="hero__bg">
-        {% if site_settings.hero_image %}
-        <img src="{{ site_settings.hero_image.url }}" alt="Плетёная мебель ESTIVO на террасе">
-        {% else %}
-        <img src="{% static 'img/placeholders/hero.svg' %}" alt="Плетёная мебель ESTIVO на террасе">
-        {% endif %}
-    </div>
-    <div class="container hero__content">
-        <h1>Мебель, которая делает пространство местом, куда хочется возвращаться</h1>
-        <p class="hero__sub">Элитная плетёная мебель ручной работы для дома, дачи и бизнеса. Собственное производство полного цикла.</p>
-        <div class="hero__actions">
-            <a href="{% url 'catalog_list' %}" class="btn btn-primary btn-lg">Смотреть коллекции и цены</a>
-            <a href="{% url 'contacts_page' %}" class="btn btn-light btn-lg">Консультация</a>
-        </div>
-    </div>
-</section>
-
-<!-- 3 СЦЕНАРИЯ -->
-<section class="section">
-    <div class="container">
-        <div class="section-head center">
-            <span class="eyebrow">С чего начать</span>
-            <h2>Выберите свой сценарий</h2>
-        </div>
-        <div class="grid grid-3">
-            {% for seg in segments %}
-            <div class="segment-card" data-reveal>
-                <span class="segment-card__num">0{{ forloop.counter }}</span>
-                <h3>{{ seg.title }}</h3>
-                <p>{{ seg.description }}</p>
-                <a href="{% url seg.cta_url_name %}" class="btn btn-outline">{{ seg.cta_text }}</a>
+<section data-section="hero" class="page-section pt-6 md:pt-10">
+    <div class="page-container grid items-center gap-8 md:grid-cols-2 md:gap-12">
+        <div class="grid gap-5">
+            <h1 class="page-h1">Мебель, в которую хочется возвращаться</h1>
+            <p class="page-lead">Элитная плетёная мебель ручной работы для дома, дачи и бизнеса. Собственное производство полного цикла.</p>
+            <div class="flex flex-wrap gap-3">
+                <a href="{% url 'catalog_list' %}" class="btn btn-primary btn-lg">Смотреть коллекции и цены</a>
+                <a href="{% url 'contacts_page' %}" class="btn btn-outline btn-lg">Консультация</a>
             </div>
-            {% endfor %}
+        </div>
+        <div class="page-media aspect-[4/5] md:aspect-[4/5]">
+            {% if site_settings.hero_image %}
+            <img src="{{ site_settings.hero_image.url }}" alt="Плетёное кресло и диван ESTIVO на террасе">
+            {% else %}
+            <img src="{% static 'img/placeholders/hero.svg' %}" alt="Плетёная мебель ESTIVO на террасе">
+            {% endif %}
         </div>
     </div>
 </section>
 
-<!-- КОЛЛЕКЦИИ / ВИТРИНА (фото + цены выше сгиба) -->
+<section data-section="categories" aria-label="Быстрый выбор" class="pb-2">
+    <div class="page-container flex flex-wrap gap-2">
+        <a href="{% url 'catalog_list' %}?flag=new" class="pill">Новинки</a>
+        <a href="{% url 'catalog_list' %}?flag=bestseller" class="pill">Хиты продаж</a>
+        <a href="{% url 'catalog_list' %}?flag=sale" class="pill">Со скидкой</a>
+        <a href="{% url 'catalog_list' %}" class="pill">Весь каталог</a>
+    </div>
+</section>
+
 {% if collections or featured_products %}
-<section class="section section-alt">
-    <div class="container">
-        <div class="section-head">
-            <span class="eyebrow">Витрина</span>
-            <h2>Коллекции с ценами</h2>
-            <p class="lead">Крупные фото, честные цены «от» и понятный выбор — без долгих рассказов.</p>
+<section data-section="collections" class="page-section">
+    <div class="page-container">
+        <div class="page-head page-head--row">
+            <h2 class="page-h2">Коллекции с ценами</h2>
+            <a href="{% url 'catalog_list' %}" class="btn btn-outline">Смотреть все</a>
         </div>
+
+        {% if collections %}
+        <ul class="page-grid page-grid--3 mb-10">
+            {% for c in collections %}
+            <li>
+                <a href="{% url 'catalog_list' %}" class="page-tile h-full">
+                    <span class="page-h3">{{ c.name }}</span>
+                    {% if c.description %}<span class="page-note">{{ c.description|truncatewords:18 }}</span>{% endif %}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
 
         {% if featured_products %}
-        <div class="grid grid-4">
+        <ul class="grid grid-cols-2 gap-4 md:grid-cols-4 list-none m-0 p-0">
             {% for product in featured_products %}
-                {% include 'partials/_product_card.html' %}
+            <li>{% include 'partials/_product_card.html' %}</li>
             {% endfor %}
-        </div>
-        <div style="text-align:center; margin-top:var(--space-5);">
-            <a href="{% url 'catalog_list' %}" class="btn btn-primary btn-lg">Весь каталог</a>
-        </div>
-        {% else %}
-        <div class="grid grid-3">
-            {% for c in collections %}
-            <a href="{% url 'catalog_list' %}" class="segment-card" data-reveal>
-                <h3>{{ c.name }}</h3>
-                <p>{{ c.description|truncatewords:18 }}</p>
-            </a>
-            {% endfor %}
-        </div>
+        </ul>
         {% endif %}
     </div>
 </section>
 {% endif %}
 
-<!-- УТП -->
-<section class="section">
-    <div class="container">
-        <div class="usp-grid">
-            <div class="usp" data-reveal><div class="usp__value">3 года</div><div class="usp__label">гарантия на изделия</div></div>
-            <div class="usp" data-reveal><div class="usp__value">от 3 дней</div><div class="usp__label">доставка по России</div></div>
-            <div class="usp" data-reveal><div class="usp__value">120 кг</div><div class="usp__label">на посадочное место</div></div>
-            <div class="usp" data-reveal><div class="usp__value">−70…+70°C</div><div class="usp__label">любой климат</div></div>
+<section data-section="services" class="page-section">
+    <div class="page-container">
+        <div class="page-head">
+            <h2 class="page-h2">Выберите свой сценарий</h2>
         </div>
-    </div>
-</section>
-
-<!-- ПРОИЗВОДСТВО -->
-<section class="section section-dark">
-    <div class="container">
-        <div class="section-head">
-            <span class="eyebrow">Производство полного цикла</span>
-            <h2>Как мы создаём мебель</h2>
-        </div>
-        <div class="timeline">
-            {% for title, text in production_steps %}
-            <div class="timeline__step" data-reveal>
-                <span class="timeline__num">0{{ forloop.counter }}</span>
-                <h4>{{ title }}</h4>
-                <p style="color:rgba(244,239,232,0.7);">{{ text }}</p>
-            </div>
+        <ul class="page-grid page-grid--3">
+            {% for seg in segments %}
+            <li class="grid content-start gap-3">
+                <h3 class="page-h3">{{ seg.title }}</h3>
+                <p class="page-note">{{ seg.description }}</p>
+                <a href="{% url seg.cta_url_name %}" class="btn btn-outline justify-self-start">{{ seg.cta_text }}</a>
+            </li>
             {% endfor %}
-        </div>
+        </ul>
     </div>
 </section>
 
-<!-- ОТЗЫВЫ (сразу после производства, не в самом низу) -->
 {% if reviews %}
-<section class="section section-alt">
-    <div class="container">
-        <div class="section-head center">
-            <span class="eyebrow">Нам доверяют</span>
-            <h2>Отзывы клиентов</h2>
+<section data-section="reviews" class="page-section page-section--alt">
+    <div class="page-container">
+        <div class="page-head">
+            <h2 class="page-h2">Отзывы клиентов</h2>
         </div>
-        <div class="grid grid-3">
+        <ul class="page-grid page-grid--3">
             {% for review in reviews %}
-            <div class="review-card" data-reveal>
-                <div class="review-card__stars">{% for _ in "12345"|make_list %}{% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}{% endfor %}</div>
-                <p class="review-card__text">«{{ review.text|truncatewords:24 }}»</p>
-                <div class="review-card__author">{{ review.author }}</div>
-                {% if review.usage_duration %}<div class="review-card__meta">Использует: {{ review.usage_duration }}</div>{% endif %}
-            </div>
+            <li>
+                <figure class="m-0 grid gap-3">
+                    <p class="page-note">Оценка: {{ review.rating }} из 5</p>
+                    <blockquote class="page-quote">«{{ review.text|truncatewords:24 }}»</blockquote>
+                    <figcaption class="page-note">
+                        {{ review.author }}{% if review.usage_duration %}, использует: {{ review.usage_duration }}{% endif %}
+                    </figcaption>
+                </figure>
+            </li>
             {% endfor %}
-        </div>
+        </ul>
     </div>
 </section>
 {% endif %}
 
-<!-- FAQ -->
-<section class="section">
-    <div class="container container-narrow">
-        <div class="section-head center">
-            <span class="eyebrow">Вопросы и ответы</span>
-            <h2>Коротко о главном</h2>
+<section data-section="story" class="page-section">
+    <div class="page-container page-split">
+        <div class="page-media">
+            {% if site_settings.about_image %}
+            <img src="{{ site_settings.about_image.url }}" alt="Мастерская ESTIVO: плетение и сборка мебели" loading="lazy">
+            {% else %}
+            <img src="{% static 'img/placeholders/collection.svg' %}" alt="Мастерская ESTIVO: плетение и сборка мебели" loading="lazy">
+            {% endif %}
         </div>
-        <div class="accordion">
-            {% for question, answer in faq_items %}
-            <div class="accordion-item">
-                <button class="accordion-trigger" type="button">{{ question }}<span class="icon">+</span></button>
-                <div class="accordion-panel"><div class="accordion-panel-inner">{{ answer }}</div></div>
+        <div class="grid content-center gap-5">
+            <h2 class="page-h2">Каждое изделие — инвестиция в атмосферу</h2>
+            <p class="page-lead">Более 10 лет мы создаём плетёную мебель ручной работы. От идеи до доставки всё производство у нас, поэтому каждое изделие проходит контроль от первого плетения до упаковки.</p>
+            <div>
+                <a href="{% url 'about_page' %}" class="btn btn-outline">О нас</a>
             </div>
+        </div>
+    </div>
+</section>
+
+<section data-section="seo" class="page-section page-section--alt">
+    <div class="page-container page-container--narrow">
+        <div class="page-prose">
+            <h2 class="page-h2">Плетёная мебель из ротанга, роупа и шпона</h2>
+            <p>ESTIVO производит плетёную мебель ручной работы: кресла, диваны, столы и комплекты для террас, гостиных и общественных пространств. Мы работаем с ротангом, роупом, шпоном и HPL, а каркасы делаем из стали или алюминия с порошковой окраской.</p>
+        </div>
+
+        <h2 class="page-h3 mt-10 mb-4">Частые вопросы</h2>
+        <div class="grid gap-3">
+            {% for question, answer in faq_items %}
+            <details class="faq-item group">
+                <summary class="faq-item__summary">{{ question }}<span aria-hidden="true" class="faq-item__icon">+</span></summary>
+                <p class="faq-item__answer">{{ answer }}</p>
+            </details>
             {% endfor %}
         </div>
     </div>
