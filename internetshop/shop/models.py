@@ -1,8 +1,15 @@
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.db import models
 from django.urls import reverse
 
 from .utils import ru_slugify
+
+
+# Только относительные пути (/catalog/) или http(s)-ссылки: никаких javascript:, data: и //host.
+validate_promo_url = RegexValidator(
+    r'^(/(?![/\\])\S*|https?://\S+)$',
+    'Укажите путь вида /catalog/ или ссылку, начинающуюся с http:// или https://.',
+)
 
 
 class Material(models.Model):
@@ -56,7 +63,7 @@ class SiteSettings(models.Model):
     promo_enabled = models.BooleanField('Показывать промо-полосу', default=False)
     promo_text = models.CharField('Текст промо-полосы', max_length=200, blank=True)
     promo_url = models.CharField(
-        'Ссылка промо-полосы', max_length=300, blank=True,
+        'Ссылка промо-полосы', max_length=300, blank=True, validators=[validate_promo_url],
         help_text='Необязательно. Например /catalog/ или https://…',
     )
 

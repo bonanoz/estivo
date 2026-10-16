@@ -55,6 +55,6 @@ class Wishlist:
     def products(self):
         """Доступные товары из избранного (удалённые и снятые отфильтрованы),
         в порядке добавления."""
-        found = Product.objects.filter(id__in=self._ids, is_available=True).select_related('material', 'category')
+        found = Product.objects.filter(id__in=self._ids, is_available=True).select_related('material', 'category').prefetch_related('available_colors', 'gallery')
         by_id = {p.id: p for p in found}
         return [by_id[i] for i in self._ids if i in by_id]

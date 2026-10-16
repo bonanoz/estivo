@@ -52,17 +52,17 @@
                 <div class="form-field">
                     <label for="{{ form.customer_name.id_for_label }}">Ваше имя</label>
                     {{ form.customer_name }}
-                    {% if form.customer_name.errors %}<div class="form-errors" role="alert">{{ form.customer_name.errors|join:", " }}</div>{% endif %}
+                    {% if form.customer_name.errors %}<div class="form-errors" id="{{ form.customer_name.id_for_label }}-error" role="alert">{{ form.customer_name.errors|join:", " }}</div>{% endif %}
                 </div>
                 <div class="form-field">
                     <label for="{{ form.customer_phone.id_for_label }}">Телефон</label>
                     {{ form.customer_phone }}
-                    {% if form.customer_phone.errors %}<div class="form-errors" role="alert">{{ form.customer_phone.errors|join:", " }}</div>{% endif %}
+                    {% if form.customer_phone.errors %}<div class="form-errors" id="{{ form.customer_phone.id_for_label }}-error" role="alert">{{ form.customer_phone.errors|join:", " }}</div>{% endif %}
                 </div>
                 <div class="form-field">
                     <label for="{{ form.customer_email.id_for_label }}">Email <span class="checkout-form__opt">(необязательно)</span></label>
                     {{ form.customer_email }}
-                    {% if form.customer_email.errors %}<div class="form-errors" role="alert">{{ form.customer_email.errors|join:", " }}</div>{% endif %}
+                    {% if form.customer_email.errors %}<div class="form-errors" id="{{ form.customer_email.id_for_label }}-error" role="alert">{{ form.customer_email.errors|join:", " }}</div>{% endif %}
                 </div>
                 <div class="form-field">
                     <label for="{{ form.delivery_address.id_for_label }}">Адрес доставки <span class="checkout-form__opt">(необязательно)</span></label>

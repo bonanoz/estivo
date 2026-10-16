@@ -1,10 +1,10 @@
 # ESTIVO — дизайн-система
 
-Источник правды для значений: `internetshop/shop/static/css/variables.css`. Этот документ описывает, как ими
+Источник правды для значений: блок `@theme` в `internetshop/frontend/src/styles/main.css` (токены Tailwind v4). Этот документ описывает, как ими
 пользоваться. Если документ и CSS расходятся, прав CSS, а документ нужно поправить.
 
 Условные обозначения: **ОБЯЗАТЕЛЬНО** — правило без исключений (must). **СЛЕДУЕТ** — рекомендация, отступать
-можно с обоснованием (should). Пометка 🆕 означает токен, который **предложен, но ещё не добавлен** в `variables.css`.
+можно с обоснованием (should). Пометка 🆕 означает токен, который **предложен, но ещё не добавлен** в `@theme`.
 
 ---
 
@@ -16,8 +16,10 @@
 - **Продукт:** публичный сайт-витрина (лидогенерация, без онлайн-оплаты). Корзина, заявка, формы для B2B и
   дизайнеров. Это **не** дашборд и не закрытый интерфейс.
 - **Аудитория:** частные покупатели, дизайнеры интерьеров, B2B (отели, рестораны). Много мобильного трафика.
-- **Стек:** Django-шаблоны + рукописный CSS (`variables / base / layout / components / pages.css`) + небольшой
-  vanilla JS. Без Bootstrap/Tailwind и без бандлера.
+- **Стек:** Django-шаблоны + Tailwind CSS v4 (токены в `@theme`) + htmx + Alpine.js + TypeScript, сборка Vite
+  (`internetshop/frontend/`, результат в `shop/static/dist/`). Общие компоненты (`.btn`, `.pill`, `.form-input`,
+  `.alert` и др.) лежат в `frontend/src/styles/main.css` в `@layer components`, страничные — в соседних файлах
+  `styles/{catalog,product,cart,pages}.css`. Без React/Next.js; старые рукописные CSS/JS удалены.
 - **Цель документа:** чтобы любая новая страница или компонент собирались из существующих токенов и классов,
   не плодили исключений и проходили WCAG 2.2 AA.
 
@@ -140,6 +142,10 @@
 
 ## 3. Компоненты
 
+Компоненты определены в `frontend/src/styles/main.css` (`@layer components`) и страничных CSS рядом. Лейблы-«eyebrow»
+над заголовками **удалены** (правило design QA: никаких мелких трекинговых надписей над h1/h2); вместо них — сам
+заголовок и lead-абзац.
+
 Обязательные состояния для каждого интерактивного компонента: **default, hover, focus-visible, active,
 disabled, loading, error** (те, что применимы). В таблицах ниже ⚠️ — состояние, которого в CSS сейчас нет.
 
@@ -206,7 +212,7 @@ disabled, loading, error** (те, что применимы). В таблица�
 - СЛЕДУЕТ: варианты `.alert--success` / `.alert--error` (с `--color-error`) вместо одного общего вида.
 - ОБЯЗАТЕЛЬНО: сообщения о результате действия объявляются скринридеру (`role="status"`, для ошибок — `role="alert"`).
 
-### 3.6 Аккордеон FAQ `.accordion-*`
+### 3.6 Аккордеон FAQ `.faq-item` (нативный `<details>`)
 
 - `.accordion-trigger` ОБЯЗАТЕЛЬНО `<button>` с `aria-expanded` и `aria-controls`; панель — с `id`.
 - Клавиатура: Tab переходит между заголовками, Enter/Space раскрывает. Несколько панелей могут быть открыты одновременно.
@@ -222,7 +228,7 @@ disabled, loading, error** (те, что применимы). В таблица�
 - Переполнение: пилюли переносятся (`flex-wrap`, уже так). СЛЕДУЕТ на mobile горизонтальный скролл-ряд
   со `scroll-snap`, если фильтров больше 6.
 
-### 3.8 Свотч цвета `.swatch` (`pages.css`)
+### 3.8 Свотч цвета `.swatch`
 
 - ОБЯЗАТЕЛЬНО: свотч — радио-кнопка (`<input type="radio">` + `label`), группа — `fieldset` с `legend`
   («Плетение», «Подушки», «Каркас»).
@@ -298,27 +304,23 @@ disabled, loading, error** (те, что применимы). В таблица�
 
 ---
 
-## 7. Миграция: что поправить в текущем CSS
+## 7. Миграция: выполнена
 
-Порядок от самого заметного для пользователя:
+Миграция с рукописного CSS (`variables / base / layout / components / pages.css`) и vanilla JS (`main / forms / cart /
+product-gallery / product-3d.js`) на Tailwind v4 + htmx + Alpine + TS завершена; старые файлы и подключение
+`@layer legacy` удалены. Поведение перенесено в бандл: маска телефона и защита от двойной отправки — `src/forms`,
+блокировка прокрутки для оверлеев — `src/lib/scroll-lock.ts`, мобильное меню — Alpine в `_header.html`,
+FAQ — нативный `<details>`. Reveal-анимации при прокрутке убраны (контент никогда не скрывается).
+`static/js/vendor/model-viewer.min.js` остаётся: он грузится только на PDP с 3D-моделью.
 
-1. Добавить в `variables.css` токены 🆕 `--color-accent-text`, `--color-line-strong`, `--color-error`, `--dur-*`.
-2. `.btn-primary` → фон `--color-accent-text` (hover — `--color-accent-dark` уже не подходит как «темнее»:
-   СЛЕДУЕТ hover = `--color-ink`, либо подобрать ещё более тёмный тон и проверить контраст).
-3. Глобальный `:focus-visible` → `--color-accent-text`; на `--color-dark` — `--color-dark-ink`.
-4. `.form-input` → граница `--color-line-strong`; добавить состояния error/disabled.
-5. `.eyebrow`, `.pill:hover`, `.breadcrumbs a:hover`, `.alert` → текст `--color-accent-text`.
-6. `.form-errors` → `--color-error`; убрать `#c0392b`.
-7. `.btn` → состояния disabled и loading.
-8. Заменить числовые длительности на `--dur-*`.
-
-После каждого шага: `python manage.py collectstatic --noinput` (хук делает это сам) и `python manage.py test`.
+Что делать при добавлении UI: брать токены из `@theme`, компонент — в `@layer components`, поведение — в
+`frontend/src/<feature>/index.ts` (подхватывается автоматически), затем `npm run build` и `collectstatic`.
 
 ---
 
 ## 8. QA-чек-лист перед мержем UI-изменений
 
-- [ ] В новом CSS нет сырых цветов и отступов вне токенов (`grep -nE '#[0-9a-fA-F]{3,6}' components.css pages.css`).
+- [ ] В новом CSS нет сырых цветов и отступов вне токенов (`grep -nE '#[0-9a-fA-F]{3,6}' frontend/src/styles/*.css`; hex допустимы только в `@theme`).
 - [ ] У body-текста только насыщенности `--weight-body-regular` / `--weight-body-bold`.
 - [ ] axe / Lighthouse Accessibility без нарушений `color-contrast` на изменённых страницах.
 - [ ] Tab-ом проходится весь сценарий, фокус всегда видим и не перекрыт шапкой.
@@ -327,4 +329,5 @@ disabled, loading, error** (те, что применимы). В таблица�
 - [ ] Длинные названия товаров, пустые списки и отсутствие фото не ломают сетку.
 - [ ] С `prefers-reduced-motion: reduce` ничего не двигается.
 - [ ] Тексты кнопок и ошибок соответствуют §5.
-- [ ] `collectstatic` проходит, `python manage.py test` зелёный.
+- [ ] `npm run build` и `collectstatic` проходят, `python manage.py test` зелёный.
+- [ ] `node ~/.claude/skills/design-taste-frontend/scripts/lint.mjs shop/templates frontend/src` без FAIL вне allow-list.

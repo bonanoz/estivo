@@ -1,9 +1,10 @@
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_GET, require_POST
 
 from .cart import Cart
@@ -17,6 +18,7 @@ CATALOG_PAGE_SIZE = 24
 SUGGEST_LIMIT = 6
 # Карточка товара читает цвета и галерею: без prefetch это по запросу на карточку.
 CARD_PREFETCH = ('available_colors', 'gallery')
+REMOVED_NOTICE_KEY = 'cart_removed_notice'
 
 
 def _is_ajax(request):
@@ -30,10 +32,32 @@ def _is_htmx(request):
 
 def _bestsellers(limit=8):
     """Хиты продаж; если не отмечено ни одного — избранные товары."""
-    products = list(Product.objects.filter(is_available=True, is_bestseller=True)[:limit])
+    available = Product.objects.filter(is_available=True).prefetch_related(*CARD_PREFETCH)
+    products = list(available.filter(is_bestseller=True)[:limit])
     if not products:
-        products = list(Product.objects.filter(is_available=True, is_featured=True)[:limit])
+        products = list(available.filter(is_featured=True)[:limit])
     return products
+
+
+def _crumbs(*trail):
+    """Хлебные крошки: последняя — текущая страница (без ссылки)."""
+    return [(label, None) for label in trail]
+
+
+def _safe_redirect_target(request, candidate, default):
+    """Вернуть ``candidate``, только если это путь этого сайта (``/…``) или http(s)-URL на этот же хост.
+
+    Голые строки вроде ``foo`` отбрасываются: ``redirect()`` принял бы их за имя view.
+    Результат всегда путь или абсолютный URL, поэтому вызывающие используют ``HttpResponseRedirect``.
+    """
+    if candidate:
+        is_path = candidate.startswith('/') and not candidate.startswith(('//', '/\\'))
+        is_absolute = candidate.startswith(('http://', 'https://'))
+        if (is_path or is_absolute) and url_has_allowed_host_and_scheme(
+            candidate, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+        ):
+            return candidate
+    return default
 
 PRODUCTION_STEPS = [
     ('Заявка и консультация', 'Обсуждаем задачу, бюджет и сроки — по телефону или на встрече.'),
@@ -77,15 +101,35 @@ HOME_SEGMENTS = [
 ]
 
 
+def _home_catalog_links():
+    """Материалы и их категории — только реально существующие сочетания с доступными товарами."""
+    pairs = (
+        Product.objects.filter(is_available=True, material__isnull=False, category__isnull=False)
+        .values_list('material', 'category').distinct()
+    )
+    by_material = {}
+    for material_id, category_id in pairs:
+        by_material.setdefault(material_id, set()).add(category_id)
+    category_ids = {c for ids in by_material.values() for c in ids}
+    categories = {c.id: c for c in Category.objects.filter(id__in=category_ids)}
+    return [
+        {
+            'material': material,
+            'categories': sorted((categories[c] for c in by_material[material.id]), key=lambda c: c.name),
+        }
+        for material in Material.objects.filter(id__in=by_material)
+    ]
+
+
 def home(request):
     collections = Collection.objects.filter(is_featured=True)[:6]
-    featured_products = Product.objects.filter(is_featured=True, is_available=True).select_related('material')[:8]
+    featured_products = Product.objects.filter(is_featured=True, is_available=True).select_related('material').prefetch_related(*CARD_PREFETCH)[:8]
     reviews = Review.objects.filter(is_published=True).select_related('product')[:6]
     return render(request, 'home.html', {
         'segments': HOME_SEGMENTS,
         'collections': collections,
         'featured_products': featured_products,
-        'production_steps': PRODUCTION_STEPS,
+        'catalog_links': _home_catalog_links(),
         'faq_items': FAQ_ITEMS,
         'reviews': reviews,
     })
@@ -113,6 +157,7 @@ def _catalog_context(request, products, skip=()):
         'active_filters': active_filters,
         'current_sort': current_sort,
         'sort_choices': SORT_CHOICES,
+        'faq_items': FAQ_ITEMS,
         'querystring': params.urlencode(),
         'total_count': page_obj.paginator.count,
         'color_options': ColorOption.objects.all(),
@@ -135,6 +180,7 @@ def catalog_list(request):
         'categories': Category.objects.all(),
         'search': search or '',
         'current_material': None,
+        'breadcrumbs': _crumbs('Каталог'),
     })
     return render(request, 'catalog_list.html', context)
 
@@ -176,6 +222,7 @@ def catalog_by_material(request, material_slug):
         'categories': Category.objects.filter(products__material=material).distinct(),
         'search': '',
         'current_material': material,
+        'breadcrumbs': [('Каталог', reverse('catalog_list')), (material.name, None)],
         'meta_title': f'{material.name} — каталог | ESTIVO',
     })
     return render(request, 'catalog_list.html', context)
@@ -222,7 +269,7 @@ def _selected_colors(request, product):
 def _product_context(request, product, review_form=None):
     related_products = (
         Product.objects.filter(is_available=True, category=product.category)
-        .exclude(pk=product.pk)[:4]
+        .exclude(pk=product.pk).prefetch_related(*CARD_PREFETCH)[:4]
     )
     reviews = product.reviews.filter(is_published=True)
     crumbs = [('Каталог', reverse('catalog_list'))]
@@ -292,34 +339,35 @@ def _lead_page(request, template_name, lead_type, extra_context=None):
 
 
 def b2b_page(request):
-    return _lead_page(request, 'b2b.html', 'b2b')
+    return _lead_page(request, 'b2b.html', 'b2b', {'breadcrumbs': _crumbs('Для бизнеса')})
 
 
 def designers_page(request):
-    return _lead_page(request, 'designers.html', 'designer')
+    return _lead_page(request, 'designers.html', 'designer', {'breadcrumbs': _crumbs('Дизайнерам')})
 
 
 def about_page(request):
     return render(request, 'about.html', {
+        'breadcrumbs': _crumbs('О нас'),
         'materials': Material.objects.all(),
         'production_steps': PRODUCTION_STEPS,
     })
 
 
 def delivery_payment_page(request):
-    return render(request, 'delivery_payment.html')
+    return render(request, 'delivery_payment.html', {'breadcrumbs': _crumbs('Доставка и оплата')})
 
 
 def warranty_page(request):
-    return render(request, 'warranty.html')
+    return render(request, 'warranty.html', {'breadcrumbs': _crumbs('Гарантия')})
 
 
 def faq_page(request):
-    return render(request, 'faq.html', {'faq_items': FAQ_ITEMS})
+    return render(request, 'faq.html', {'faq_items': FAQ_ITEMS, 'breadcrumbs': _crumbs('Вопросы и ответы')})
 
 
 def contacts_page(request):
-    return _lead_page(request, 'contacts.html', 'private')
+    return _lead_page(request, 'contacts.html', 'private', {'breadcrumbs': _crumbs('Контакты')})
 
 
 def _parse_colors(request, product):
@@ -372,7 +420,7 @@ def cart_add(request, product_id):
             response['HX-Redirect'] = reverse('checkout')
             return response
         return redirect('checkout')
-    return redirect(request.POST.get('next') or 'cart_detail')
+    return HttpResponseRedirect(_safe_redirect_target(request, request.POST.get('next'), reverse('cart_detail')))
 
 
 def _cart_lines_response(request, removed=None):
@@ -401,6 +449,8 @@ def cart_update(request):
         })
     if _is_htmx(request):
         return _cart_lines_response(request, removed)
+    if removed:
+        request.session[REMOVED_NOTICE_KEY] = removed['name']
     return redirect('cart_detail')
 
 
@@ -423,6 +473,8 @@ def cart_remove(request):
         return JsonResponse({'count': cart.count, 'total_price': cart.total_price})
     if _is_htmx(request):
         return _cart_lines_response(request, removed)
+    if removed:
+        request.session[REMOVED_NOTICE_KEY] = removed['name']
     return redirect('cart_detail')
 
 
@@ -448,17 +500,24 @@ def wishlist_toggle(request, product_id):
             'wishlist': wishlist,
             'in_wishlist': product.id in wishlist,
         })
-    return redirect(request.META.get('HTTP_REFERER') or 'wishlist')
+    return HttpResponseRedirect(_safe_redirect_target(request, request.META.get('HTTP_REFERER'), reverse('wishlist')))
 
 
 def wishlist_page(request):
-    return render(request, 'wishlist.html', {'products': Wishlist(request).products()})
+    return render(request, 'wishlist.html', {'products': Wishlist(request).products(), 'breadcrumbs': _crumbs('Избранное')})
 
 
 def cart_detail(request):
     # Для пустого состояния корзины: подборка хитов (UX.md §8.4)
     bestsellers = _bestsellers(4) if Cart(request).is_empty else []
-    return render(request, 'cart.html', {'bestsellers': bestsellers})
+    # Откат удаления без JS: имя удалённой позиции кладут в сессию cart_remove/cart_update.
+    removed_name = request.session.pop(REMOVED_NOTICE_KEY, None)
+    removed = {'name': removed_name} if removed_name else None
+    return render(request, 'cart.html', {
+        'bestsellers': bestsellers,
+        'breadcrumbs': _crumbs('Корзина'),
+        'removed': removed,
+    })
 
 
 def checkout(request):
@@ -530,7 +589,7 @@ def lead_create(request):
                 lead.telegram_notified = True
                 lead.save(update_fields=['telegram_notified'])
             messages.success(request, 'Заявка отправлена! Мы свяжемся с вами в ближайшее время.')
-    return redirect(request.POST.get('next', 'home'))
+    return HttpResponseRedirect(_safe_redirect_target(request, request.POST.get('next'), reverse('home')))
 
 
 def handler404(request, exception=None):

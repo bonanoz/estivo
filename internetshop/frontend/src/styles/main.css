@@ -20,7 +20,7 @@
 @source "../../../shop/templates";
 
 /*
- * Tokens. Values mirror shop/static/css/variables.css and docs/design-system.md (brand source of truth), plus the
+ * Tokens. Values are defined in this @theme block; usage rules live in docs/design-system.md (brand source of truth), plus the
  * corrected tokens from the design-system (accent-text, line-strong, error). From DESIGN.md only the pill radius and
  * the motion duration scale are taken - never its palette or fonts.
  */
@@ -310,6 +310,17 @@
   }
 
   /* ---- Pill (filter / toggle) ---- */
+  /* django.contrib.messages */
+  .alert {
+    margin-bottom: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-accent-text);
+    border-radius: var(--radius-sm);
+    background: var(--color-accent-soft);
+    color: var(--color-accent-text);
+    font-weight: var(--weight-body-bold);
+  }
+
   .pill {
     display: inline-flex;
     align-items: center;

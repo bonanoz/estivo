@@ -6,6 +6,7 @@
 {% block content %}
 <section class="cart-page">
     <div class="mx-auto w-full max-w-[1240px] px-4 py-8 md:px-6 md:py-12">
+        {% include 'partials/_breadcrumbs.html' with crumbs=breadcrumbs %}
         <h1 class="cart-page__title">Корзина</h1>
         {% include 'partials/htmx/_cart_lines.html' with mode='page' full=True %}
     </div>
