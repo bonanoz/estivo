@@ -16,4 +16,13 @@ window.Alpine = Alpine;
 // automatically, so new epics add a folder without editing this file.
 import.meta.glob('./*/index.ts', { eager: true });
 
+// Counter badges in the header are hidden at 0; HTMX swaps their text (OOB), so keep `hidden` in sync.
+function syncCounters(root: ParentNode = document): void {
+  root.querySelectorAll<HTMLElement>('[data-cart-count], [data-wishlist-count]').forEach((el) => {
+    el.hidden = (el.textContent ?? '').trim() === '0' || (el.textContent ?? '').trim() === '';
+  });
+}
+document.body.addEventListener('htmx:afterSettle', () => syncCounters());
+document.body.addEventListener('htmx:oobAfterSwap', () => syncCounters());
+
 Alpine.start();
