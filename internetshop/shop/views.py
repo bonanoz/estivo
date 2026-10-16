@@ -1,19 +1,37 @@
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 
 from .cart import Cart
-from .forms import LeadForm, OrderForm
+from .catalog_filters import SORT_CHOICES, apply_filters, apply_sort
+from .forms import LeadForm, OrderForm, ReviewForm
 from .models import Category, Collection, ColorOption, Material, OrderItem, Product, Review
 from .utils import notify_telegram
+from .wishlist import Wishlist
+
+CATALOG_PAGE_SIZE = 24
+SUGGEST_LIMIT = 6
 
 
 def _is_ajax(request):
     return request.headers.get('x-requested-with') == 'XMLHttpRequest'
+
+
+def _is_htmx(request):
+    # Без зависимости от django_htmx.middleware: достаточно заголовка.
+    return request.headers.get('HX-Request') == 'true'
+
+
+def _bestsellers(limit=8):
+    """Хиты продаж; если не отмечено ни одного — избранные товары."""
+    products = list(Product.objects.filter(is_available=True, is_bestseller=True)[:limit])
+    if not products:
+        products = list(Product.objects.filter(is_available=True, is_featured=True)[:limit])
+    return products
 
 PRODUCTION_STEPS = [
     ('Заявка и консультация', 'Обсуждаем задачу, бюджет и сроки — по телефону или на встрече.'),
@@ -72,44 +90,100 @@ def home(request):
 
 
 def _paginate_products(request, products):
-    paginator = Paginator(products, 12)
+    paginator = Paginator(products, CATALOG_PAGE_SIZE)
     page_number = request.GET.get('page')
     return paginator.get_page(page_number)
+
+
+def _catalog_context(request, products, skip=()):
+    """Общая часть каталога: фильтры, сортировка, пагинация 24/стр.
+
+    ``querystring`` — GET-параметры без ``page`` (для ссылок пагинации:
+    ``?{{ querystring }}&page=N``), чтобы фильтры не терялись при перелистывании.
+    """
+    products, active_filters = apply_filters(products, request.GET, skip=skip)
+    products, current_sort = apply_sort(products, request.GET)
+    params = request.GET.copy()
+    params.pop('page', None)
+    page_obj = _paginate_products(request, products)
+    return {
+        'page_obj': page_obj,
+        'active_filters': active_filters,
+        'current_sort': current_sort,
+        'sort_choices': SORT_CHOICES,
+        'querystring': params.urlencode(),
+        'total_count': page_obj.paginator.count,
+        'color_options': ColorOption.objects.all(),
+    }
+
+
+def _search_products(products, search):
+    return products.filter(Q(name__icontains=search) | Q(description__icontains=search))
 
 
 def catalog_list(request):
     products = Product.objects.filter(is_available=True).select_related('material', 'category')
     search = request.GET.get('search')
     if search:
-        products = products.filter(Q(name__icontains=search) | Q(description__icontains=search))
-    return render(request, 'catalog_list.html', {
-        'page_obj': _paginate_products(request, products),
+        products = _search_products(products, search)
+    context = _catalog_context(request, products)
+    context.update({
         'materials': Material.objects.all(),
         'categories': Category.objects.all(),
         'search': search or '',
         'current_material': None,
     })
+    return render(request, 'catalog_list.html', context)
+
+
+@require_GET
+def catalog_count(request):
+    """Фрагмент с числом товаров под текущие фильтры (живой счётчик панели фильтров)."""
+    products = Product.objects.filter(is_available=True)
+    search = request.GET.get('search')
+    if search:
+        products = _search_products(products, search)
+    products, _active = apply_filters(products, request.GET)
+    return render(request, 'partials/htmx/_catalog_count.html', {'count': products.count()})
+
+
+@require_GET
+def search_suggest(request):
+    """Подсказки поиска в шапке: до 6 доступных товаров по названию/артикулу/описанию."""
+    q = (request.GET.get('q') or '').strip()
+    if len(q) < 2:
+        return HttpResponse('')
+    products = list(
+        Product.objects.filter(is_available=True)
+        .filter(Q(name__icontains=q) | Q(sku__icontains=q) | Q(description__icontains=q))
+        .select_related('material', 'category')[:SUGGEST_LIMIT]
+    )
+    context = {'query': q, 'products': products}
+    if not products:
+        context['recommendations'] = _bestsellers(4)
+    return render(request, 'partials/htmx/_search_suggestions.html', context)
 
 
 def catalog_by_material(request, material_slug):
     material = get_object_or_404(Material, slug=material_slug)
     products = Product.objects.filter(is_available=True, material=material).select_related('category')
-    return render(request, 'catalog_list.html', {
-        'page_obj': _paginate_products(request, products),
+    context = _catalog_context(request, products, skip=('material',))
+    context.update({
         'materials': Material.objects.all(),
         'categories': Category.objects.filter(products__material=material).distinct(),
         'search': '',
         'current_material': material,
         'meta_title': f'{material.name} — каталог | ESTIVO',
     })
+    return render(request, 'catalog_list.html', context)
 
 
 def catalog_by_category(request, material_slug, category_slug):
     material = get_object_or_404(Material, slug=material_slug)
     category = get_object_or_404(Category, slug=category_slug)
     products = Product.objects.filter(is_available=True, material=material, category=category)
-    return render(request, 'catalog_list.html', {
-        'page_obj': _paginate_products(request, products),
+    context = _catalog_context(request, products, skip=('material', 'category'))
+    context.update({
         'materials': Material.objects.all(),
         'categories': Category.objects.filter(products__material=material).distinct(),
         'search': '',
@@ -123,10 +197,26 @@ def catalog_by_category(request, material_slug, category_slug):
         'meta_title': f'{category.name} из {material.name.lower()} | ESTIVO',
         'meta_description': f'{category.name} из {material.name.lower()} ручной работы — ESTIVO. Гарантия 3 года, доставка по России от 3 дней.',
     })
+    return render(request, 'catalog_list.html', context)
 
 
-def product_detail(request, slug):
-    product = get_object_or_404(Product.objects.select_related('material', 'category'), slug=slug)
+def _selected_colors(request, product):
+    """Предвыбор цветов из ``?weave=&cushion=&frame=`` — только реально доступные
+    товару цвета нужного типа отделки; всё остальное молча игнорируется."""
+    available = {c.id: c for c in product.available_colors.all()}
+    selected = {}
+    for finish_type, _label in ColorOption.FINISH_TYPE_CHOICES:
+        try:
+            color_id = int(request.GET.get(finish_type))
+        except (TypeError, ValueError):
+            continue
+        color = available.get(color_id)
+        if color is not None and color.finish_type == finish_type:
+            selected[finish_type] = color_id
+    return selected
+
+
+def _product_context(request, product, review_form=None):
     related_products = (
         Product.objects.filter(is_available=True, category=product.category)
         .exclude(pk=product.pk)[:4]
@@ -136,12 +226,40 @@ def product_detail(request, slug):
     if product.material:
         crumbs.append((product.material.name, reverse('catalog_by_material', args=[product.material.slug])))
     crumbs.append((product.name, None))
-    return render(request, 'product_detail.html', {
+    return {
         'product': product,
         'related_products': related_products,
         'reviews': reviews,
         'breadcrumbs': crumbs,
-    })
+        'selected_colors': _selected_colors(request, product),
+        'review_form': review_form or ReviewForm(),
+    }
+
+
+def product_detail(request, slug):
+    product = get_object_or_404(Product.objects.select_related('material', 'category'), slug=slug)
+    return render(request, 'product_detail.html', _product_context(request, product))
+
+
+@require_POST
+def review_create(request, slug):
+    """Отзыв с PDP: сохраняется неопубликованным, без Telegram-уведомления."""
+    product = get_object_or_404(Product.objects.select_related('material', 'category'), slug=slug)
+    form = ReviewForm(request.POST)
+    if form.is_valid():
+        if not form.is_spam:
+            review = form.save(commit=False)
+            review.product = product
+            review.is_published = False
+            review.save()
+        # Бот с заполненным honeypot получает тот же ответ, что и человек.
+        if _is_htmx(request):
+            return render(request, 'partials/htmx/_review_success.html', {'product': product})
+        messages.success(request, 'Спасибо! Отзыв отправлен на модерацию.')
+        return redirect(product.get_absolute_url())
+    if _is_htmx(request):
+        return render(request, 'partials/htmx/_review_form.html', {'product': product, 'review_form': form})
+    return render(request, 'product_detail.html', _product_context(request, product, review_form=form))
 
 
 def _lead_page(request, template_name, lead_type, extra_context=None):
@@ -235,9 +353,28 @@ def cart_add(request, product_id):
     cart.add(product, colors=colors, quantity=quantity)
     if _is_ajax(request):
         return JsonResponse({'count': cart.count, 'total_price': cart.total_price})
+    if _is_htmx(request) and 'checkout' not in request.POST:
+        recommendations = (
+            Product.objects.filter(is_available=True, category=product.category)
+            .exclude(pk=product.pk)[:4]
+            if product.category_id else []
+        )
+        return render(request, 'partials/htmx/_cart_drawer.html', {
+            'added_product': product,
+            'recommendations': recommendations,
+        })
     if 'checkout' in request.POST:
+        if _is_htmx(request):
+            response = HttpResponse(status=204)
+            response['HX-Redirect'] = reverse('checkout')
+            return response
         return redirect('checkout')
     return redirect(request.POST.get('next') or 'cart_detail')
+
+
+def _cart_lines_response(request, removed=None):
+    """HTMX-ответ для cart_update/cart_remove: свежие строки корзины и итог."""
+    return render(request, 'partials/htmx/_cart_lines.html', {'removed': removed})
 
 
 @require_POST
@@ -248,6 +385,10 @@ def cart_update(request):
     except (TypeError, ValueError):
         quantity = 1
     cart = Cart(request)
+    removed = None
+    if quantity <= 0:
+        removed = _removed_info(cart, line_id)
+        cart.stash_removed(line_id)
     cart.set_quantity(line_id, quantity)
     if _is_ajax(request):
         return JsonResponse({
@@ -255,16 +396,60 @@ def cart_update(request):
             'total_price': cart.total_price,
             'removed': quantity <= 0,
         })
+    if _is_htmx(request):
+        return _cart_lines_response(request, removed)
     return redirect('cart_detail')
+
+
+def _removed_info(cart, line_id):
+    """Название товара удаляемой позиции — для тоста «… удалён · Вернуть»."""
+    for item in cart:
+        if item['line_id'] == line_id:
+            return {'name': item['product'].name}
+    return None
 
 
 @require_POST
 def cart_remove(request):
     cart = Cart(request)
-    cart.remove(request.POST.get('line_id'))
+    line_id = request.POST.get('line_id')
+    removed = _removed_info(cart, line_id)
+    cart.stash_removed(line_id)
+    cart.remove(line_id)
     if _is_ajax(request):
         return JsonResponse({'count': cart.count, 'total_price': cart.total_price})
+    if _is_htmx(request):
+        return _cart_lines_response(request, removed)
     return redirect('cart_detail')
+
+
+@require_POST
+def cart_undo(request):
+    """Вернуть последнюю удалённую из корзины позицию."""
+    Cart(request).undo_remove()
+    if _is_htmx(request):
+        return _cart_lines_response(request)
+    return redirect('cart_detail')
+
+
+@require_POST
+def wishlist_toggle(request, product_id):
+    wishlist = Wishlist(request)
+    product = get_object_or_404(Product, id=product_id)
+    if not product.is_available and product.id not in wishlist:
+        return HttpResponse(status=404)
+    wishlist.toggle(product.id)
+    if _is_htmx(request):
+        return render(request, 'partials/htmx/_wishlist_toggle.html', {
+            'product': product,
+            'wishlist': wishlist,
+            'in_wishlist': product.id in wishlist,
+        })
+    return redirect(request.META.get('HTTP_REFERER') or 'wishlist')
+
+
+def wishlist_page(request):
+    return render(request, 'wishlist.html', {'products': Wishlist(request).products()})
 
 
 def cart_detail(request):
@@ -344,4 +529,4 @@ def lead_create(request):
 
 
 def handler404(request, exception=None):
-    return render(request, '404.html', status=404)
+    return render(request, '404.html', {'bestsellers': _bestsellers(8)}, status=404)

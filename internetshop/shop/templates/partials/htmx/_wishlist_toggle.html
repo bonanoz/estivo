@@ -1,0 +1,5 @@
+<button type="button" class="wishlist-btn"
+        hx-post="{% url 'wishlist_toggle' product.id %}" hx-target="this" hx-swap="outerHTML"
+        aria-pressed="{% if in_wishlist %}true{% else %}false{% endif %}"
+        aria-label="{% if in_wishlist %}Убрать из избранного{% else %}В избранное{% endif %}">&#9825;</button>
+<span hx-swap-oob="innerHTML:[data-wishlist-count]" data-wishlist-count>{{ wishlist.count }}</span>

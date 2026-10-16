@@ -1,0 +1,37 @@
+{% load humanize %}
+<div id="cart-lines">
+    {% if removed %}
+    <div class="toast" role="status">
+        <span>{{ removed.name }} удалён из корзины</span>
+        <form method="post" action="{% url 'cart_undo' %}" hx-post="{% url 'cart_undo' %}" hx-target="#cart-lines" hx-swap="outerHTML">
+            {% csrf_token %}
+            <button type="submit">Вернуть</button>
+        </form>
+    </div>
+    {% endif %}
+    {% for item in cart %}
+    <div class="cart-line">
+        <span>{{ item.product.name }}</span>
+        {% for label, name in item.colors_display %}<span>{{ label }}: {{ name }}</span>{% endfor %}
+        <form method="post" action="{% url 'cart_update' %}">
+            {% csrf_token %}
+            <input type="hidden" name="line_id" value="{{ item.line_id }}">
+            <button type="submit" name="quantity" value="{{ item.quantity|add:'-1' }}" aria-label="Уменьшить"
+                    hx-post="{% url 'cart_update' %}" hx-include="closest form" hx-vals='{"quantity": "{{ item.quantity|add:'-1' }}"}' hx-target="#cart-lines" hx-swap="outerHTML">&minus;</button>
+            <span>{{ item.quantity }}</span>
+            <button type="submit" name="quantity" value="{{ item.quantity|add:'1' }}" aria-label="Увеличить"
+                    hx-post="{% url 'cart_update' %}" hx-include="closest form" hx-vals='{"quantity": "{{ item.quantity|add:'1' }}"}' hx-target="#cart-lines" hx-swap="outerHTML">+</button>
+        </form>
+        <span>{{ item.line_total|intcomma }} ₽</span>
+        <form method="post" action="{% url 'cart_remove' %}" hx-post="{% url 'cart_remove' %}" hx-target="#cart-lines" hx-swap="outerHTML">
+            {% csrf_token %}
+            <input type="hidden" name="line_id" value="{{ item.line_id }}">
+            <button type="submit">Удалить</button>
+        </form>
+    </div>
+    {% empty %}
+    <p>Корзина пуста</p>
+    {% endfor %}
+    <p class="cart-total">Итого: {{ cart.total_price|intcomma }} ₽</p>
+</div>
+<span hx-swap-oob="innerHTML:[data-cart-count]" data-cart-count>{{ cart.count }}</span>
