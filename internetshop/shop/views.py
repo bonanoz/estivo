@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
@@ -45,11 +45,18 @@ def _crumbs(*trail):
 
 
 def _safe_redirect_target(request, candidate, default):
-    """Вернуть ``candidate``, только если он ведёт на этот же сайт, иначе ``default``."""
-    if candidate and url_has_allowed_host_and_scheme(
-        candidate, allowed_hosts={request.get_host()}, require_https=request.is_secure()
-    ):
-        return candidate
+    """Вернуть ``candidate``, только если это путь этого сайта (``/…``) или http(s)-URL на этот же хост.
+
+    Голые строки вроде ``foo`` отбрасываются: ``redirect()`` принял бы их за имя view.
+    Результат всегда путь или абсолютный URL, поэтому вызывающие используют ``HttpResponseRedirect``.
+    """
+    if candidate:
+        is_path = candidate.startswith('/') and not candidate.startswith(('//', '/\\'))
+        is_absolute = candidate.startswith(('http://', 'https://'))
+        if (is_path or is_absolute) and url_has_allowed_host_and_scheme(
+            candidate, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+        ):
+            return candidate
     return default
 
 PRODUCTION_STEPS = [
@@ -413,7 +420,7 @@ def cart_add(request, product_id):
             response['HX-Redirect'] = reverse('checkout')
             return response
         return redirect('checkout')
-    return redirect(_safe_redirect_target(request, request.POST.get('next'), reverse('cart_detail')))
+    return HttpResponseRedirect(_safe_redirect_target(request, request.POST.get('next'), reverse('cart_detail')))
 
 
 def _cart_lines_response(request, removed=None):
@@ -493,7 +500,7 @@ def wishlist_toggle(request, product_id):
             'wishlist': wishlist,
             'in_wishlist': product.id in wishlist,
         })
-    return redirect(_safe_redirect_target(request, request.META.get('HTTP_REFERER'), reverse('wishlist')))
+    return HttpResponseRedirect(_safe_redirect_target(request, request.META.get('HTTP_REFERER'), reverse('wishlist')))
 
 
 def wishlist_page(request):
@@ -582,7 +589,7 @@ def lead_create(request):
                 lead.telegram_notified = True
                 lead.save(update_fields=['telegram_notified'])
             messages.success(request, 'Заявка отправлена! Мы свяжемся с вами в ближайшее время.')
-    return redirect(_safe_redirect_target(request, request.POST.get('next'), reverse('home')))
+    return HttpResponseRedirect(_safe_redirect_target(request, request.POST.get('next'), reverse('home')))
 
 
 def handler404(request, exception=None):
