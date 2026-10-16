@@ -22,3 +22,7 @@ internetshop/media/
 
 # tasteskill inspector output
 .taste-skill/inspect/
+
+# Vite build output and Node deps
+internetshop/shop/static/dist/
+node_modules/
