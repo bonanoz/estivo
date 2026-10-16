@@ -18,19 +18,18 @@
     <meta property="og:image" content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/placeholders/hero.svg' %}{% endblock %}">
     {% endblock %}
 
+    {# Flag for CSS (progressive enhancement): set before the first paint. #}
+    <script>document.documentElement.classList.add('js')</script>
+    {% if site_settings.promo_enabled and site_settings.promo_text %}
+    {# A dismissed promo bar is hidden before paint, so there is no flash or layout shift after reload. #}
+    <script>try{if(localStorage.getItem('estivo:promo-dismissed')==='{{ site_settings.promo_text|escapejs }}')document.documentElement.classList.add('promo-dismissed')}catch(e){}</script>
+    <style>.promo-dismissed [data-promo-bar]{display:none}</style>
+    {% endif %}
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&display=swap" rel="stylesheet">
 
-    {# Legacy CSS stays until every template is migrated; it sits in the lowest cascade layer so the Tailwind layers always win. #}
-    <style>
-        @layer legacy, theme, base, components, utilities;
-        @import url("{% static 'css/variables.css' %}") layer(legacy);
-        @import url("{% static 'css/base.css' %}") layer(legacy);
-        @import url("{% static 'css/layout.css' %}") layer(legacy);
-        @import url("{% static 'css/components.css' %}") layer(legacy);
-        @import url("{% static 'css/pages.css' %}") layer(legacy);
-    </style>
     {% vite_hmr_client %}
     {% vite_asset 'src/main.ts' %}
     {% block extra_head %}{% endblock %}
@@ -62,9 +61,6 @@
     {# Contact button is on every page, including the reduced checkout shell. #}
     {% include 'partials/_chat_button.html' %}
 
-    <script src="{% static 'js/main.js' %}" defer></script>
-    <script src="{% static 'js/forms.js' %}" defer></script>
-    <script src="{% static 'js/cart.js' %}" defer></script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

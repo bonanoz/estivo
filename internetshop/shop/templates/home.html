@@ -5,7 +5,7 @@
 <section data-section="hero" class="page-section pt-6 md:pt-10">
     <div class="page-container grid items-center gap-8 md:grid-cols-2 md:gap-12">
         <div class="grid gap-5">
-            <h1 class="page-h1">Мебель, в которую хочется возвращаться</h1>
+            <h1 class="page-h1">Мебель для мест, куда хочется возвращаться</h1>
             <p class="page-lead">Элитная плетёная мебель ручной работы для дома, дачи и бизнеса. Собственное производство полного цикла.</p>
             <div class="flex flex-wrap gap-3">
                 <a href="{% url 'catalog_list' %}" class="btn btn-primary btn-lg">Смотреть коллекции и цены</a>
@@ -23,11 +23,20 @@
 </section>
 
 <section data-section="categories" aria-label="Быстрый выбор" class="pb-2">
-    <div class="page-container flex flex-wrap gap-2">
-        <a href="{% url 'catalog_list' %}?flag=new" class="pill">Новинки</a>
-        <a href="{% url 'catalog_list' %}?flag=bestseller" class="pill">Хиты продаж</a>
-        <a href="{% url 'catalog_list' %}?flag=sale" class="pill">Со скидкой</a>
-        <a href="{% url 'catalog_list' %}" class="pill">Весь каталог</a>
+    <div class="page-container grid gap-3">
+        <div class="flex flex-wrap gap-2">
+            <a href="{% url 'catalog_list' %}" class="pill">Весь каталог</a>
+            {% for group in catalog_links %}
+            <a href="{% url 'catalog_by_material' group.material.slug %}" class="pill">{{ group.material.name }}</a>
+            {% endfor %}
+        </div>
+        {% for group in catalog_links %}
+        <ul class="m-0 flex list-none flex-wrap items-center gap-2 p-0" aria-label="{{ group.material.name }}: категории">
+            {% for category in group.categories %}
+            <li><a href="{% url 'catalog_by_category' group.material.slug category.slug %}" class="pill">{{ category.name }} из {{ group.material.name|lower }}</a></li>
+            {% endfor %}
+        </ul>
+        {% endfor %}
     </div>
 </section>
 

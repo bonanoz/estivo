@@ -29,7 +29,7 @@
                 this.$nextTick(() => this.$refs.menuBtn.focus());
             }
         }"
-        x-effect="document.documentElement.style.overflow = (menu || search) ? 'hidden' : ''"
+        x-effect="$scrollLock('mobile-menu', menu); $scrollLock('search', search)"
         @keydown.escape.window="if (search) closeSearch(); else if (menu) closeMenu()">
     <div class="mx-auto grid w-full max-w-[1240px] grid-cols-[1fr_auto_1fr] items-center gap-2 px-2 py-1 md:px-6 lg:grid-cols-[auto_1fr_auto] lg:gap-6">
         <div class="flex items-center lg:hidden">

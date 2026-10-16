@@ -1,9 +1,10 @@
-// Cart drawer and checkout form niceties. Owned by the cart epic.
+// Cart drawer. Owned by the cart epic.
 //
 // The drawer is a server fragment (partials/htmx/_cart_drawer.html) returned by POST /cart/add/<id>/.
 // Whatever hx-target the "add to cart" button declares, the fragment is redirected here into
 // #cart-drawer-root (created on demand), so the product page does not need a mount point.
 import Alpine from 'alpinejs';
+import { setScrollLock } from '../lib/scroll-lock';
 
 const ROOT_ID = 'cart-drawer-root';
 const CLOSE_MS = 300;
@@ -82,7 +83,7 @@ Alpine.data('cartDrawer', () => ({
     const scope = this as unknown as DrawerScope;
     this.returnTo = lastTrigger ?? (document.activeElement as HTMLElement | null);
     this.open = true;
-    document.documentElement.style.overflow = 'hidden';
+    setScrollLock('cart-drawer', true);
     // Everything behind the dialog becomes inert (screen readers and Tab skip it).
     this.hiddenSiblings = Array.from(document.body.children).filter(
       (el): el is HTMLElement => el instanceof HTMLElement && el.id !== ROOT_ID,
@@ -92,7 +93,7 @@ Alpine.data('cartDrawer', () => ({
   },
 
   release() {
-    document.documentElement.style.overflow = '';
+    setScrollLock('cart-drawer', false);
     this.hiddenSiblings.forEach((el) => el.removeAttribute('inert'));
     this.hiddenSiblings = [];
   },
@@ -138,41 +139,3 @@ Alpine.data('cartDrawer', () => ({
     }
   },
 }));
-
-// Checkout form: phone mask and double-submit guard (scoped, so it does not depend on the legacy forms.js).
-function formatPhone(raw: string): string {
-  let digits = raw.replace(/\D/g, '');
-  if (digits.startsWith('8')) digits = '7' + digits.slice(1);
-  if (!digits.startsWith('7')) digits = '7' + digits;
-  digits = digits.slice(0, 11);
-  let out = '+7';
-  if (digits.length > 1) out += ' ' + digits.slice(1, 4);
-  if (digits.length >= 5) out += ' ' + digits.slice(4, 7);
-  if (digits.length >= 8) out += '-' + digits.slice(7, 9);
-  if (digits.length >= 10) out += '-' + digits.slice(9, 11);
-  return out;
-}
-
-function initCheckoutForm(): void {
-  const form = document.querySelector<HTMLFormElement>('form[data-checkout-form]');
-  if (!form) return;
-  form.querySelectorAll<HTMLInputElement>('input[name="customer_phone"]').forEach((input) => {
-    input.addEventListener('input', () => {
-      input.value = formatPhone(input.value);
-    });
-  });
-  form.addEventListener('submit', () => {
-    const btn = form.querySelector<HTMLButtonElement>('button[type="submit"]');
-    if (!btn) return;
-    window.setTimeout(() => {
-      btn.setAttribute('aria-busy', 'true');
-      btn.disabled = true;
-    }, 0);
-  });
-}
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initCheckoutForm);
-} else {
-  initCheckoutForm();
-}

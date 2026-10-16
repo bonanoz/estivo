@@ -310,6 +310,17 @@
   }
 
   /* ---- Pill (filter / toggle) ---- */
+  /* django.contrib.messages */
+  .alert {
+    margin-bottom: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-accent-text);
+    border-radius: var(--radius-sm);
+    background: var(--color-accent-soft);
+    color: var(--color-accent-text);
+    font-weight: var(--weight-body-bold);
+  }
+
   .pill {
     display: inline-flex;
     align-items: center;
