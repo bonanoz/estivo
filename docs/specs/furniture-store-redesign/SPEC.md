@@ -303,6 +303,37 @@ created by E2 are restyled by wave 2 (different waves, no conflict).
 - **Tests:** `shop/tests/test_seo_a11y.py` + full run
 - **Manual check:** —
 
+## Test contract interfaces (fixed by the tests, binding for workers)
+
+Tests live in `internetshop/shop/tests/` (one file per epic, classes prefixed `E1…`–`E7…`); `helpers.py` has a
+mini-DOM parser and `make_product()`. Run one epic: `python manage.py test shop.tests.test_<name>`.
+
+- Markers: promo bar `data-promo-bar`; contact button container `data-contact-button`; footer rating block
+  `data-reviews-summary`; wishlist toggle response includes an `hx-swap-oob` element carrying `data-wishlist-count`.
+- Card swatches: first 4 shown, then `+N` where N = total − 4 (no `+N` at exactly 4).
+- `Product.badges` → list of codes `'new'`, `'bestseller'`, `'sale'` (property or method).
+- Review form fields `author`, `rating`, `usage_duration`, `text`; honeypot `name="website"`, hidden; success text
+  contains «модерац».
+- 404 context key `bestsellers` (≤ 8, falls back to `is_featured`).
+- `apply_filters(params: QueryDict, …)` returns a 2-tuple; views keep `page_obj` in context.
+- **`/catalog/count/` must be registered before `catalog/<slug:material_slug>/`** (otherwise the slug route catches it).
+- Vite tag: `<script type="module">` whose src contains `main` (e.g. `{% vite_asset 'src/main.ts' %}`).
+- Undo: element with `hx-post="/cart/undo/"` or a POST form to `/cart/undo/`, text «Вернуть».
+- Count element: the `hx-get` element, a descendant, or its `hx-target` has `aria-live="polite"`.
+- Empty `/search/suggest/` (q < 2 chars) returns an empty body.
+- With `HX-Request`, `cart_update`/`cart_remove` return 200 HTML (not 302); PDP heart has
+  `hx-post="/wishlist/toggle/<id>/"` and `aria-pressed`.
+- Existing pieces relied on: nav `aria-label="Основная навигация"`, `partials/_breadcrumbs.html`, session key
+  `wishlist` holding int ids.
+
+Orchestrator decisions on ambiguities raised by the test writer:
+- Multiple `color` values → union (OR), like `category`; no duplicate products.
+- `sort=new` → `-is_new`, then newest first (`-id`).
+- Price/length bounds are inclusive. Unknown `category`/`material` slugs in GET params are ignored.
+- The review form is in the initial PDP HTML (may be visually collapsed with Alpine); the "Write a review" button reveals it.
+- "Apply"/"Reset" are rendered in Russian («Применить» / «Сбросить»).
+- Existing test count is 16, not 15.
+
 ## Left for integration (orchestrator)
 
 - Resolve trivial merge conflicts, run `npm run build` + `collectstatic` in the main checkout.
@@ -338,3 +369,4 @@ migration is reversible (`migrate shop 0005`).
 
 - 2026-10-16 spec created (draft). Uncommitted work committed as `0143b33`, branch `feat/furniture-store-redesign`.
 - 2026-10-16 spec rewritten in English at the user's request.
+- 2026-10-16 test contract written: 179 tests (16 moved + 163 new). Diagnostic run on SQLite: 58 pass (all 16 existing), 113 red for missing fields/routes/markup. Real Postgres run pending PG upgrade (local server is 9.5; Django 5.0 needs 12+).

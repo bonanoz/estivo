@@ -3,7 +3,7 @@ from unittest import mock
 from django.test import TestCase
 from django.urls import reverse
 
-from .models import Category, ColorOption, Lead, Material, Order, Product
+from shop.models import Category, ColorOption, Lead, Material, Order, Product
 
 
 class SmokeTests(TestCase):
