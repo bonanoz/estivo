@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block meta_title %}Избранное | ESTIVO{% endblock %}
+
+{% block content %}
+<section class="section-sm">
+    <div class="container">
+        <h1>Избранное</h1>
+        {% if products %}
+        <div class="grid grid-4">
+            {% for product in products %}
+                {% include 'partials/_product_card.html' %}
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="lead muted">Здесь пока пусто. Нажмите на сердечко у понравившегося товара, чтобы сохранить его.</p>
+        <a href="{% url 'catalog_list' %}" class="btn btn-primary">Перейти в каталог</a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

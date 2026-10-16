@@ -1,0 +1,29 @@
+<form method="post" action="{% url 'review_create' product.slug %}" hx-post="{% url 'review_create' product.slug %}" hx-target="this" hx-swap="outerHTML" class="review-form">
+    {% csrf_token %}
+    {{ review_form.non_field_errors }}
+    <div>
+        <label for="id_author">Имя</label>
+        {{ review_form.author }}
+        {{ review_form.author.errors }}
+    </div>
+    <div>
+        <label for="id_rating">Оценка (1–5)</label>
+        {{ review_form.rating }}
+        {{ review_form.rating.errors }}
+    </div>
+    <div>
+        <label for="id_usage_duration">Срок использования</label>
+        {{ review_form.usage_duration }}
+        {{ review_form.usage_duration.errors }}
+    </div>
+    <div>
+        <label for="id_text">Отзыв</label>
+        {{ review_form.text }}
+        {{ review_form.text.errors }}
+    </div>
+    <div style="position:absolute;left:-9999px;" aria-hidden="true">
+        <label for="id_website">Сайт</label>
+        {{ review_form.website }}
+    </div>
+    <button type="submit" class="btn btn-primary">Отправить отзыв</button>
+</form>

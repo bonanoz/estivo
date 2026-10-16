@@ -138,6 +138,13 @@ class Command(BaseCommand):
                 available += colors_by_type[ColorOption.FRAME]
             p.available_colors.set(available)
 
+        # Бейджи «Новинка» / «Хит» для демо: первый товар — новинка, второй — хит
+        # (перезаписываем при каждом прогоне, как габариты).
+        for index, p in enumerate(list(products.values())[:2]):
+            p.is_new = index == 0
+            p.is_bestseller = index == 1
+            p.save(update_fields=['is_new', 'is_bestseller'])
+
         for prod_name, author, rating, duration, text in REVIEWS:
             product = products.get(prod_name)
             if product:

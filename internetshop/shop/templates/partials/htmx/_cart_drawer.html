@@ -1,0 +1,23 @@
+{% load humanize %}
+<div class="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-drawer-title">
+    <button type="button" class="cart-drawer__close" aria-label="Закрыть">&times;</button>
+    <h2 id="cart-drawer-title">Товар добавлен</h2>
+    <p>{{ added_product.name }}</p>
+    <ul>
+        {% for item in cart %}
+        <li>{{ item.product.name }} &times; {{ item.quantity }} — {{ item.line_total|intcomma }} ₽</li>
+        {% endfor %}
+    </ul>
+    <p class="cart-total">Итого: {{ cart.total_price|intcomma }} ₽</p>
+    <a href="{% url 'checkout' %}" class="btn btn-primary">Оформить заявку</a>
+    <a href="{% url 'catalog_list' %}" class="btn btn-outline">Продолжить покупки</a>
+    {% if recommendations %}
+    <h3>Вам может понравиться</h3>
+    <ul>
+        {% for product in recommendations %}
+        <li><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</div>
+<span hx-swap-oob="innerHTML:[data-cart-count]" data-cart-count>{{ cart.count }}</span>

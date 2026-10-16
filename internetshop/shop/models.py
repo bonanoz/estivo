@@ -53,6 +53,13 @@ class SiteSettings(models.Model):
         help_text='Страница о компании, блок «Философия».',
     )
 
+    promo_enabled = models.BooleanField('Показывать промо-полосу', default=False)
+    promo_text = models.CharField('Текст промо-полосы', max_length=200, blank=True)
+    promo_url = models.CharField(
+        'Ссылка промо-полосы', max_length=300, blank=True,
+        help_text='Необязательно. Например /catalog/ или https://…',
+    )
+
     class Meta:
         verbose_name = 'Настройки сайта'
         verbose_name_plural = 'Настройки сайта'
@@ -210,6 +217,8 @@ class Product(models.Model):
 
     is_available = models.BooleanField('В наличии/под заказ', default=True)
     is_featured = models.BooleanField('Показывать на главной', default=False)
+    is_new = models.BooleanField('Новинка', default=False)
+    is_bestseller = models.BooleanField('Хит продаж', default=False)
 
     main_image = models.ImageField(upload_to='products/', blank=True, null=True)
 
@@ -231,6 +240,18 @@ class Product(models.Model):
 
     def get_absolute_url(self):
         return reverse('product_detail', args=[self.slug])
+
+    @property
+    def badges(self):
+        """Коды бейджей карточки: 'new', 'bestseller', 'sale' (скидка = old_price > price)."""
+        codes = []
+        if self.is_new:
+            codes.append('new')
+        if self.is_bestseller:
+            codes.append('bestseller')
+        if self.old_price and self.old_price > self.price:
+            codes.append('sale')
+        return codes
 
     def colors_by_type(self):
         """Доступные цвета, сгруппированные по типу отделки, в порядке
