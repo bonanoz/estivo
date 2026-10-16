@@ -1,7 +1,7 @@
 // Error state for the add-to-cart buttons (loading state comes from htmx's .htmx-request class).
 
 export function initCartFeedback(): void {
-  document.body.addEventListener('htmx:responseError', (event) => {
+  const onError = (event: Event): void => {
     const el = (event as CustomEvent<{ elt?: HTMLElement }>).detail?.elt;
     if (!el?.matches('[data-add-to-cart]')) return;
     el.dataset.state = 'error';
@@ -11,5 +11,7 @@ export function initCartFeedback(): void {
       delete el.dataset.state;
       if (status) status.textContent = '';
     }, 4000);
-  });
+  };
+  document.body.addEventListener('htmx:responseError', onError);
+  document.body.addEventListener('htmx:sendError', onError);
 }

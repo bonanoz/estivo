@@ -9,6 +9,10 @@ export function initStickyBar(): void {
     bar.classList.toggle('is-visible', visible);
     if (visible) bar.removeAttribute('inert');
     else bar.setAttribute('inert', '');
+    // Lift the floating contact button above the bar and keep the footer readable (bar is display:none on desktop).
+    const h = visible ? bar.offsetHeight : 0;
+    document.documentElement.style.setProperty('--contact-offset', `${h}px`);
+    document.querySelector<HTMLElement>('[data-pdp]')?.style.setProperty('padding-bottom', h ? `${h + 16}px` : '');
   };
 
   new IntersectionObserver(
