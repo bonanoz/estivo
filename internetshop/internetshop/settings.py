@@ -43,6 +43,8 @@ ALLOWED_HOSTS += ['localhost', '127.0.0.1', '.trycloudflare.com']
 # POST-формы (заявки/лиды) шлют CSRF-токен — домен туннеля должен быть доверенным,
 # иначе Django вернёт 403 при отправке формы.
 CSRF_TRUSTED_ORIGINS = ['https://*.trycloudflare.com']
+# Домены хостинга (https://my-shop.onrender.com и т.п.), через запятую
+CSRF_TRUSTED_ORIGINS += [o for o in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',') if o]
 
 # Application definition
 
@@ -113,6 +115,13 @@ DATABASES = {
     }
 }
 
+# Хостинг (Render/Koyeb/Neon/Supabase) отдаёт одну строку подключения — она приоритетнее DB_*.
+if os.environ.get('DATABASE_URL'):
+    import dj_database_url
+    DATABASES['default'] = dj_database_url.parse(
+        os.environ['DATABASE_URL'], conn_max_age=600, ssl_require=not DEBUG,
+    )
+
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
@@ -159,6 +168,22 @@ STORAGES = {
     },
 }
 
+# Медиа в S3-совместимом хранилище (Cloudflare R2 / Supabase Storage / AWS S3): диск на бесплатных
+# хостингах эфемерный, загруженные через админку фото и .glb пропадают при перезапуске.
+# Включается, только если задан AWS_STORAGE_BUCKET_NAME; иначе — локальный диск (MEDIA_ROOT).
+if os.environ.get('AWS_STORAGE_BUCKET_NAME'):
+    STORAGES['default'] = {"BACKEND": "storages.backends.s3.S3Storage"}
+    AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
+    AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+    AWS_S3_ENDPOINT_URL = os.environ.get('AWS_S3_ENDPOINT_URL') or None  # R2/Supabase: свой endpoint
+    AWS_S3_REGION_NAME = os.environ.get('AWS_S3_REGION_NAME') or None
+    # Публичный адрес бакета (R2 public/custom domain, Supabase public URL) — без него ссылки подписанные
+    AWS_S3_CUSTOM_DOMAIN = os.environ.get('AWS_S3_CUSTOM_DOMAIN') or None
+    AWS_QUERYSTRING_AUTH = not AWS_S3_CUSTOM_DOMAIN
+    AWS_DEFAULT_ACL = None
+    AWS_S3_FILE_OVERWRITE = False
+
 # Vite (frontend/ -> shop/static/dist). В dev-режиме django-vite подключает dev-сервер Vite и не читает
 # manifest, поэтому тесты и `VITE_DEV_MODE=1` не требуют собранного dist/.
 # Для прод-режима: `cd frontend && npm ci && npm run build`, затем collectstatic.
@@ -178,6 +203,16 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # Публичный домен сайта — используется для sitemap.xml и абсолютных og:url/canonical
 SITE_URL = os.environ.get('SITE_URL', 'https://estivo63.ru')
+
+# Прод за прокси хостинга (TLS терминируется на нём)
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    # SECRET_KEY по умолчанию небезопасный — на проде обязательно задать свой
+    if SECRET_KEY == 'django-insecure-change-me' and 'test' not in sys.argv:
+        from django.core.exceptions import ImproperlyConfigured
+        raise ImproperlyConfigured('Задай SECRET_KEY в переменных окружения')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
