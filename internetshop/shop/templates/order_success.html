@@ -4,16 +4,24 @@
 {% block meta_description %}Ваша заявка принята. Менеджер ESTIVO свяжется с вами в ближайшее время.{% endblock %}
 
 {% block content %}
-<section class="section">
-    <div class="container">
-        <div class="confirm">
-            <div class="confirm__icon">✓</div>
-            <h1>Заявка принята</h1>
-            <p class="lead">Спасибо! Мы получили вашу заявку и свяжемся с вами в ближайшее время, чтобы согласовать детали, стоимость и сроки.</p>
-            <div style="display:flex; gap:var(--space-3); justify-content:center; flex-wrap:wrap; margin-top:var(--space-4);">
-                <a href="{% url 'catalog_list' %}" class="btn btn-primary btn-lg">Продолжить просмотр</a>
-                <a href="{% url 'home' %}" class="btn btn-outline btn-lg">На главную</a>
-            </div>
+<section class="order-done">
+    <div class="mx-auto w-full max-w-[820px] px-4 py-12 md:px-6 md:py-20">
+        <div class="order-done__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>
+        </div>
+        <h1 class="order-done__title">Заявка принята</h1>
+        <p class="order-done__lead">Спасибо! Мы получили вашу заявку и свяжемся с вами в ближайшее время, чтобы согласовать детали, стоимость и сроки.</p>
+
+        <h2 class="order-done__subtitle">Что дальше</h2>
+        <ol class="order-done__steps">
+            <li>Менеджер позвонит или напишет вам в мессенджер и уточнит детали.</li>
+            <li>Согласуем цвета отделки, размеры, стоимость и сроки изготовления.</li>
+            <li>Изготовим мебель вручную и пришлём фото на согласование перед отправкой.</li>
+        </ol>
+
+        <div class="order-done__actions">
+            <a href="{% url 'catalog_list' %}" class="btn btn-primary btn-lg">Продолжить просмотр каталога</a>
+            <a href="{% url 'home' %}" class="btn btn-outline btn-lg">На главную</a>
         </div>
     </div>
 </section>

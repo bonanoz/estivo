@@ -1,37 +1,64 @@
-{% load humanize %}
-<div id="cart-lines">
+{% load humanize %}{% comment %}
+Строки корзины, итог и действия - общий блок для страницы /cart/ и выезжающей корзины.
+Режим: параметр `mode` ('drawer' | 'page') при include; в ответах HTMX на cart_update/cart_remove/cart_undo
+приходит скрытым полем `ctx` формы. `full` - блок вставлен в полную страницу (а не пришёл фрагментом);
+`bestsellers` - подборка для пустого состояния полной страницы.
+Заменяется целиком (hx-target="#cart-lines", outerHTML). Счётчик в шапке - OOB в конце.
+{% endcomment %}
+{% firstof mode request.POST.ctx "page" as ctx %}
+<div id="cart-lines" class="cart-lines cart-lines--{% if ctx == 'drawer' %}drawer{% else %}page{% endif %}">
     {% if removed %}
-    <div class="toast" role="status">
-        <span>{{ removed.name }} удалён из корзины</span>
+    <div class="cart-toast" role="status" x-data="{ show: true }" x-init="setTimeout(() => show = false, 10000)" x-show="show" x-transition.opacity>
+        <span class="cart-toast__text">{{ removed.name }} удалён из корзины</span>
         <form method="post" action="{% url 'cart_undo' %}" hx-post="{% url 'cart_undo' %}" hx-target="#cart-lines" hx-swap="outerHTML">
             {% csrf_token %}
-            <button type="submit">Вернуть</button>
+            <input type="hidden" name="ctx" value="{% if ctx == 'drawer' %}drawer{% else %}page{% endif %}">
+            <button type="submit" class="cart-toast__undo">Вернуть</button>
         </form>
     </div>
     {% endif %}
-    {% for item in cart %}
-    <div class="cart-line">
-        <span>{{ item.product.name }}</span>
-        {% for label, name in item.colors_display %}<span>{{ label }}: {{ name }}</span>{% endfor %}
-        <form method="post" action="{% url 'cart_update' %}">
-            {% csrf_token %}
-            <input type="hidden" name="line_id" value="{{ item.line_id }}">
-            <button type="submit" name="quantity" value="{{ item.quantity|add:'-1' }}" aria-label="Уменьшить"
-                    hx-post="{% url 'cart_update' %}" hx-include="closest form" hx-vals='{"quantity": "{{ item.quantity|add:'-1' }}"}' hx-target="#cart-lines" hx-swap="outerHTML">&minus;</button>
-            <span>{{ item.quantity }}</span>
-            <button type="submit" name="quantity" value="{{ item.quantity|add:'1' }}" aria-label="Увеличить"
-                    hx-post="{% url 'cart_update' %}" hx-include="closest form" hx-vals='{"quantity": "{{ item.quantity|add:'1' }}"}' hx-target="#cart-lines" hx-swap="outerHTML">+</button>
-        </form>
-        <span>{{ item.line_total|intcomma }} ₽</span>
-        <form method="post" action="{% url 'cart_remove' %}" hx-post="{% url 'cart_remove' %}" hx-target="#cart-lines" hx-swap="outerHTML">
-            {% csrf_token %}
-            <input type="hidden" name="line_id" value="{{ item.line_id }}">
-            <button type="submit">Удалить</button>
-        </form>
+
+    {% if cart.is_empty %}
+    <div class="cart-empty">
+        <h2 class="cart-empty__title">В корзине пока пусто</h2>
+        <p class="cart-empty__text">Выберите мебель в каталоге: добавьте понравившееся, и менеджер поможет с деталями и стоимостью.</p>
+        <a href="{% url 'catalog_list' %}" class="btn btn-primary btn-lg">Продолжить покупки</a>
+        {% if ctx != 'drawer' %}
+        <ul class="cart-trust">
+            <li><strong>Ручная работа</strong><span>Каждое изделие плетут мастера мастерской ESTIVO.</span></li>
+            <li><strong>Гарантия 3 года</strong><span>На каркас и плетение при правильной эксплуатации.</span></li>
+            <li><strong>Доставка по России</strong><span>От 3 дней, аккуратная упаковка для транспортировки.</span></li>
+        </ul>
+        {% if bestsellers %}
+        <section id="cart-recs" class="cart-empty__recs" aria-labelledby="cart-recs-title">
+            <h2 id="cart-recs-title">Вам может понравиться</h2>
+            <div class="cart-empty__grid">
+                {% for product in bestsellers %}{% include 'partials/_product_card.html' %}{% endfor %}
+            </div>
+        </section>
+        {% elif not full %}
+        <div id="cart-recs" hx-get="{% url 'cart_detail' %}" hx-trigger="load" hx-select="#cart-recs" hx-swap="outerHTML"></div>
+        {% endif %}
+        {% endif %}
     </div>
-    {% empty %}
-    <p>Корзина пуста</p>
-    {% endfor %}
-    <p class="cart-total">Итого: {{ cart.total_price|intcomma }} ₽</p>
+    {% else %}
+    <div class="cart-lines__grid">
+        <ul class="cart-lines__list">
+            {% for item in cart %}{% if ctx == 'drawer' %}{% include 'partials/htmx/_cart_line.html' with item=item idx=forloop.counter mode='drawer' %}{% else %}{% include 'partials/htmx/_cart_line.html' with item=item idx=forloop.counter mode='page' %}{% endif %}{% endfor %}
+        </ul>
+        <div class="cart-summary">
+            <div class="cart-summary__row"><span>Товаров</span><span>{{ cart.count }}</span></div>
+            <div class="cart-summary__row cart-summary__total"><span>Итого</span><span>{{ cart.total_price|intcomma }}&nbsp;₽</span></div>
+            <a href="{% url 'checkout' %}" class="btn btn-primary btn-block btn-lg">Оформить заявку</a>
+            {% if ctx == 'drawer' %}
+            <a href="{% url 'catalog_list' %}" class="btn btn-outline btn-block" @click.prevent="close()">Продолжить покупки</a>
+            <a href="{% url 'cart_detail' %}" class="cart-summary__link">Открыть корзину</a>
+            {% else %}
+            <a href="{% url 'catalog_list' %}" class="btn btn-outline btn-block">Продолжить покупки</a>
+            {% endif %}
+            <p class="form-note">Это заявка, а не оплата. Менеджер свяжется с вами, чтобы согласовать детали и стоимость.</p>
+        </div>
+    </div>
+    {% endif %}
 </div>
 <span hx-swap-oob="innerHTML:[data-cart-count]" data-cart-count>{{ cart.count }}</span>

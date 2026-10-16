@@ -1,0 +1,47 @@
+{% load static humanize %}{% comment %}
+Одна позиция корзины. Ожидает item, idx (порядковый номер, для стабильных id кнопок - HTMX возвращает фокус
+по id после замены фрагмента) и mode ('drawer' | 'page').
+Без JS формы работают как обычный POST + redirect; с HTMX - меняют #cart-lines.
+{% endcomment %}
+<li class="cart-line" data-line="{{ item.line_id }}">
+    <a href="{{ item.product.get_absolute_url }}" class="cart-line__media" tabindex="-1" aria-hidden="true">
+        {% if item.product.main_image %}
+        <img src="{{ item.product.main_image.url }}" alt="" loading="lazy" decoding="async" width="160" height="120">
+        {% else %}
+        <img src="{% static 'img/placeholders/product.svg' %}" alt="" loading="lazy" decoding="async" width="160" height="120">
+        {% endif %}
+    </a>
+    <div class="cart-line__body">
+        <a href="{{ item.product.get_absolute_url }}" class="cart-line__title">{{ item.product.name }}</a>
+        {% if item.colors_display %}
+        <ul class="cart-line__chips">
+            {% for label, name in item.colors_display %}<li class="chip">{{ label }}: <strong>{{ name }}</strong></li>{% endfor %}
+        </ul>
+        {% endif %}
+        <div class="cart-line__unit">от {{ item.unit_price|intcomma }}&nbsp;₽ / шт</div>
+        <div class="cart-line__row">
+            <form class="stepper" method="post" action="{% url 'cart_update' %}">
+                {% csrf_token %}
+                <input type="hidden" name="line_id" value="{{ item.line_id }}">
+                <input type="hidden" name="ctx" value="{{ mode }}">
+                <button type="submit" id="cart-{{ mode }}-dec-{{ idx }}" class="stepper__btn" name="quantity" value="{{ item.quantity|add:'-1' }}"
+                        aria-label="Уменьшить" hx-post="{% url 'cart_update' %}" hx-target="#cart-lines" hx-swap="outerHTML" hx-disabled-elt="this">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 12h12"/></svg>
+                </button>
+                <output class="stepper__value" aria-live="polite">{{ item.quantity }}</output>
+                <button type="submit" id="cart-{{ mode }}-inc-{{ idx }}" class="stepper__btn" name="quantity" value="{{ item.quantity|add:'1' }}"
+                        aria-label="Увеличить" hx-post="{% url 'cart_update' %}" hx-target="#cart-lines" hx-swap="outerHTML" hx-disabled-elt="this">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 6v12M6 12h12"/></svg>
+                </button>
+            </form>
+            <div class="cart-line__total">{{ item.line_total|intcomma }}&nbsp;₽</div>
+        </div>
+    </div>
+    <form class="cart-line__remove" method="post" action="{% url 'cart_remove' %}"
+          hx-post="{% url 'cart_remove' %}" hx-target="#cart-lines" hx-swap="outerHTML">
+        {% csrf_token %}
+        <input type="hidden" name="line_id" value="{{ item.line_id }}">
+        <input type="hidden" name="ctx" value="{{ mode }}">
+        <button type="submit" class="link-btn" aria-label="Удалить: {{ item.product.name }}">Удалить</button>
+    </form>
+</li>

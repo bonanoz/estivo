@@ -456,7 +456,9 @@ def wishlist_page(request):
 
 
 def cart_detail(request):
-    return render(request, 'cart.html')
+    # Для пустого состояния корзины: подборка хитов (UX.md §8.4)
+    bestsellers = _bestsellers(4) if Cart(request).is_empty else []
+    return render(request, 'cart.html', {'bestsellers': bestsellers})
 
 
 def checkout(request):
