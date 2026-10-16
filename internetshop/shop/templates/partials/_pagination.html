@@ -1,0 +1,31 @@
+{% comment %}
+Нумерованная пагинация с многоточием. Ожидает `page_obj` и `querystring` (GET без page, уже urlencoded),
+чтобы фильтры и сортировка не терялись при перелистывании. Не показывается, если страница одна.
+{% endcomment %}
+{% if page_obj.paginator.num_pages > 1 %}
+<nav class="pager" aria-label="Страницы">
+    <ul class="pager__list">
+        {% if page_obj.has_previous %}
+        <li><a class="pager__link" href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ page_obj.previous_page_number }}" rel="prev" aria-label="Предыдущая страница">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg>
+        </a></li>
+        {% endif %}
+
+        {% for p in page_obj.paginator.page_range %}
+            {% if p == page_obj.number %}
+            <li><span class="pager__link is-current" aria-current="page"><span class="sr-only">Страница </span>{{ p }}</span></li>
+            {% elif p == 1 or p == page_obj.paginator.num_pages or p == page_obj.number|add:"-1" or p == page_obj.number|add:"1" %}
+            <li><a class="pager__link" href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ p }}"><span class="sr-only">Страница </span>{{ p }}</a></li>
+            {% elif p == page_obj.number|add:"-2" or p == page_obj.number|add:"2" %}
+            <li aria-hidden="true"><span class="pager__gap">…</span></li>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <li><a class="pager__link" href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ page_obj.next_page_number }}" rel="next" aria-label="Следующая страница">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
+        </a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}

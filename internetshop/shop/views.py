@@ -15,6 +15,8 @@ from .wishlist import Wishlist
 
 CATALOG_PAGE_SIZE = 24
 SUGGEST_LIMIT = 6
+# Карточка товара читает цвета и галерею: без prefetch это по запросу на карточку.
+CARD_PREFETCH = ('available_colors', 'gallery')
 
 
 def _is_ajax(request):
@@ -114,6 +116,7 @@ def _catalog_context(request, products, skip=()):
         'querystring': params.urlencode(),
         'total_count': page_obj.paginator.count,
         'color_options': ColorOption.objects.all(),
+        'bestsellers': _bestsellers(4) if page_obj.paginator.count == 0 else [],
     }
 
 
@@ -122,7 +125,7 @@ def _search_products(products, search):
 
 
 def catalog_list(request):
-    products = Product.objects.filter(is_available=True).select_related('material', 'category')
+    products = Product.objects.filter(is_available=True).select_related('material', 'category').prefetch_related(*CARD_PREFETCH)
     search = request.GET.get('search')
     if search:
         products = _search_products(products, search)
@@ -166,7 +169,7 @@ def search_suggest(request):
 
 def catalog_by_material(request, material_slug):
     material = get_object_or_404(Material, slug=material_slug)
-    products = Product.objects.filter(is_available=True, material=material).select_related('category')
+    products = Product.objects.filter(is_available=True, material=material).select_related('category').prefetch_related(*CARD_PREFETCH)
     context = _catalog_context(request, products, skip=('material',))
     context.update({
         'materials': Material.objects.all(),
@@ -181,7 +184,7 @@ def catalog_by_material(request, material_slug):
 def catalog_by_category(request, material_slug, category_slug):
     material = get_object_or_404(Material, slug=material_slug)
     category = get_object_or_404(Category, slug=category_slug)
-    products = Product.objects.filter(is_available=True, material=material, category=category)
+    products = Product.objects.filter(is_available=True, material=material, category=category).prefetch_related(*CARD_PREFETCH)
     context = _catalog_context(request, products, skip=('material', 'category'))
     context.update({
         'materials': Material.objects.all(),
