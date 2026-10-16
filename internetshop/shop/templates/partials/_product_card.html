@@ -17,6 +17,7 @@
         {% else %}
         <img src="{% static 'img/placeholders/product.svg' %}" alt="{{ product.name }}" loading="lazy" width="800" height="600">
         {% endif %}
+        {% if product.gallery.all %}<span class="product-card__gallery-hint" aria-hidden="true"><span class="is-current"></span><span></span></span>{% endif %}
     </div>
 
     <button type="button" class="icon-btn product-card__heart"

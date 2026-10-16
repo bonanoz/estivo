@@ -93,7 +93,7 @@
     {# Search overlay: HTMX suggestions while typing, plain GET to the catalog on Enter #}
     <div id="search-overlay" class="fixed inset-0 z-[var(--z-modal)] overflow-y-auto bg-bg"
          role="dialog" aria-modal="true" aria-label="Поиск по каталогу"
-         x-show="search" x-cloak x-transition.opacity.duration.200ms>
+         x-show="search" x-cloak x-focus-trap="search" x-transition.opacity.duration.200ms>
         <div class="mx-auto w-full max-w-[820px] px-4 py-4 md:px-6">
             <div class="flex items-center gap-2">
                 <form action="{% url 'catalog_list' %}" method="get" role="search" class="flex min-w-0 flex-1 items-center gap-2">
@@ -101,8 +101,7 @@
                     <input id="search-input" x-ref="query" type="search" name="search" autocomplete="off"
                            placeholder="Название, артикул, материал" class="form-input rounded-pill"
                            hx-get="/search/suggest/" hx-trigger="input changed delay:250ms, search"
-                           hx-target="#search-suggest" hx-params="q"
-                           hx-vals='js:{q: document.getElementById("search-input").value}'>
+                           hx-target="#search-suggest" hx-params="search" hx-swap="innerHTML">
                     <button type="submit" class="btn btn-primary">Найти</button>
                 </form>
                 <button type="button" class="icon-btn" aria-label="Закрыть поиск" @click="closeSearch()">
