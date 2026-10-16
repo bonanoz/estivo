@@ -1,48 +1,83 @@
-{% load static %}
-<footer class="site-footer">
-    <div class="container">
-        <div class="footer-grid">
-            <div class="footer-col">
-                <a href="{% url 'home' %}" class="brand" style="font-size:1.5rem;">{{ site_info.brand_name }}</a>
-                <p style="margin-top:var(--space-3); max-width:320px; opacity:0.8;">
-                    Плетёная мебель ручной работы для дома, дачи и бизнеса.
-                    Каждое изделие — инвестиция в атмосферу.
+{% load shop_tags %}{% comment %}
+Подвал (UX.md §1). Сокращённая версия для оформления заявки:
+{% include 'partials/_footer.html' with minimal=True %} — блок «Нужна помощь?» с телефоном и мессенджерами.
+{% endcomment %}
+{% if minimal %}
+<footer class="bg-dark text-dark-ink">
+    <div class="mx-auto flex w-full max-w-[1240px] flex-col gap-4 px-4 py-6 md:flex-row md:items-center md:justify-between md:px-6">
+        <div>
+            <p class="m-0 font-display text-2xl">Нужна помощь?</p>
+            <p class="m-0 text-[0.95rem] opacity-80">Поможем выбрать модель и оформить заявку.</p>
+        </div>
+        <ul class="m-0 flex list-none flex-wrap gap-2 p-0">
+            <li><a href="tel:{{ site_info.phone_href }}" class="btn btn-light">{{ site_info.phone }}</a></li>
+            <li><a href="{{ site_info.social_links.telegram }}" target="_blank" rel="noopener" class="btn btn-light">Telegram</a></li>
+            <li><a href="{{ site_info.social_links.whatsapp }}" target="_blank" rel="noopener" class="btn btn-light">WhatsApp</a></li>
+        </ul>
+    </div>
+</footer>
+{% else %}
+{% footer_data as footer %}
+<footer class="bg-dark text-dark-ink">
+    <div class="mx-auto w-full max-w-[1240px] px-4 py-10 md:px-6 md:py-16">
+        <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+            <div>
+                <a href="{% url 'home' %}" class="inline-flex min-h-11 items-center font-display text-3xl font-medium">{{ site_info.brand_name }}</a>
+                <p class="mt-2 max-w-[320px] opacity-80">Плетёная мебель ручной работы для дома, дачи и бизнеса. Каждое изделие — инвестиция в атмосферу.</p>
+                {% if footer.reviews %}
+                <p class="mt-4" data-reviews-summary>
+                    <span class="font-extrabold">Оценка покупателей: {{ footer.reviews.avg|floatformat:1 }} из 5</span>
+                    <span class="opacity-80">· отзывов: {{ footer.reviews.count }}</span>
                 </p>
-                <div class="footer-socials">
-                    <a href="{{ site_info.social_links.instagram }}" target="_blank" rel="noopener">Instagram</a>
-                    <a href="{{ site_info.social_links.telegram }}" target="_blank" rel="noopener">Telegram</a>
-                    <a href="{{ site_info.social_links.whatsapp }}" target="_blank" rel="noopener">WhatsApp</a>
-                    <a href="{{ site_info.social_links.vk }}" target="_blank" rel="noopener">VK</a>
-                    <a href="{{ site_info.social_links.pinterest }}" target="_blank" rel="noopener">Pinterest</a>
-                </div>
+                {% endif %}
+                <ul class="mt-4 flex list-none flex-wrap gap-x-4 p-0">
+                    <li><a href="{{ site_info.social_links.instagram }}" target="_blank" rel="noopener" class="inline-flex min-h-11 items-center hover:text-accent">Instagram</a></li>
+                    <li><a href="{{ site_info.social_links.telegram }}" target="_blank" rel="noopener" class="inline-flex min-h-11 items-center hover:text-accent">Telegram</a></li>
+                    <li><a href="{{ site_info.social_links.whatsapp }}" target="_blank" rel="noopener" class="inline-flex min-h-11 items-center hover:text-accent">WhatsApp</a></li>
+                    <li><a href="{{ site_info.social_links.vk }}" target="_blank" rel="noopener" class="inline-flex min-h-11 items-center hover:text-accent">VK</a></li>
+                    <li><a href="{{ site_info.social_links.pinterest }}" target="_blank" rel="noopener" class="inline-flex min-h-11 items-center hover:text-accent">Pinterest</a></li>
+                </ul>
             </div>
 
-            <div class="footer-col">
-                <h4>Разделы</h4>
-                <a href="{% url 'catalog_list' %}">Каталог</a>
-                <a href="{% url 'b2b_page' %}">Для бизнеса</a>
-                <a href="{% url 'designers_page' %}">Для дизайнеров</a>
-                <a href="{% url 'about_page' %}">О нас и производство</a>
-                <a href="{% url 'delivery_payment_page' %}">Доставка и оплата</a>
-                <a href="{% url 'warranty_page' %}">Гарантия и возврат</a>
-                <a href="{% url 'faq_page' %}">Вопросы и ответы</a>
-            </div>
+            <nav aria-labelledby="footer-popular">
+                <h2 id="footer-popular" class="mb-2 font-display text-2xl font-medium">Популярное</h2>
+                <ul class="m-0 flex list-none flex-col p-0">
+                    <li><a href="{% url 'catalog_list' %}" class="inline-flex min-h-11 items-center hover:text-accent">Весь каталог</a></li>
+                    {% for item in footer.categories %}
+                    <li><a href="{% url 'catalog_by_category' item.material_slug item.category_slug %}" class="inline-flex min-h-11 items-center hover:text-accent">{{ item.label }}</a></li>
+                    {% endfor %}
+                </ul>
+            </nav>
 
-            <div class="footer-col">
-                <h4>Контакты</h4>
-                <a href="tel:{{ site_info.phone_href }}">{{ site_info.phone }}</a>
-                <a href="mailto:{{ site_info.email }}">{{ site_info.email }}</a>
-                <p>{{ site_info.address }}</p>
+            <nav aria-labelledby="footer-customers">
+                <h2 id="footer-customers" class="mb-2 font-display text-2xl font-medium">Покупателям</h2>
+                <ul class="m-0 flex list-none flex-col p-0">
+                    <li><a href="{% url 'about_page' %}" class="inline-flex min-h-11 items-center hover:text-accent">О нас и производство</a></li>
+                    <li><a href="{% url 'delivery_payment_page' %}" class="inline-flex min-h-11 items-center hover:text-accent">Доставка и оплата</a></li>
+                    <li><a href="{% url 'warranty_page' %}" class="inline-flex min-h-11 items-center hover:text-accent">Гарантия и возврат</a></li>
+                    <li><a href="{% url 'faq_page' %}" class="inline-flex min-h-11 items-center hover:text-accent">Вопросы и ответы</a></li>
+                    <li><a href="{% url 'b2b_page' %}" class="inline-flex min-h-11 items-center hover:text-accent">Для бизнеса</a></li>
+                    <li><a href="{% url 'designers_page' %}" class="inline-flex min-h-11 items-center hover:text-accent">Для дизайнеров</a></li>
+                    <li><a href="{% url 'contacts_page' %}" class="inline-flex min-h-11 items-center hover:text-accent">Контакты</a></li>
+                </ul>
+            </nav>
+
+            <div>
+                <h2 class="mb-2 font-display text-2xl font-medium">Контакты</h2>
+                <p class="m-0"><a href="tel:{{ site_info.phone_href }}" class="inline-flex min-h-11 items-center hover:text-accent">{{ site_info.phone }}</a></p>
+                <p class="m-0"><a href="mailto:{{ site_info.email }}" class="inline-flex min-h-11 items-center hover:text-accent">{{ site_info.email }}</a></p>
+                <p class="mt-2">{{ site_info.address }}</p>
                 {% for label, hours in site_info.work_hours %}
-                <p style="opacity:0.75;">{{ label }}: {{ hours }}</p>
+                <p class="m-0 opacity-80">{{ label }}: {{ hours }}</p>
                 {% endfor %}
-                <p style="opacity:0.6; font-size:0.85rem;">{{ site_info.work_hours_note }}</p>
+                <p class="mt-2 text-[0.9rem] opacity-80">{{ site_info.work_hours_note }}</p>
             </div>
         </div>
 
-        <div class="footer-legal">
+        <div class="mt-10 flex flex-col gap-2 pt-6 text-[0.85rem] opacity-80 md:flex-row md:justify-between">
             <span>{{ site_info.legal_name }} · ИНН {{ site_info.inn }} · ОГРНИП {{ site_info.ogrnip }}</span>
             <span>© {{ site_info.brand_name }}. Информация на сайте не является публичной офертой.</span>
         </div>
     </div>
 </footer>
+{% endif %}

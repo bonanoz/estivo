@@ -1,4 +1,4 @@
-{% load static %}<!DOCTYPE html>
+{% load static django_vite %}<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="utf-8">
@@ -22,21 +22,32 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="{% static 'css/variables.css' %}">
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
-    <link rel="stylesheet" href="{% static 'css/layout.css' %}">
-    <link rel="stylesheet" href="{% static 'css/components.css' %}">
-    <link rel="stylesheet" href="{% static 'css/pages.css' %}">
+    {# Legacy CSS stays until every template is migrated; it sits in the lowest cascade layer so the Tailwind layers always win. #}
+    <style>
+        @layer legacy, theme, base, components, utilities;
+        @import url("{% static 'css/variables.css' %}") layer(legacy);
+        @import url("{% static 'css/base.css' %}") layer(legacy);
+        @import url("{% static 'css/layout.css' %}") layer(legacy);
+        @import url("{% static 'css/components.css' %}") layer(legacy);
+        @import url("{% static 'css/pages.css' %}") layer(legacy);
+    </style>
+    {% vite_hmr_client %}
+    {% vite_asset 'src/main.ts' %}
     {% block extra_head %}{% endblock %}
 </head>
-<body>
-    {% include 'partials/_header.html' %}
+<body class="bg-bg text-ink" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+    <a class="skip-link" href="#main">Перейти к содержимому</a>
 
-    <main>
+    {% block header %}
+    {% if site_settings.promo_enabled and site_settings.promo_text %}{% include 'partials/_promo_bar.html' %}{% endif %}
+    {% include 'partials/_header.html' %}
+    {% endblock %}
+
+    <main id="main">
         {% if messages %}
-        <div class="container" style="padding-top: var(--space-4);">
+        <div class="mx-auto w-full max-w-[1240px] px-4 pt-4 md:px-6">
             {% for message in messages %}
-            <div class="alert">{{ message }}</div>
+            <div class="alert" role="status">{{ message }}</div>
             {% endfor %}
         </div>
         {% endif %}
@@ -44,7 +55,12 @@
         {% block content %}{% endblock %}
     </main>
 
+    {% block footer %}
     {% include 'partials/_footer.html' %}
+    {% endblock %}
+
+    {# Contact button is on every page, including the reduced checkout shell. #}
+    {% include 'partials/_chat_button.html' %}
 
     <script src="{% static 'js/main.js' %}" defer></script>
     <script src="{% static 'js/forms.js' %}" defer></script>

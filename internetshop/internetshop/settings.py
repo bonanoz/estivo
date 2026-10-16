@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
+import sys
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -54,6 +55,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sitemaps',
     'django.contrib.humanize',
+    'django_htmx',
+    'django_vite',
     'shop',
 ]
 
@@ -66,6 +69,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_htmx.middleware.HtmxMiddleware',
 ]
 
 ROOT_URLCONF = 'internetshop.urls'
@@ -84,6 +88,7 @@ TEMPLATES = [
                 'shop.context_processors.site_info',
                 'shop.context_processors.cart',
                 'shop.context_processors.site_settings',
+                'shop.context_processors.wishlist',
             ],
         },
     },
@@ -152,6 +157,19 @@ STORAGES = {
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
+}
+
+# Vite (frontend/ -> shop/static/dist). В dev-режиме django-vite подключает dev-сервер Vite и не читает
+# manifest, поэтому тесты и `VITE_DEV_MODE=1` не требуют собранного dist/.
+# Для прод-режима: `cd frontend && npm ci && npm run build`, затем collectstatic.
+DJANGO_VITE = {
+    'default': {
+        'dev_mode': os.environ.get('VITE_DEV_MODE') == '1' or 'test' in sys.argv,
+        'manifest_path': BASE_DIR / 'shop' / 'static' / 'dist' / '.vite' / 'manifest.json',
+        'static_url_prefix': 'dist',
+        'dev_server_host': 'localhost',
+        'dev_server_port': 5173,
+    }
 }
 
 # Media files (загруженные фото товаров и коллекций)

@@ -1,0 +1,18 @@
+{% comment %}
+Плавающая кнопка связи (UX.md §1) — на каждой странице, включая оформление заявки.
+<details> работает без JS; Alpine добавляет закрытие по Esc. Нижний отступ можно поднять переменной --contact-offset
+(например, под липкую панель покупки на мобильном).
+{% endcomment %}
+<div data-contact-button class="fixed right-4 z-[var(--z-overlay)]" style="bottom: calc(var(--contact-offset, 0px) + 16px)">
+    <details class="group relative" x-data @keydown.escape="$el.open = false">
+        <summary class="flex h-14 w-14 cursor-pointer list-none items-center justify-center rounded-full bg-accent-text text-white transition-colors duration-200 hover:bg-ink [&::-webkit-details-marker]:hidden"
+                 aria-label="Связаться с нами">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 0 1-11.6 7.1L4 20l1-4A8 8 0 1 1 20 12Z"/></svg>
+        </summary>
+        <ul class="absolute bottom-full right-0 mb-2 m-0 flex w-56 list-none flex-col gap-1 rounded-md bg-surface p-2 shadow-md">
+            <li><a href="{{ site_info.social_links.telegram }}" target="_blank" rel="noopener" class="flex min-h-11 items-center rounded-pill px-4 hover:bg-surface-alt">Написать в Telegram</a></li>
+            <li><a href="{{ site_info.social_links.whatsapp }}" target="_blank" rel="noopener" class="flex min-h-11 items-center rounded-pill px-4 hover:bg-surface-alt">Написать в WhatsApp</a></li>
+            <li><a href="tel:{{ site_info.phone_href }}" class="flex min-h-11 items-center rounded-pill px-4 hover:bg-surface-alt">Позвонить: {{ site_info.phone }}</a></li>
+        </ul>
+    </details>
+</div>

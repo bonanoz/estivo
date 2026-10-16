@@ -26,6 +26,12 @@ def main() -> None:
     if "/shop/static/" not in file_path:
         return
 
+    # shop/static/dist/ — вывод Vite (в .gitignore, собирается `npm run build` в frontend/).
+    # Его отсутствие или правка не повод запускать collectstatic: сборка не падает без dist/,
+    # а прогон на артефакте сборки только шумит.
+    if "/shop/static/dist/" in file_path:
+        return
+
     hooks_dir = os.path.dirname(os.path.abspath(__file__))        # .../.claude/hooks
     repo_root = os.path.dirname(os.path.dirname(hooks_dir))        # корень репозитория
     manage_dir = os.path.join(repo_root, "internetshop")          # где лежит manage.py
