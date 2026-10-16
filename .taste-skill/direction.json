@@ -1,0 +1,4 @@
+{
+  "note": "Brand locked by docs/design-system.md; no drawn direction. See docs/specs/furniture-store-redesign/SPEC.md 'Design QA skills'.",
+  "allow": ["palette-claude", "palette-terracotta", "palette-cream", "card-rows", "few-pictures", "no-real-pictures", "no-footage", "still-page"]
+}

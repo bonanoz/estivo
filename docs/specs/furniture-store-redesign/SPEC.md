@@ -303,6 +303,36 @@ created by E2 are restyled by wave 2 (different waves, no conflict).
 - **Tests:** `shop/tests/test_seo_a11y.py` + full run
 - **Manual check:** —
 
+## Design QA skills (tasteskill + ui-ux-pro-max) — rules and checks only
+
+Both skills are used as **checklists and gates**, never as a source of visual direction. Brand values
+(docs/design-system.md, variables.css) and DESIGN.md/UX.md win every conflict.
+
+| Skill | Used | Banned in this project |
+|---|---|---|
+| `ui-ux-pro-max:ui-ux-pro-max` | `references/quick-reference.md` (UX guidelines: a11y, touch, layout shift, forms, navigation, motion) and the pre-delivery checklist in `references/pro-rules.md` | `search.py` style/palette/font/product-type picks |
+| `design-taste-frontend` (tasteskill) | house rules (no gradients, no shadows at rest, no glass, no emoji, no monospace outside code, no index numbering, no tiny tracked uppercase labels, no eyebrow labels above headings, no styled accent word in headings, headings ≤ 2 lines, ≤ 2 typefaces); `scripts/lint.mjs` (static scan); `scripts/inspect.mjs` (browser measurement at 1440/768/390 + screenshots); `references/critique.md` for the look-and-fix round | `draw.mjs` directions, its palettes/type systems/section blueprints, `assets.mjs` stock imagery, the mandatory 8+ moving-elements motion layer |
+
+Allow-list for brand-mandated or e-commerce-inherent exceptions (stored in `.taste-skill/direction.json`, read
+automatically by `inspect.mjs`; for `lint.mjs` the same findings are treated as allowed):
+`palette-claude`, `palette-terracotta`, `palette-cream` (ESTIVO brand: warm ground + terracotta accent),
+`card-rows` (product grids), `few-pictures`, `no-real-pictures` (placeholders until owner uploads photos),
+`no-footage` (no video in scope), `still-page` (motion per DESIGN.md durations, not tasteskill's quota). Every other
+FAIL must be fixed; each WARN is fixed or justified in one sentence in the worker report.
+Note: the "no eyebrow" rule removes the current `.eyebrow` labels above headings — accepted deviation from the
+existing look; `docs/design-system.md` §3 is updated in E7.
+
+Where they run:
+- **Workers on UI epics (E1, E3–E6):** read both references before building; before committing run
+  `node ~/.claude/skills/design-taste-frontend/scripts/lint.mjs <own templates + own CSS/TS>` and walk the
+  ui-ux-pro-max pre-delivery checklist for own pages; report results.
+- **Reviewer:** reads `pro-rules.md` checklist + tasteskill house rules by path and checks the diff against them;
+  reruns `lint.mjs` on the epic's files.
+- **Orchestrator at integration:** `inspect.mjs` on the running app (home, catalog, PDP, cart, checkout, 404) at
+  three widths, one critique round with `references/critique.md`, fix top issues (max 3 rounds).
+- Added acceptance line for E1, E3, E4, E5, E6: "`lint.mjs` on the epic's files has no FAIL outside the allow-list;
+  ui-ux-pro-max pre-delivery checklist walked and reported."
+
 ## Test contract interfaces (fixed by the tests, binding for workers)
 
 Tests live in `internetshop/shop/tests/` (one file per epic, classes prefixed `E1…`–`E7…`); `helpers.py` has a
@@ -370,3 +400,4 @@ migration is reversible (`migrate shop 0005`).
 - 2026-10-16 spec created (draft). Uncommitted work committed as `0143b33`, branch `feat/furniture-store-redesign`.
 - 2026-10-16 spec rewritten in English at the user's request.
 - 2026-10-16 test contract written: 179 tests (16 moved + 163 new). Diagnostic run on SQLite: 58 pass (all 16 existing), 113 red for missing fields/routes/markup. Real Postgres run pending PG upgrade (local server is 9.5; Django 5.0 needs 12+).
+- 2026-10-16 Design QA skills section added (tasteskill + ui-ux-pro-max, rules/gates only, allow-list in .taste-skill/direction.json).

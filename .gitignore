@@ -19,3 +19,6 @@ internetshop/staticfiles/
 
 # Загруженные через админку файлы
 internetshop/media/
+
+# tasteskill inspector output
+.taste-skill/inspect/
