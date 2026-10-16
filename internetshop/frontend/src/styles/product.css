@@ -3,10 +3,16 @@
 /* ---- Gallery ---- */
 .pdp-gallery__main {
   position: relative;
-  aspect-ratio: 4 / 3;
+  /* Square on phones, portrait on desktop: the product picture must dominate the first screen. */
+  aspect-ratio: 1 / 1;
   overflow: hidden;
   border-radius: var(--radius-md);
   background: var(--color-surface-alt);
+}
+@media (min-width: 1024px) {
+  .pdp-gallery__main {
+    aspect-ratio: 4 / 5;
+  }
 }
 .pdp-gallery__main img,
 .pdp-gallery__main model-viewer {
