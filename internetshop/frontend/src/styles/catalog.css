@@ -13,29 +13,34 @@
 }
 
 /* ---- Banner ---- */
+/* Title on the page ground (no boxed banner): one large title, the lead set beside it on wide screens. */
 .catalog-banner {
   margin-top: var(--space-3);
-  padding: var(--space-4) var(--space-3);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface-alt);
+  padding-block: var(--space-3) var(--space-4);
 }
 .catalog-banner__title {
   margin: 0;
-  max-width: 24ch;
+  max-width: 18ch;
   font-family: var(--font-display);
-  font-size: clamp(2rem, 4.2vw, 3.25rem);
+  font-size: clamp(2.4rem, 6vw, 4.75rem);
   font-weight: 500;
-  line-height: 1.05;
+  line-height: 1.02;
 }
 .catalog-banner__text {
-  max-width: 62ch;
-  margin: var(--space-2) 0 0;
+  max-width: 46ch;
+  margin: var(--space-3) 0 0;
   color: var(--color-ink-soft);
-  font-size: 1.05rem;
+  font-size: 1.1rem;
 }
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .catalog-banner {
-    padding: var(--space-5) var(--space-5);
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    align-items: end;
+    gap: var(--space-5);
+  }
+  .catalog-banner__text {
+    margin: 0;
   }
 }
 
@@ -402,12 +407,12 @@ a.pager__link:active {
     gap: var(--space-6);
   }
 }
-.faq-item {
+.catalog-faq .faq-item {
   margin-bottom: var(--space-2);
   border-radius: var(--radius-md);
   background: var(--color-bg);
 }
-.faq-item summary {
+.catalog-faq .faq-item summary {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -419,10 +424,10 @@ a.pager__link:active {
   cursor: pointer;
   list-style: none;
 }
-.faq-item summary::-webkit-details-marker {
+.catalog-faq .faq-item summary::-webkit-details-marker {
   display: none;
 }
-.faq-item summary::after {
+.catalog-faq .faq-item summary::after {
   content: '+';
   flex-shrink: 0;
   font-size: 1.5rem;
@@ -430,13 +435,13 @@ a.pager__link:active {
   color: var(--color-accent-text);
   transition: transform var(--dur-fast) var(--ease);
 }
-.faq-item[open] summary::after {
+.catalog-faq .faq-item[open] summary::after {
   transform: rotate(45deg);
 }
-.faq-item summary:hover {
+.catalog-faq .faq-item summary:hover {
   color: var(--color-accent-text);
 }
-.faq-item p {
+.catalog-faq .faq-item p {
   margin: 0;
   padding: 0 var(--space-3) var(--space-3);
   color: var(--color-ink-soft);

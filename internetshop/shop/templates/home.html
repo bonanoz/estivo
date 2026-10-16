@@ -22,7 +22,7 @@
     </div>
 </section>
 
-<section data-section="categories" aria-label="Быстрый выбор" class="pb-2">
+<section data-section="categories" aria-label="Быстрый выбор" class="pb-6">
     <div class="page-container grid gap-3">
         <div class="flex flex-wrap gap-2">
             <a href="{% url 'catalog_list' %}" class="pill">Весь каталог</a>
@@ -30,13 +30,6 @@
             <a href="{% url 'catalog_by_material' group.material.slug %}" class="pill">{{ group.material.name }}</a>
             {% endfor %}
         </div>
-        {% for group in catalog_links %}
-        <ul class="m-0 flex list-none flex-wrap items-center gap-2 p-0" aria-label="{{ group.material.name }}: категории">
-            {% for category in group.categories %}
-            <li><a href="{% url 'catalog_by_category' group.material.slug category.slug %}" class="pill">{{ category.name }} из {{ group.material.name|lower }}</a></li>
-            {% endfor %}
-        </ul>
-        {% endfor %}
     </div>
 </section>
 

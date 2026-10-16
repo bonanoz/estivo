@@ -640,6 +640,12 @@
     line-clamp: 3;
     overflow: hidden;
   }
+  /* Two-column phone grid: title, swatches and price only — the descriptor made cards cramped. */
+  @media (max-width: 639px) {
+    .product-card__desc {
+      display: none;
+    }
+  }
   .product-card__swatches {
     display: flex;
     align-items: center;
@@ -659,6 +665,9 @@
     font-family: var(--font-display);
     font-size: 1.5rem;
     font-weight: 600;
+    /* above the stretched title link so the price is never covered */
+    position: relative;
+    z-index: 2;
   }
   .product-card__price small {
     font-family: var(--font-body);
