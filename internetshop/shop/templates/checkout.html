@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static humanize %}
 
 {% block meta_title %}Оформление заявки | ESTIVO{% endblock %}
 {% block meta_description %}Оформление заявки на подобранную мебель ESTIVO. Менеджер свяжется с вами для согласования деталей и стоимости.{% endblock %}
@@ -29,10 +29,10 @@
                         </div>
                         {% endif %}
                     </div>
-                    <div class="checkout-line__total">{{ item.line_total }} ₽</div>
+                    <div class="checkout-line__total">{{ item.line_total|intcomma }} ₽</div>
                 </div>
                 {% endfor %}
-                <div class="checkout-total"><span>Итого</span><span>{{ cart.total_price }} ₽</span></div>
+                <div class="checkout-total"><span>Итого</span><span>{{ cart.total_price|intcomma }} ₽</span></div>
             </div>
 
             <!-- Форма контактов -->

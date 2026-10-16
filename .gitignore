@@ -16,3 +16,6 @@ __pycache__/
 .idea/
 
 internetshop/staticfiles/
+
+# Загруженные через админку файлы
+internetshop/media/

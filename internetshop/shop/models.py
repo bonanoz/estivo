@@ -28,6 +28,51 @@ class Material(models.Model):
         super().save(*args, **kwargs)
 
 
+class SiteSettings(models.Model):
+    """Синглтон с редактируемыми через админку фото на статичных страницах.
+
+    Всегда ровно одна запись (pk=1) — редактируется через админку без
+    добавления новых строк. ``get_solo()`` создаёт её при первом обращении.
+    Каждое фото имеет заглушку в шаблоне, если поле не заполнено.
+    """
+
+    hero_image = models.ImageField(
+        'Фото главного баннера', upload_to='site/', blank=True, null=True,
+        help_text='Главная страница, баннер под заголовком «Мебель, которая делает пространство…».',
+    )
+    b2b_image = models.ImageField(
+        'Фото на странице «Для бизнеса»', upload_to='site/', blank=True, null=True,
+        help_text='Страница B2B, блок «Почему ESTIVO».',
+    )
+    designers_image = models.ImageField(
+        'Фото на странице «Дизайнерам»', upload_to='site/', blank=True, null=True,
+        help_text='Страница для дизайнеров, блок «Что мы даём дизайнеру».',
+    )
+    about_image = models.ImageField(
+        'Фото на странице «О нас»', upload_to='site/', blank=True, null=True,
+        help_text='Страница о компании, блок «Философия».',
+    )
+
+    class Meta:
+        verbose_name = 'Настройки сайта'
+        verbose_name_plural = 'Настройки сайта'
+
+    def __str__(self):
+        return 'Настройки сайта'
+
+    def save(self, *args, **kwargs):
+        self.pk = 1
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        pass
+
+    @classmethod
+    def get_solo(cls):
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj
+
+
 class Category(models.Model):
     """Категория товара: кресла, диваны, столы и т.д.
 

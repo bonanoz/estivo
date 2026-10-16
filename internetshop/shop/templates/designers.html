@@ -18,7 +18,13 @@
 <section class="section">
     <div class="container">
         <div class="split reverse">
-            <div class="split__media"><img src="{% static 'img/placeholders/collection.svg' %}" alt="Индивидуальный проект ESTIVO"></div>
+            <div class="split__media">
+                {% if site_settings.designers_image %}
+                <img src="{{ site_settings.designers_image.url }}" alt="Индивидуальный проект ESTIVO">
+                {% else %}
+                <img src="{% static 'img/placeholders/collection.svg' %}" alt="Индивидуальный проект ESTIVO">
+                {% endif %}
+            </div>
             <div>
                 <span class="eyebrow">Что мы даём дизайнеру</span>
                 <h2>Гибкость производства полного цикла</h2>

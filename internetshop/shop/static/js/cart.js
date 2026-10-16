@@ -7,7 +7,8 @@
     }
 
     function fmt(n) {
-        return n + ' ₽';
+        // Неразрывный пробел между разрядами — как у серверного intcomma для ru
+        return Number(n).toLocaleString('ru-RU') + ' ₽';
     }
 
     function updateTotals(data) {

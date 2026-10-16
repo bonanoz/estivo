@@ -158,6 +158,9 @@
     .nav.open { transform: translateY(0); }
     .nav-toggle { display: flex; }
     .header-phone { display: none; }
+    /* .nav выпадает из потока (fixed) — прижимаем корзину к бургеру, а не по центру */
+    .header-inner { gap: var(--space-2); }
+    .header-cart { margin-left: auto; }
 }
 
 @media (max-width: 640px) {

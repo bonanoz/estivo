@@ -1,9 +1,27 @@
 from django.contrib import admin
+from django.shortcuts import redirect
 
 from .models import (
     Category, Collection, ColorOption, Lead, Material, Order, OrderItem,
-    Product, ProductImage, Review,
+    Product, ProductImage, Review, SiteSettings,
 )
+
+
+@admin.register(SiteSettings)
+class SiteSettingsAdmin(admin.ModelAdmin):
+    """Синглтон: список сразу ведёт на единственную запись, добавление/удаление запрещены."""
+
+    fields = ('hero_image', 'b2b_image', 'designers_image', 'about_image')
+
+    def has_add_permission(self, request):
+        return not SiteSettings.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def changelist_view(self, request, extra_context=None):
+        obj = SiteSettings.get_solo()
+        return redirect('admin:shop_sitesettings_change', obj.pk)
 
 
 @admin.register(ColorOption)

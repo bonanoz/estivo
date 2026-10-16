@@ -1,4 +1,4 @@
-{% load static %}
+{% load static humanize %}
 <article class="product-card" data-reveal>
     <a href="{{ product.get_absolute_url }}" class="product-card__media">
         {% if product.old_price %}<span class="badge">Акция</span>{% endif %}
@@ -14,8 +14,8 @@
         {% if product.short_description %}<p class="product-card__desc">{{ product.short_description }}</p>{% endif %}
         <div class="product-card__foot">
             <div class="product-card__price">
-                {% if product.old_price %}<span class="product-card__old">{{ product.old_price }} ₽</span>{% endif %}
-                <small>от</small> {{ product.price }} ₽
+                {% if product.old_price %}<span class="product-card__old">{{ product.old_price|intcomma }} ₽</span>{% endif %}
+                <small>от</small> {{ product.price|intcomma }} ₽
             </div>
             <a href="{{ product.get_absolute_url }}" class="btn btn-outline" style="padding:10px 20px;">Подробнее</a>
         </div>

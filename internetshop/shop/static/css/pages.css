@@ -1,11 +1,13 @@
 /* Специфичные для страниц блоки */
 
-/* Табличные цифры — динамичные суммы/счётчики не «прыгают» по ширине */
+/* Табличные цифры — динамичные суммы/счётчики не «прыгают» по ширине.
+   lining-nums форсирует ровные маюскульные цифры: Cormorant Garamond по умолчанию
+   отдаёт старостильные (разновысотные) цифры, из-за чего цены выглядят рвано. */
 .product-detail__price, .product-card__price, .product-card__old,
 .cart-item__total, .cart-item__price, .cart-summary__row, .cart-summary__total,
 .checkout-line__total, .checkout-total, .qty__input,
 .usp__value, [data-cart-total], [data-cart-count] {
-    font-variant-numeric: tabular-nums;
+    font-variant-numeric: lining-nums tabular-nums;
 }
 
 /* ---- Hero ---- */

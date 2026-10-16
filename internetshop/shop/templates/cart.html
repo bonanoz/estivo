@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static humanize %}
 
 {% block meta_title %}Корзина | ESTIVO{% endblock %}
 {% block meta_description %}Ваша подборка мебели ESTIVO. Оформите заявку — менеджер свяжется для согласования деталей и стоимости.{% endblock %}
@@ -35,7 +35,7 @@
                             {% endfor %}
                         </ul>
                         {% endif %}
-                        <div class="cart-item__price"><small>от</small> {{ item.unit_price }} ₽ / шт</div>
+                        <div class="cart-item__price"><small>от</small> {{ item.unit_price|intcomma }} ₽ / шт</div>
                     </div>
                     <div class="cart-item__controls">
                         <form class="qty js-cart-form" method="post" action="{% url 'cart_update' %}" data-cart-action="update">
@@ -45,7 +45,7 @@
                             <input type="number" name="quantity" class="qty__input" value="{{ item.quantity }}" min="1" inputmode="numeric" aria-label="Количество">
                             <button type="button" class="qty__btn" data-qty-inc aria-label="Увеличить">+</button>
                         </form>
-                        <div class="cart-item__total" data-line-total>{{ item.line_total }} ₽</div>
+                        <div class="cart-item__total" data-line-total>{{ item.line_total|intcomma }} ₽</div>
                         <form method="post" action="{% url 'cart_remove' %}" class="js-cart-form" data-cart-action="remove">
                             {% csrf_token %}
                             <input type="hidden" name="line_id" value="{{ item.line_id }}">
@@ -58,7 +58,7 @@
 
             <aside class="cart-summary">
                 <div class="cart-summary__row"><span>Позиций</span><span data-cart-count>{{ cart.count }}</span></div>
-                <div class="cart-summary__row cart-summary__total"><span>Итого</span><span data-cart-total>{{ cart.total_price }} ₽</span></div>
+                <div class="cart-summary__row cart-summary__total"><span>Итого</span><span data-cart-total>{{ cart.total_price|intcomma }} ₽</span></div>
                 <a href="{% url 'checkout' %}" class="btn btn-primary btn-block btn-lg">Оформить заявку</a>
                 <p class="form-note">Это заявка, а не оплата. Менеджер свяжется с вами, чтобы согласовать детали и стоимость.</p>
             </aside>

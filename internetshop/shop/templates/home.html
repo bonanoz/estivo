@@ -5,7 +5,11 @@
 <!-- HERO -->
 <section class="hero">
     <div class="hero__bg">
+        {% if site_settings.hero_image %}
+        <img src="{{ site_settings.hero_image.url }}" alt="Плетёная мебель ESTIVO на террасе">
+        {% else %}
         <img src="{% static 'img/placeholders/hero.svg' %}" alt="Плетёная мебель ESTIVO на террасе">
+        {% endif %}
     </div>
     <div class="container hero__content">
         <h1>Мебель, которая делает пространство местом, куда хочется возвращаться</h1>

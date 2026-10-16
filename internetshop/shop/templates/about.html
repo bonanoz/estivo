@@ -18,7 +18,13 @@
 <section class="section">
     <div class="container">
         <div class="split">
-            <div class="split__media"><img src="{% static 'img/placeholders/hero.svg' %}" alt="Производство ESTIVO"></div>
+            <div class="split__media">
+                {% if site_settings.about_image %}
+                <img src="{{ site_settings.about_image.url }}" alt="Производство ESTIVO">
+                {% else %}
+                <img src="{% static 'img/placeholders/hero.svg' %}" alt="Производство ESTIVO">
+                {% endif %}
+            </div>
             <div>
                 <span class="eyebrow">Философия</span>
                 <h2>Каждое изделие — инвестиция в атмосферу</h2>

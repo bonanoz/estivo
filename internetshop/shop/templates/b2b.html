@@ -29,7 +29,13 @@
 <section class="section">
     <div class="container">
         <div class="split">
-            <div class="split__media"><img src="{% static 'img/placeholders/hero.svg' %}" alt="Мебель ESTIVO для бизнеса"></div>
+            <div class="split__media">
+                {% if site_settings.b2b_image %}
+                <img src="{{ site_settings.b2b_image.url }}" alt="Мебель ESTIVO для бизнеса">
+                {% else %}
+                <img src="{% static 'img/placeholders/hero.svg' %}" alt="Мебель ESTIVO для бизнеса">
+                {% endif %}
+            </div>
             <div>
                 <span class="eyebrow">Почему ESTIVO</span>
                 <h2>Мебель, которая становится частью вашего успеха</h2>

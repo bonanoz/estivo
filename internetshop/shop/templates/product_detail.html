@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static humanize %}
 
 {% block meta_title %}{{ product.name }}{% if product.material %} из {{ product.material.name|lower }}{% endif %} | ESTIVO{% endblock %}
 {% block meta_description %}{{ product.short_description|default:product.description|truncatewords:24 }}{% endblock %}
@@ -46,8 +46,8 @@
                 {% if product.material %}<div class="product-card__meta">{{ product.material.name }}{% if product.category %} · {{ product.category.name }}{% endif %}</div>{% endif %}
                 <h1 style="font-size:clamp(2rem,3.5vw,2.8rem);">{{ product.name }}</h1>
                 <div class="product-detail__price">
-                    {% if product.old_price %}<span class="product-card__old">{{ product.old_price }} ₽</span>{% endif %}
-                    <small style="font-family:var(--font-body);font-size:1rem;color:var(--color-ink-muted);">от</small> {{ product.price }} ₽
+                    {% if product.old_price %}<span class="product-card__old">{{ product.old_price|intcomma }} ₽</span>{% endif %}
+                    <small style="font-family:var(--font-body);font-size:1rem;color:var(--color-ink-muted);">от</small> {{ product.price|intcomma }} ₽
                 </div>
 
                 {% if product.short_description %}<p class="lead">{{ product.short_description }}</p>{% endif %}

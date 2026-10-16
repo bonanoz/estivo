@@ -33,3 +33,10 @@ def cart(request):
     """Корзина — доступна в любом шаблоне (счётчик в шапке на всех страницах)."""
     from .cart import Cart
     return {'cart': Cart(request)}
+
+
+def site_settings(request):
+    """Редактируемые из админки фото страниц (hero, B2B, дизайнерам) —
+    доступны в любом шаблоне без передачи из каждого view."""
+    from .models import SiteSettings
+    return {'site_settings': SiteSettings.get_solo()}
