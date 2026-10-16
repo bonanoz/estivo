@@ -59,6 +59,15 @@ document.addEventListener('htmx:beforeSwap', (evt) => {
   detail.shouldSwap = true;
 });
 
+// After a stepper / remove swap inside the open drawer, the focused button is gone: keep focus in the dialog.
+document.addEventListener('htmx:afterSwap', (evt) => {
+  const detail = (evt as CustomEvent<HtmxDetail>).detail;
+  const isLines = detail.target?.id === 'cart-lines' || /\/cart\/(update|remove|undo)\/?$/.test(detail.pathInfo?.requestPath ?? '');
+  if (!isLines) return;
+  const panel = document.querySelector<HTMLElement>('[data-cart-drawer] .cart-drawer');
+  if (panel && (document.activeElement === document.body || document.activeElement === null)) panel.focus();
+});
+
 Alpine.data('cartDrawer', () => ({
   open: false,
   returnTo: null as HTMLElement | null,
@@ -76,24 +85,35 @@ Alpine.data('cartDrawer', () => ({
     document.documentElement.style.overflow = 'hidden';
     // Everything behind the dialog becomes inert (screen readers and Tab skip it).
     this.hiddenSiblings = Array.from(document.body.children).filter(
-      (el): el is HTMLElement => el instanceof HTMLElement && el.id !== ROOT_ID && !el.hasAttribute('inert'),
+      (el): el is HTMLElement => el instanceof HTMLElement && el.id !== ROOT_ID,
     );
     this.hiddenSiblings.forEach((el) => el.setAttribute('inert', ''));
     scope.$nextTick(() => scope.$refs.panel?.focus());
   },
 
-  close() {
-    if (!this.open) return;
-    this.open = false;
+  release() {
     document.documentElement.style.overflow = '';
     this.hiddenSiblings.forEach((el) => el.removeAttribute('inert'));
     this.hiddenSiblings = [];
+  },
+
+  close() {
+    if (!this.open) return;
+    const el = (this as unknown as { $el: HTMLElement }).$el;
+    this.open = false;
+    this.release();
     const target = this.returnTo;
     window.setTimeout(() => {
-      const root = document.getElementById(ROOT_ID);
-      if (root) root.innerHTML = '';
-      if (target && document.contains(target)) target.focus();
+      // Only remove our own element: a newer drawer may already occupy the root.
+      if (el.isConnected) el.remove();
+      const another = document.querySelector('[data-cart-drawer]');
+      if (!another && target && document.contains(target)) target.focus();
     }, CLOSE_MS);
+  },
+
+  // Replaced by a newer drawer while open: do not leave the page inert.
+  destroy() {
+    if (this.open) this.release();
   },
 
   // Keep Tab inside the dialog.
