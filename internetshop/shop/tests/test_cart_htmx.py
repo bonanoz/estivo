@@ -30,13 +30,6 @@ class E2CartAddHtmxTests(TestCase):
         resp = self.client.post(reverse('cart_add', args=[self.product.id]))
         self.assertRedirects(resp, reverse('cart_detail'), fetch_redirect_response=False)
 
-    def test_ajax_json_contract_preserved(self):
-        resp = self.client.post(reverse('cart_add', args=[self.product.id]), {'quantity': 3},
-                                HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        data = resp.json()
-        self.assertEqual(data['count'], 3)
-        self.assertEqual(data['total_price'], 126000)
-
     def test_checkout_button_still_redirects_to_checkout(self):
         resp = self.client.post(reverse('cart_add', args=[self.product.id]), {'checkout': '1'})
         self.assertRedirects(resp, reverse('checkout'), fetch_redirect_response=False)

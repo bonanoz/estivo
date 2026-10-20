@@ -86,7 +86,7 @@ class OrderAdmin(admin.ModelAdmin):
         'id', 'customer_name', 'customer_phone', 'status', 'payment_status',
         'total_price', 'created_at',
     )
-    list_filter = ('status', 'payment_status', 'created_at')
+    list_filter = ('status', 'payment_status', 'telegram_notified', 'created_at')
     search_fields = ('customer_name', 'customer_phone', 'customer_email')
     readonly_fields = ('created_at', 'total_price', 'telegram_notified')
     inlines = [OrderItemInline]
@@ -95,7 +95,7 @@ class OrderAdmin(admin.ModelAdmin):
 @admin.register(Lead)
 class LeadAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'phone', 'lead_type', 'status', 'source_page', 'created_at')
-    list_filter = ('lead_type', 'status')
+    list_filter = ('lead_type', 'status', 'telegram_notified')
     search_fields = ('name', 'phone', 'email')
     readonly_fields = ('created_at', 'telegram_notified')
 

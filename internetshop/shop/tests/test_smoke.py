@@ -79,14 +79,6 @@ class CartTests(TestCase):
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(len(self.client.session['cart']), 1)
 
-    def test_cart_add_ajax_returns_count(self):
-        resp = self.client.post(
-            reverse('cart_add', args=[self.product.id]), {'quantity': 2},
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest',
-        )
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.json()['count'], 2)
-
     def test_cart_rejects_foreign_color(self):
         """Цвет, не привязанный к товару, не попадает в позицию (защита от подмены)."""
         self.client.post(reverse('cart_add', args=[self.product.id]), {'color_weave': self.foreign.id})

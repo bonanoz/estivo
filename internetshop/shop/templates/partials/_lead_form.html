@@ -27,6 +27,10 @@
         {% if form.message.errors %}<div class="form-errors" id="{{ form.message.id_for_label }}-error" role="alert">{{ form.message.errors|join:", " }}</div>{% endif %}
     </div>
     {{ form.lead_type }}
+    <div class="form-trap" aria-hidden="true">
+        <label for="{{ form.website.id_for_label }}">Сайт</label>
+        {{ form.website }}
+    </div>
 
     <button type="submit" class="btn btn-primary btn-block btn-lg">Оставить заявку</button>
     <p class="form-note mt-3">Нажимая кнопку, вы соглашаетесь с обработкой персональных данных.</p>

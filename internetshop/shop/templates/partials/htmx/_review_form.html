@@ -25,7 +25,7 @@
         {{ review_form.text }}
         {% if review_form.text.errors %}<div class="form-error" role="alert">{{ review_form.text.errors|join:" " }}</div>{% endif %}
     </div>
-    <div class="review-form__trap" aria-hidden="true">
+    <div class="form-trap" aria-hidden="true">
         <label for="{{ review_form.website.id_for_label }}">Сайт</label>
         {{ review_form.website }}
     </div>

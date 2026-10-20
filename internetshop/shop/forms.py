@@ -25,7 +25,25 @@ class AriaErrorsMixin:
             attrs['aria-describedby'] = f'{self[name].id_for_label}-error'
 
 
-class OrderForm(AriaErrorsMixin, forms.ModelForm):
+class HoneypotMixin:
+    """``website`` — honeypot: человек его не видит и не заполняет, бот заполняет.
+
+    View отвечает боту так же, как человеку, но ничего не сохраняет и не шлёт в Telegram.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['website'] = forms.CharField(
+            required=False,
+            widget=forms.TextInput(attrs={'tabindex': '-1', 'autocomplete': 'off'}),
+        )
+
+    @property
+    def is_spam(self):
+        return bool(self.cleaned_data.get('website'))
+
+
+class OrderForm(HoneypotMixin, AriaErrorsMixin, forms.ModelForm):
     aria_error_fields = ('customer_name', 'customer_phone', 'customer_email')
 
     class Meta:
@@ -46,7 +64,7 @@ class OrderForm(AriaErrorsMixin, forms.ModelForm):
             raise forms.ValidationError(str(exc))
 
 
-class LeadForm(AriaErrorsMixin, forms.ModelForm):
+class LeadForm(HoneypotMixin, AriaErrorsMixin, forms.ModelForm):
     aria_error_fields = ('name', 'phone', 'email', 'message')
 
     class Meta:
@@ -67,16 +85,8 @@ class LeadForm(AriaErrorsMixin, forms.ModelForm):
             raise forms.ValidationError(str(exc))
 
 
-class ReviewForm(forms.ModelForm):
-    """Отзыв с PDP. Сохраняется неопубликованным (модерация в админке).
-
-    ``website`` — honeypot: человек его не видит и не заполняет, бот заполняет.
-    """
-
-    website = forms.CharField(
-        required=False,
-        widget=forms.TextInput(attrs={'tabindex': '-1', 'autocomplete': 'off'}),
-    )
+class ReviewForm(HoneypotMixin, forms.ModelForm):
+    """Отзыв с PDP. Сохраняется неопубликованным (модерация в админке)."""
 
     class Meta:
         model = Review
@@ -87,7 +97,3 @@ class ReviewForm(forms.ModelForm):
             'usage_duration': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Срок использования (необязательно)'}),
             'text': forms.Textarea(attrs={'class': 'form-input', 'rows': 4, 'placeholder': 'Ваш отзыв'}),
         }
-
-    @property
-    def is_spam(self):
-        return bool(self.cleaned_data.get('website'))

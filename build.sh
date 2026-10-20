@@ -6,3 +6,4 @@ pip install -r requirements.txt
 cd internetshop
 python manage.py collectstatic --noinput
 python manage.py migrate --noinput
+python manage.py clearsessions

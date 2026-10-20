@@ -1,7 +1,8 @@
 from django.contrib import messages
 from django.core.paginator import Paginator
+from django.db import transaction
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
@@ -19,15 +20,6 @@ SUGGEST_LIMIT = 6
 # Карточка товара читает цвета и галерею: без prefetch это по запросу на карточку.
 CARD_PREFETCH = ('available_colors', 'gallery')
 REMOVED_NOTICE_KEY = 'cart_removed_notice'
-
-
-def _is_ajax(request):
-    return request.headers.get('x-requested-with') == 'XMLHttpRequest'
-
-
-def _is_htmx(request):
-    # Без зависимости от django_htmx.middleware: достаточно заголовка.
-    return request.headers.get('HX-Request') == 'true'
 
 
 def _bestsellers(limit=8):
@@ -215,7 +207,7 @@ def search_suggest(request):
 
 def catalog_by_material(request, material_slug):
     material = get_object_or_404(Material, slug=material_slug)
-    products = Product.objects.filter(is_available=True, material=material).select_related('category').prefetch_related(*CARD_PREFETCH)
+    products = Product.objects.filter(is_available=True, material=material).select_related('material', 'category').prefetch_related(*CARD_PREFETCH)
     context = _catalog_context(request, products, skip=('material',))
     context.update({
         'materials': Material.objects.all(),
@@ -231,7 +223,7 @@ def catalog_by_material(request, material_slug):
 def catalog_by_category(request, material_slug, category_slug):
     material = get_object_or_404(Material, slug=material_slug)
     category = get_object_or_404(Category, slug=category_slug)
-    products = Product.objects.filter(is_available=True, material=material, category=category).prefetch_related(*CARD_PREFETCH)
+    products = Product.objects.filter(is_available=True, material=material, category=category).select_related('material', 'category').prefetch_related(*CARD_PREFETCH)
     context = _catalog_context(request, products, skip=('material', 'category'))
     context.update({
         'materials': Material.objects.all(),
@@ -303,11 +295,11 @@ def review_create(request, slug):
             review.is_published = False
             review.save()
         # Бот с заполненным honeypot получает тот же ответ, что и человек.
-        if _is_htmx(request):
+        if request.htmx:
             return render(request, 'partials/htmx/_review_success.html', {'product': product})
         messages.success(request, 'Спасибо! Отзыв отправлен на модерацию.')
         return redirect(product.get_absolute_url())
-    if _is_htmx(request):
+    if request.htmx:
         return render(request, 'partials/htmx/_review_form.html', {'product': product, 'review_form': form})
     return render(request, 'product_detail.html', _product_context(request, product, review_form=form))
 
@@ -315,6 +307,9 @@ def review_create(request, slug):
 def _lead_page(request, template_name, lead_type, extra_context=None):
     if request.method == 'POST':
         form = LeadForm(request.POST)
+        if form.is_valid() and form.is_spam:
+            messages.success(request, 'Заявка отправлена! Мы свяжемся с вами в ближайшее время.')
+            return redirect(request.path)
         if form.is_valid():
             lead = form.save(commit=False)
             lead.source_page = template_name
@@ -402,9 +397,7 @@ def cart_add(request, product_id):
         quantity = 1
     cart = Cart(request)
     cart.add(product, colors=colors, quantity=quantity)
-    if _is_ajax(request):
-        return JsonResponse({'count': cart.count, 'total_price': cart.total_price})
-    if _is_htmx(request) and 'checkout' not in request.POST:
+    if request.htmx and 'checkout' not in request.POST:
         recommendations = (
             Product.objects.filter(is_available=True, category=product.category)
             .exclude(pk=product.pk)[:4]
@@ -415,7 +408,7 @@ def cart_add(request, product_id):
             'recommendations': recommendations,
         })
     if 'checkout' in request.POST:
-        if _is_htmx(request):
+        if request.htmx:
             response = HttpResponse(status=204)
             response['HX-Redirect'] = reverse('checkout')
             return response
@@ -441,13 +434,7 @@ def cart_update(request):
         removed = _removed_info(cart, line_id)
         cart.stash_removed(line_id)
     cart.set_quantity(line_id, quantity)
-    if _is_ajax(request):
-        return JsonResponse({
-            'count': cart.count,
-            'total_price': cart.total_price,
-            'removed': quantity <= 0,
-        })
-    if _is_htmx(request):
+    if request.htmx:
         return _cart_lines_response(request, removed)
     if removed:
         request.session[REMOVED_NOTICE_KEY] = removed['name']
@@ -469,9 +456,7 @@ def cart_remove(request):
     removed = _removed_info(cart, line_id)
     cart.stash_removed(line_id)
     cart.remove(line_id)
-    if _is_ajax(request):
-        return JsonResponse({'count': cart.count, 'total_price': cart.total_price})
-    if _is_htmx(request):
+    if request.htmx:
         return _cart_lines_response(request, removed)
     if removed:
         request.session[REMOVED_NOTICE_KEY] = removed['name']
@@ -482,7 +467,7 @@ def cart_remove(request):
 def cart_undo(request):
     """Вернуть последнюю удалённую из корзины позицию."""
     Cart(request).undo_remove()
-    if _is_htmx(request):
+    if request.htmx:
         return _cart_lines_response(request)
     return redirect('cart_detail')
 
@@ -494,7 +479,7 @@ def wishlist_toggle(request, product_id):
     if not product.is_available and product.id not in wishlist:
         return HttpResponse(status=404)
     wishlist.toggle(product.id)
-    if _is_htmx(request):
+    if request.htmx:
         return render(request, 'partials/htmx/_wishlist_toggle.html', {
             'product': product,
             'wishlist': wishlist,
@@ -528,17 +513,24 @@ def checkout(request):
     if request.method == 'POST':
         form = OrderForm(request.POST)
         if form.is_valid():
+            if form.is_spam:
+                # Бот получает тот же ответ, что и человек, но заявка не создаётся.
+                cart.clear()
+                return redirect('order_success')
             items = list(cart)
-            order = form.save()
-            for item in items:
-                OrderItem.objects.create(
-                    order=order,
-                    product=item['product'],
-                    quantity=item['quantity'],
-                    unit_price=item['unit_price'],
-                    selected_colors=dict(item['colors_display']),
-                )
-            order.recalc_total()
+            with transaction.atomic():
+                order = form.save()
+                for item in items:
+                    OrderItem.objects.create(
+                        order=order,
+                        product=item['product'],
+                        quantity=item['quantity'],
+                        unit_price=item['unit_price'],
+                        selected_colors=dict(item['colors_display']),
+                    )
+                order.recalc_total()
+            # Чистим до Telegram: если отправка зависнет и воркер убьют, повторная отправка не создаст дубль.
+            cart.clear()
 
             lines = []
             for item in items:
@@ -558,8 +550,6 @@ def checkout(request):
             if sent:
                 order.telegram_notified = True
                 order.save(update_fields=['telegram_notified'])
-
-            cart.clear()
             return redirect('order_success')
     else:
         form = OrderForm()
@@ -569,27 +559,6 @@ def checkout(request):
 
 def order_success(request):
     return render(request, 'order_success.html')
-
-
-def lead_create(request):
-    """Общая точка приёма лид-форм со страниц, которые сами не рендерят форму
-    напрямую (например, hero на главной)."""
-    if request.method == 'POST':
-        form = LeadForm(request.POST)
-        if form.is_valid():
-            lead = form.save(commit=False)
-            lead.source_page = request.POST.get('source_page', '')
-            lead.save()
-            sent = notify_telegram(
-                f'📩 Новая заявка ({lead.get_lead_type_display()})\n'
-                f'Имя: {lead.name}\nТелефон: {lead.phone}\nEmail: {lead.email}\n'
-                f'Сообщение: {lead.message}'
-            )
-            if sent:
-                lead.telegram_notified = True
-                lead.save(update_fields=['telegram_notified'])
-            messages.success(request, 'Заявка отправлена! Мы свяжемся с вами в ближайшее время.')
-    return HttpResponseRedirect(_safe_redirect_target(request, request.POST.get('next'), reverse('home')))
 
 
 def handler404(request, exception=None):

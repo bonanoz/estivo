@@ -73,6 +73,10 @@
                     {{ form.comment }}
                 </div>
 
+                <div class="form-trap" aria-hidden="true">
+                    <label for="{{ form.website.id_for_label }}">Сайт</label>
+                    {{ form.website }}
+                </div>
                 <button type="submit" class="btn btn-primary btn-block btn-lg">Отправить заявку</button>
                 <p class="form-note">Это заявка, а не оплата. Менеджер свяжется с вами, чтобы согласовать детали и стоимость.</p>
             </form>

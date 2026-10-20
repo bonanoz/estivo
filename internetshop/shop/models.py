@@ -1,8 +1,11 @@
+from django.core.cache import cache
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.db import models
 from django.urls import reverse
 
 from .utils import ru_slugify
+
+SITE_SETTINGS_CACHE_KEY = 'shop:site_settings'
 
 
 # Только относительные пути (/catalog/) или http(s)-ссылки: никаких javascript:, data: и //host.
@@ -77,6 +80,7 @@ class SiteSettings(models.Model):
     def save(self, *args, **kwargs):
         self.pk = 1
         super().save(*args, **kwargs)
+        cache.delete(SITE_SETTINGS_CACHE_KEY)
 
     def delete(self, *args, **kwargs):
         pass
@@ -85,6 +89,15 @@ class SiteSettings(models.Model):
     def get_solo(cls):
         obj, _ = cls.objects.get_or_create(pk=1)
         return obj
+
+    @classmethod
+    def get_cached(cls):
+        """``get_solo`` без запроса на каждой странице (кэш чистится при сохранении в админке).
+
+        shortcut: кэш LocMem — свой в каждом воркере gunicorn, поэтому другой воркер
+        увидит правку до 60 с позже; для мгновенного обновления нужен общий кэш (Redis).
+        """
+        return cache.get_or_set(SITE_SETTINGS_CACHE_KEY, cls.get_solo, 60)
 
 
 class Category(models.Model):
@@ -323,7 +336,7 @@ class Order(models.Model):
     )
     customer_name = models.CharField('ФИО', max_length=256)
     customer_phone = models.CharField('Телефон', max_length=32)
-    customer_email = models.CharField('Email', max_length=256, blank=True)
+    customer_email = models.EmailField('Email', max_length=256, blank=True)
     delivery_address = models.TextField('Адрес доставки', blank=True)
     comment = models.TextField('Комментарий', blank=True)
 
@@ -405,7 +418,7 @@ class Lead(models.Model):
 
     name = models.CharField('Имя', max_length=256)
     phone = models.CharField('Телефон', max_length=32)
-    email = models.CharField('Email', max_length=256, blank=True)
+    email = models.EmailField('Email', max_length=256, blank=True)
     lead_type = models.CharField(max_length=20, choices=LEAD_TYPE_CHOICES, default='private')
     message = models.TextField('Сообщение', blank=True)
     source_page = models.CharField('Источник', max_length=128, blank=True)

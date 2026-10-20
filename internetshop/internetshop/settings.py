@@ -39,10 +39,13 @@ ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',') if os.environ.get
 # --- Демо через Cloudflare-туннель (trycloudflare.com) ---
 # Туннель выдаёт случайный поддомен *.trycloudflare.com. Разрешаем его,
 # а также локальные адреса, чтобы сайт открывался и локально, и по ссылке туннеля.
-ALLOWED_HOSTS += ['localhost', '127.0.0.1', '.trycloudflare.com']
-# POST-формы (заявки/лиды) шлют CSRF-токен — домен туннеля должен быть доверенным,
-# иначе Django вернёт 403 при отправке формы.
-CSRF_TRUSTED_ORIGINS = ['https://*.trycloudflare.com']
+ALLOWED_HOSTS += ['localhost', '127.0.0.1']
+# Туннель — только при DEBUG: на проде любой может поднять свой туннель на этом домене.
+CSRF_TRUSTED_ORIGINS = []
+if DEBUG:
+    ALLOWED_HOSTS += ['.trycloudflare.com']
+    # POST-формы шлют CSRF-токен — домен туннеля должен быть доверенным, иначе 403.
+    CSRF_TRUSTED_ORIGINS = ['https://*.trycloudflare.com']
 # Домены хостинга (https://my-shop.onrender.com и т.п.), через запятую
 CSRF_TRUSTED_ORIGINS += [o for o in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',') if o]
 

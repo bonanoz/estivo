@@ -32,5 +32,4 @@ urlpatterns = [
     path('cart/undo/', views.cart_undo, name='cart_undo'),
     path('cart/checkout/', views.checkout, name='checkout'),
     path('order/success/', views.order_success, name='order_success'),
-    path('lead/', views.lead_create, name='lead_create'),
 ]

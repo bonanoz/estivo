@@ -419,7 +419,7 @@
     grid-template-columns: 2fr 1fr;
   }
 }
-.review-form__trap {
+.form-trap {
   position: absolute;
   left: -9999px;
   width: 1px;

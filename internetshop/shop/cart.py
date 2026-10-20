@@ -9,6 +9,12 @@ from .models import ColorOption, Product
 
 CART_SESSION_ID = 'cart'
 CART_UNDO_SESSION_ID = 'cart_undo'
+# Предел на позицию: огромное число переполняет integer-колонки и роняет checkout.
+MAX_QUANTITY = 99
+
+
+def _clamp(quantity):
+    return min(quantity, MAX_QUANTITY)
 
 
 def _line_id(product_id, colors):
@@ -24,21 +30,20 @@ def _line_id(product_id, colors):
 class Cart:
     def __init__(self, request):
         self.session = request.session
-        cart = self.session.get(CART_SESSION_ID)
-        if cart is None:
-            cart = self.session[CART_SESSION_ID] = {}
-        self._cart = cart
+        # Только чтение: запись в сессию здесь создавала бы строку django_session на каждый визит (и бота).
+        self._cart = self.session.get(CART_SESSION_ID, {})
+        self._lines = None
 
     def add(self, product, colors=None, quantity=1):
         """Добавить товар с выбранными цветами (``{finish_type: color_id}``)."""
         colors = colors or {}
         line_id = _line_id(product.id, colors)
         if line_id in self._cart:
-            self._cart[line_id]['quantity'] += quantity
+            self._cart[line_id]['quantity'] = _clamp(self._cart[line_id]['quantity'] + quantity)
         else:
             self._cart[line_id] = {
                 'product_id': product.id,
-                'quantity': quantity,
+                'quantity': _clamp(quantity),
                 'colors': colors,
             }
         self.save()
@@ -47,7 +52,7 @@ class Cart:
     def set_quantity(self, line_id, quantity):
         if line_id in self._cart:
             if quantity > 0:
-                self._cart[line_id]['quantity'] = quantity
+                self._cart[line_id]['quantity'] = _clamp(quantity)
             else:
                 del self._cart[line_id]
             self.save()
@@ -71,23 +76,32 @@ class Cart:
             return None
         line_id, item = stashed['line_id'], stashed['item']
         if line_id in self._cart:
-            self._cart[line_id]['quantity'] += item['quantity']
+            self._cart[line_id]['quantity'] = _clamp(self._cart[line_id]['quantity'] + item['quantity'])
         else:
             self._cart[line_id] = item
         self.save()
         return line_id
 
     def clear(self):
-        self.session[CART_SESSION_ID] = self._cart = {}
+        self._cart = {}
+        self.session.pop(CART_UNDO_SESSION_ID, None)
         self.save()
 
     def save(self):
+        self.session[CART_SESSION_ID] = self._cart
         self.session.modified = True
+        self._lines = None
 
     def __iter__(self):
+        # Шаблон обходит корзину несколько раз (строки, итог, счётчик) — запросы делаем один раз.
+        if self._lines is None:
+            self._lines = list(self._load_lines())
+        return iter(self._lines)
+
+    def _load_lines(self):
         """Позиции корзины с подгруженными товарами и названиями цветов.
 
-        Позиции с удалённым из БД товаром молча пропускаются.
+        Позиции с удалённым или снятым с продажи товаром молча пропускаются.
         """
         product_ids = [item['product_id'] for item in self._cart.values()]
         products = Product.objects.in_bulk(product_ids)
@@ -99,7 +113,7 @@ class Cart:
 
         for line_id, item in self._cart.items():
             product = products.get(item['product_id'])
-            if product is None:
+            if product is None or not product.is_available:
                 continue
             colors_map = item.get('colors', {})
             colors_display = []
@@ -132,4 +146,4 @@ class Cart:
 
     @property
     def is_empty(self):
-        return not self._cart
+        return not list(self)
