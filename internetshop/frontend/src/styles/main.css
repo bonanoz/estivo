@@ -15,6 +15,7 @@
 @import "./product.css" layer(components);
 @import "./cart.css" layer(components);
 @import "./pages.css" layer(components);
+@import "./request.css" layer(components);
 
 /* Templates live outside the Vite root, so tell Tailwind where to look for class names. */
 @source "../../../shop/templates";

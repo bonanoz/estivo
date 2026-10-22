@@ -49,14 +49,21 @@
         <div class="cart-summary">
             <div class="cart-summary__row"><span>Товаров</span><span>{{ cart.count }}</span></div>
             <div class="cart-summary__row cart-summary__total"><span>Итого</span><span>{{ cart.total_price|intcomma }}&nbsp;₽</span></div>
-            <a href="{% url 'checkout' %}" class="btn btn-primary btn-block btn-lg">Оформить заявку</a>
+            {% if ctx != 'drawer' %}<h2 class="cart-summary__title">Ваша заявка</h2>{% endif %}
+            <p class="cart-summary__note">Это предварительный расчёт. Оплаты на сайте нет: менеджер перезвонит в течение [уточнить: время], уточнит цвет, сроки и стоимость доставки.</p>
+            <ul class="es-facts">
+                <li><b>Срок</b>Отгрузка в течение 3 дней / изготовление от 4 недель</li>
+                <li><b>Доставка</b>ТК до двери</li>
+                <li><b>Гарантия</b><a href="{% url 'warranty_page' %}">3 года</a></li>
+                <li><b>Оплата</b>Договор, 50/50 после фото- и видеоотчёта</li>
+            </ul>
+            <a href="{% url 'checkout' %}" class="btn btn-primary btn-block btn-lg">Перейти к заявке</a>
             {% if ctx == 'drawer' %}
             <a href="{% url 'catalog_list' %}" class="btn btn-outline btn-block" @click.prevent="close()">Продолжить покупки</a>
             <a href="{% url 'cart_detail' %}" class="cart-summary__link">Открыть корзину</a>
             {% else %}
             <a href="{% url 'catalog_list' %}" class="btn btn-outline btn-block">Продолжить покупки</a>
             {% endif %}
-            <p class="form-note">Это заявка, а не оплата. Менеджер свяжется с вами, чтобы согласовать детали и стоимость.</p>
         </div>
     </div>
     {% endif %}

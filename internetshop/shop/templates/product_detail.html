@@ -103,12 +103,21 @@
             </a>
 
             <p class="pdp-price">
+                {% if product.price %}
                 <span class="pdp-price__now"><small>от</small> {{ product.price|intcomma }}&nbsp;₽</span>
                 {% if product.old_price and product.old_price > product.price %}<s class="pdp-price__old">{{ product.old_price|intcomma }}&nbsp;₽</s>{% endif %}
+                {% else %}
+                <span class="pdp-price__now">Цена по запросу</span>
+                {% endif %}
             </p>
 
             {% if product.short_description %}<p class="pdp-lead">{{ product.short_description }}</p>{% endif %}
 
+            {% if not product.price %}
+            <div class="pdp-actions" data-buy-anchor>
+                <a href="{% url 'contacts_page' %}?product={{ product.slug }}" class="btn btn-dark btn-lg btn-block">Узнать цену</a>
+            </div>
+            {% else %}
             <form method="post" action="{% url 'cart_add' product.id %}" id="pdp-form" data-pdp-form>
                 {% csrf_token %}
 
@@ -138,6 +147,7 @@
                 </div>
                 <p class="sr-only" role="status" data-add-status></p>
             </form>
+            {% endif %}
             <div id="cart-drawer-slot"></div>
 
             <ul class="pdp-trust">
@@ -209,6 +219,7 @@
 </div>
 
 <!-- Липкая панель покупки (мобильные) -->
+{% if product.price %}
 <div class="pdp-sticky" data-sticky-bar inert>
     <div class="pdp-sticky__info">
         <span class="pdp-sticky__name">{{ product.name }}</span>
@@ -218,6 +229,7 @@
             hx-post="{% url 'cart_add' product.id %}" hx-include="#pdp-form"
             hx-target="#cart-drawer-slot" hx-swap="innerHTML" hx-disabled-elt="this">В корзину</button>
 </div>
+{% endif %}
 {% endblock %}
 
 {% block extra_js %}

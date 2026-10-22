@@ -208,6 +208,10 @@ class Product(models.Model):
 
     price = models.IntegerField(help_text='Цена в рублях (или цена "от" для комплектов)')
     old_price = models.IntegerField(null=True, blank=True, help_text='Прежняя цена — для акций')
+    offer_ends_at = models.DateField(
+        'Акция до', null=True, blank=True,
+        help_text='Промо-карточка в каталоге (?flag=sale) показывается до этой даты включительно',
+    )
 
     max_load_kg = models.IntegerField('Нагрузка на посадочное место, кг', default=120)
     warranty_years = models.IntegerField('Гарантия, лет', default=3)
@@ -260,6 +264,10 @@ class Product(models.Model):
 
     def get_absolute_url(self):
         return reverse('product_detail', args=[self.slug])
+
+    @property
+    def saving(self):
+        return (self.old_price or 0) - self.price
 
     @property
     def badges(self):

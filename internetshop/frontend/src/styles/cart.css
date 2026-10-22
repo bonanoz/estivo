@@ -44,12 +44,14 @@
   border-radius: var(--radius-md);
   background: var(--color-surface);
 }
+/* Compact: 32px to the eye, 44px to the finger (::after). */
 .stepper__btn {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: var(--tap-min);
-  height: var(--tap-min);
+  width: 32px;
+  height: 32px;
   border-radius: var(--radius-md);
   color: var(--color-ink);
   transition: background-color var(--dur-fast) var(--ease);

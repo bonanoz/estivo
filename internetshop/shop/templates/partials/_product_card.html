@@ -48,6 +48,7 @@
             <span>Цена по запросу</span>
             {% endif %}
         </div>
+        {% if not product.price %}<a href="{% url 'contacts_page' %}?product={{ product.slug }}" class="product-card__ask">Узнать цену</a>{% endif %}
     </div>
 </article>
 {% endwith %}
