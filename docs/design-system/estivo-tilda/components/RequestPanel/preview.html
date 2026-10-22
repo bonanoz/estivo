@@ -23,6 +23,9 @@
   .es-request__sum { display: flex; justify-content: space-between; font: 800 16px/24px var(--font-body); color: var(--ink); }
   .es-request__note { margin: 0; font: 300 14px/20px var(--font-body); color: var(--ink-soft); }
   .es-request .es-btn--accent { width: 100%; }
+  /* Narrow panel: one fact per line; underline clears descenders («д») instead of breaking at them. */
+  .es-request .es-facts { flex-direction: column; gap: 12px; }
+  .es-request .es-facts a { text-decoration-skip-ink: none; text-underline-offset: 4px; }
   .es-toast { position: absolute; left: 20px; bottom: 20px; display: flex; align-items: center; gap: 16px; padding: 0 0 0 20px;
     background: var(--graphite); color: var(--on-dark); font: 300 14px/17px var(--font-body); }
   .es-toast a { display: inline-flex; align-items: center; min-height: var(--tap-min); padding: 0 20px; color: var(--on-dark); }
