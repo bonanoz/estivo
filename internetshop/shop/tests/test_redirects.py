@@ -81,13 +81,14 @@ class E_d_RedirectTests(TestCase):
         self.assertIn('href="/catalog/"', html)
 
     def test_e_d_slash_variants(self):
-        for old in ('/aksessuary', '/b2b'):
-            new = next(n for o, _, n in self.rows if o == old)
-            with self.subTest(old=old):
-                r = self.client.get(old + '/')
-                self.assertEqual(r.status_code, 301)
-                self.assertEqual(r['Location'], new)
-        self.assertEqual(self.client.get('/b2b')['Location'], '/b2b/')
+        # /b2b/ — живая Django-страница, поэтому вариант со слэшем проверяем только на /aksessuary
+        new = next(n for o, _, n in self.rows if o == '/aksessuary')
+        r = self.client.get('/aksessuary/')
+        self.assertEqual(r.status_code, 301)
+        self.assertEqual(r['Location'], new)
+        r = self.client.get('/b2b')
+        self.assertEqual(r.status_code, 301)
+        self.assertEqual(r['Location'], '/b2b/')
         self.assertEqual(self.client.get('/b2b/').status_code, 200)
 
     def test_e_d_product_by_tilda_id_follows_new_slug(self):
