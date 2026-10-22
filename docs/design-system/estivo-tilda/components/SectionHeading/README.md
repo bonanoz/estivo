@@ -1,5 +1,5 @@
 # SectionHeading
-Every home section opens with a small brand-colour eyebrow, then a 50px Cormorant title in uppercase.
+Every home section opens with a small brand-colour eyebrow, then a 50px Cormorant Garamond title in uppercase.
 
 - Provide: eyebrow text (sentence case, 1–3 words: «Наши преимущества», «FAQ», «Отзывы»), the title, optional body.
 - Eyebrow: `eyebrow` style (14px) in `brand`, 20px above the title. Title: `section-title` in `ink`, uppercased by CSS, not typed in caps; 50px on desktop, scaling down to 32px on phones.

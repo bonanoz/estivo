@@ -25,12 +25,13 @@ Captured from estivo63.ru (Tilda) on 2026-10-20, then corrected against `MARKETI
 
 ## Type
 
-- Two families: `display` (Cormorant, Google Fonts, Cyrillic) for headings, `body` (Gilroy) for everything else.
-- Home headings: `hero` and `section-title` at weight 400, uppercase, `ink`. Promo headings: `promo-title` and `promo-cover` at 600.
+- Two families: `display` (Cormorant Garamond, Google Fonts, Cyrillic — the same font the Django project already loads) for headings, `body` (Gilroy) for everything else.
+- Gilroy has exactly two weights: **300** for all regular text (body, nav, eyebrow, caption, default button, banner) and **800** for emphasis (accent and call buttons, promo button, `step-title`, `contact-accent`). Only these two are licensed (owner decision 2026-10-22); never set Gilroy at 400/500/600 — the source site's 400/500/600 were mapped 400→300, 500/600→800.
+- Home headings: `hero` and `section-title` at weight 400, uppercase, `ink`. Promo headings: `promo-title` and `promo-cover` at 600 (Cormorant Garamond weights, not Gilroy).
 - Readable on a phone (R22): body copy is `body` 16/24; nothing on the site is set below 14px — `nav`, `eyebrow`, `caption` and button labels are 14px. The source site's 10–13px text is not carried over.
 - Display sizes are desktop values. Below 768px, `es-title` and the banner line scale down with `clamp()` in `components/bundle.css`; there is no separate mobile token set.
 - The sale strip is the one place Gilroy goes huge: `banner` uppercase.
-- Gilroy is a commercial font served by Tilda; no files are bundled here. Load licensed `.woff2` files yourself, otherwise the stack falls back to Helvetica Neue / Arial.
+- Gilroy is a commercial font; no files are bundled here. Load the licensed Light (300) and ExtraBold (800) `.woff2` files (the project expects them in `shop/static/fonts/gilroy/`), otherwise the stack falls back to Helvetica Neue / Arial. Light 300 at 14px is thin: keep it on `surface`/`surface-white` with `ink`, not on `surface-muted` with `muted`, and check it on a real phone.
 
 ## Layout and spacing
 
