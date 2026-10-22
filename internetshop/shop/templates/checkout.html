@@ -19,7 +19,7 @@
 
         <div class="checkout__layout">
             <aside class="checkout-summary" aria-labelledby="checkout-summary-title">
-                <h2 id="checkout-summary-title" class="checkout-summary__title">Ваш заказ</h2>
+                <h2 id="checkout-summary-title" class="checkout-summary__title">Ваша заявка</h2>
                 <ul class="checkout-summary__list">
                     {% for item in cart %}
                     <li class="checkout-line">
@@ -41,7 +41,7 @@
                     {% endfor %}
                 </ul>
                 <div class="checkout-total"><span>Итого</span><span>{{ cart.total_price|intcomma }}&nbsp;₽</span></div>
-                <a href="{% url 'cart_detail' %}" class="checkout-summary__edit">Изменить состав заказа</a>
+                <a href="{% url 'cart_detail' %}" class="checkout-summary__edit">Изменить состав заявки</a>
             </aside>
 
             <form method="post" class="checkout-form" data-once data-checkout-form>

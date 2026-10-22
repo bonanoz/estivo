@@ -1,0 +1,24 @@
+{% load static humanize %}{% comment %}
+Промо-карточка акции (макет estivo-tilda/components/OfferCard). Ожидает `product` с old_price > price и offer_ends_at.
+Кнопка ведёт на форму «Узнать цену» (contacts_page?product=<slug>) - лид получает source_page='price-request:<slug>'.
+{% endcomment %}
+<article class="offer-card">
+    <div class="offer-card__media">
+        {% if product.main_image %}
+        <img src="{{ product.main_image.url }}" alt="{{ product.name }}" loading="lazy" width="800" height="600">
+        {% else %}
+        <img src="{% static 'img/placeholders/product.svg' %}" alt="{{ product.name }}" loading="lazy" width="800" height="600">
+        {% endif %}
+    </div>
+    <div class="offer-card__body">
+        <h3 class="offer-card__title"><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h3>
+        {% if product.short_description %}<p class="offer-card__desc">{{ product.short_description }}</p>{% endif %}
+        <p class="offer-card__price">
+            <span>{{ product.price|intcomma }}&nbsp;₽</span>
+            <s class="offer-card__old">{{ product.old_price|intcomma }}&nbsp;₽</s>
+        </p>
+        <p class="offer-card__saving">Выгода {{ product.saving|intcomma }}&nbsp;₽</p>
+        <p class="offer-card__ends">Акция до {{ product.offer_ends_at|date:"j E Y" }}</p>
+        <a href="{% url 'contacts_page' %}?product={{ product.slug }}" class="btn btn-primary">Узнать цену {{ product.name }}</a>
+    </div>
+</article>

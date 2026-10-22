@@ -1,10 +1,11 @@
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import F, Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_GET, require_POST
 
@@ -144,7 +145,14 @@ def _catalog_context(request, products, skip=()):
     params = request.GET.copy()
     params.pop('page', None)
     page_obj = _paginate_products(request, products)
+    offers = []
+    if 'sale' in request.GET.getlist('flag'):
+        # Промо-карточки: только скидка с датой окончания не раньше сегодня.
+        offers = Product.objects.filter(
+            is_available=True, old_price__gt=F('price'), offer_ends_at__gte=timezone.localdate(),
+        ).order_by('offer_ends_at')[:3]
     return {
+        'offers': offers,
         'page_obj': page_obj,
         'active_filters': active_filters,
         'current_sort': current_sort,
@@ -305,6 +313,9 @@ def review_create(request, slug):
 
 
 def _lead_page(request, template_name, lead_type, extra_context=None):
+    # «Узнать цену»: слаг товара приходит скрытым полем (POST) или ?product= (GET-предзаполнение).
+    price_slug = request.POST.get('price_request_for') or request.GET.get('product')
+    price_product = Product.objects.filter(slug=price_slug).first() if price_slug else None
     if request.method == 'POST':
         form = LeadForm(request.POST)
         if form.is_valid() and form.is_spam:
@@ -313,6 +324,9 @@ def _lead_page(request, template_name, lead_type, extra_context=None):
         if form.is_valid():
             lead = form.save(commit=False)
             lead.source_page = template_name
+            if price_product:
+                lead.source_page = f'price-request:{price_product.slug}'
+                lead.message = f'Узнать цену: {price_product.name}\n{lead.message}'.strip()
             lead.save()
             sent = notify_telegram(
                 f'📩 Новая заявка ({lead.get_lead_type_display()})\n'
@@ -325,9 +339,12 @@ def _lead_page(request, template_name, lead_type, extra_context=None):
             messages.success(request, 'Заявка отправлена! Мы свяжемся с вами в ближайшее время.')
             return redirect(request.path)
     else:
-        form = LeadForm(initial={'lead_type': lead_type})
+        initial = {'lead_type': lead_type}
+        if price_product:
+            initial['message'] = f'Узнать цену: {price_product.name}'
+        form = LeadForm(initial=initial)
 
-    context = {'form': form}
+    context = {'form': form, 'price_product': price_product}
     if extra_context:
         context.update(extra_context)
     return render(request, template_name, context)
@@ -390,6 +407,14 @@ def _parse_colors(request, product):
 @require_POST
 def cart_add(request, product_id):
     product = get_object_or_404(Product, id=product_id, is_available=True)
+    if not product.price:
+        # Цена по запросу: в заявку не кладём, ведём на форму «Узнать цену».
+        url = f"{reverse('contacts_page')}?product={product.slug}"
+        if request.htmx:
+            response = HttpResponse(status=204)
+            response['HX-Redirect'] = url
+            return response
+        return redirect(url)
     colors = _parse_colors(request, product)
     try:
         quantity = max(1, int(request.POST.get('quantity', 1)))
