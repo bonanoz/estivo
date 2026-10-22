@@ -5,12 +5,14 @@
 <section data-section="hero" class="page-section pt-6 md:pt-10">
     <div class="page-container grid items-center gap-8 md:grid-cols-2 md:gap-12">
         <div class="grid gap-5">
-            <h1 class="page-h1">Мебель для мест, куда хочется возвращаться</h1>
-            <p class="page-lead">Элитная плетёная мебель ручной работы для дома, дачи и бизнеса. Собственное производство полного цикла.</p>
+            <h1 class="page-h1">Плетёная мебель из ротанга и роупа — своё производство в Тольятти</h1>
+            <p class="page-lead">Плетём вручную на металлическом каркасе. Делаем по каталогу и в ваш размер, доставляем по всей России.</p>
             <div class="flex flex-wrap gap-3">
-                <a href="{% url 'catalog_list' %}" class="btn btn-primary btn-lg">Смотреть коллекции и цены</a>
-                <a href="{% url 'contacts_page' %}" class="btn btn-outline btn-lg">Консультация</a>
+                <a href="{% url 'catalog_list' %}" class="btn btn-primary btn-lg">Подобрать комплект</a>
+                <a href="{% url 'catalog_by_material' 'rotang' %}" class="btn btn-outline btn-lg">Каталог ротанга</a>
+                <a href="{% url 'catalog_by_material' 'roup' %}" class="btn btn-outline btn-lg">Каталог роупа</a>
             </div>
+            <p class="page-note">Гарантия 3 года · Изготовление от 4 недель · 3 цеха и склад 650 м² · Доставка ТК до двери</p>
         </div>
         <div class="page-media aspect-[4/5] md:aspect-[4/5]">
             {% if site_settings.hero_image %}
@@ -21,6 +23,22 @@
         </div>
     </div>
 </section>
+
+{% if featured_products %}
+<section data-section="products" class="page-section pt-0">
+    <div class="page-container">
+        <div class="page-head page-head--row">
+            <h2 class="page-h2">Популярные модели</h2>
+            <a href="{% url 'catalog_list' %}" class="btn btn-outline">Смотреть все</a>
+        </div>
+        <ul class="grid grid-cols-2 gap-4 md:grid-cols-4 list-none m-0 p-0">
+            {% for product in featured_products %}
+            <li>{% include 'partials/_product_card.html' %}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</section>
+{% endif %}
 
 <section data-section="categories" aria-label="Быстрый выбор" class="pb-6">
     <div class="page-container grid gap-3">
@@ -33,7 +51,7 @@
     </div>
 </section>
 
-{% if collections or featured_products %}
+{% if collections %}
 <section data-section="collections" class="page-section">
     <div class="page-container">
         <div class="page-head page-head--row">
@@ -54,13 +72,6 @@
         </ul>
         {% endif %}
 
-        {% if featured_products %}
-        <ul class="grid grid-cols-2 gap-4 md:grid-cols-4 list-none m-0 p-0">
-            {% for product in featured_products %}
-            <li>{% include 'partials/_product_card.html' %}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
     </div>
 </section>
 {% endif %}
@@ -115,8 +126,8 @@
             {% endif %}
         </div>
         <div class="grid content-center gap-5">
-            <h2 class="page-h2">Каждое изделие — инвестиция в атмосферу</h2>
-            <p class="page-lead">Более 10 лет мы создаём плетёную мебель ручной работы. От идеи до доставки всё производство у нас, поэтому каждое изделие проходит контроль от первого плетения до упаковки.</p>
+            <h2 class="page-h2">Всё производство — в Тольятти</h2>
+            <p class="page-lead">Плетём вручную, сами свариваем и красим металл: от идеи до доставки всё производство у нас, поэтому каждое изделие проходит контроль от первого плетения до упаковки.</p>
             <div>
                 <a href="{% url 'about_page' %}" class="btn btn-outline">О нас</a>
             </div>
@@ -128,7 +139,7 @@
     <div class="page-container page-container--narrow">
         <div class="page-prose">
             <h2 class="page-h2">Плетёная мебель из ротанга, роупа и шпона</h2>
-            <p>ESTIVO производит плетёную мебель ручной работы: кресла, диваны, столы и комплекты для террас, гостиных и общественных пространств. Мы работаем с ротангом, роупом, шпоном и HPL, а каркасы делаем из стали или алюминия с порошковой окраской.</p>
+            <p>ESTIVO производит плетёную мебель ручной работы: кресла, диваны, столы и комплекты для террас, гостиных и общественных пространств. Мы работаем с ротангом, роупом, шпоном и HPL, а каркасы делаем из металла с порошковой окраской.</p>
         </div>
 
         <h2 class="page-h3 mt-10 mb-4">Частые вопросы</h2>
@@ -142,6 +153,8 @@
         </div>
     </div>
 </section>
+
+{% include 'partials/_why_estivo.html' %}
 
 {% include 'partials/_cta_section.html' %}
 {% endblock %}
