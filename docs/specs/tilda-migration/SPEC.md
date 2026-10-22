@@ -114,7 +114,7 @@
 - [ ] Тест: уведомление после добавления содержит «Добавлено в заявку» и ссылку на корзину (R01).
 - [ ] Тест: промо-карточка с `old_price > price` и `offer_ends_at` в будущем показывает обе цены и дату; без даты или с прошедшей датой — не показывается.
 - [ ] Тест: карточка товара и PDP открываются по прямой ссылке с шапкой и счётчиком корзины (R01).
-- [ ] `accent` только у кнопки заявки и полосы распродажи (тест: класс `btn-primary` встречается только в `_cart_drawer.html`, `cart.html`, `checkout.html` и `_offer_card.html`).
+- [ ] `accent` только у кнопки заявки и полосы распродажи (тест: класс `btn-primary` встречается только в `_cart_drawer.html`, `_cart_lines.html`, `cart.html`, `checkout.html`, `_offer_card.html` и одна главная CTA в hero `home.html` — исключение владельца 22.10.2026).
 - [ ] Дизайн-проверки из (a) пройдены для этих экранов.
 
 ### (c) Импорт товаров с Tilda
@@ -226,3 +226,4 @@
 - 22.10.2026 — владелец утвердил SPEC и план схемы БД. Старт пайплайна с эпика (a); a5 — только после отдельного «да».
 - 22.10.2026 — (a) a1–a4: контракт `test_design_tokens.py` (26 тестов), воркер с 1-й попытки, ревью APPROVE, merge; 211/211 зелёные. Открыто: `.btn-primary` в hero главной оставлен из-за старого теста `E6HomeTests.test_hero_has_h1_and_single_primary_cta` (MAPPING велит `.btn-dark`) — решить до (b); `.page-section--dark` теперь светлый (П4), имя класса устарело; на checkout accent-кнопка «Отправить заявку» vs «Получить расчёт» в MAPPING — тексты в (f).
 - 22.10.2026 — a5 после «да» владельца: `docs/design-system.md` переписан под estivo-tilda, `DESIGN.md`/`UX.md` удалены, `CLAUDE.md` (источник дизайна, allow-list, Gilroy — П8), `README.md`, `.taste-skill/direction.json`, `.claude/skills/design-system/SKILL.md` и 4 комментария со ссылкой на `UX.md` поправлены. Исторические `docs/specs/furniture-store-redesign/*` не трогались. 211/211 зелёные. Эпик (a) закрыт.
+- 22.10.2026 — решение владельца: `.btn-primary` (accent) в hero главной остаётся **постоянным исключением** из правила «accent только у кнопки заявки и полосы распродажи»; тест `E6HomeTests.test_hero_has_h1_and_single_primary_cta` не меняется. Каждый следующий эпик — в новом чате: `/pipeline resume tilda-migration`, начиная с (b).

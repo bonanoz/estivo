@@ -59,7 +59,7 @@ estivo63.ru и исправлено по `MARKETING_AUDIT.md`. Решение в
 
 - ОБЯЗАТЕЛЬНО: в компонентах только `var(--color-*)`; сырые hex/rgb — только в `@theme`.
 - ОБЯЗАТЕЛЬНО: `accent` — только кнопка заявки («Перейти к заявке» / «Получить расчёт», `.btn-primary`) и полоса
-  распродажи. Полоса распродажи — одна на страницу и не на первом экране (R13).
+  распродажи. Исключение владельца: одна главная CTA в hero главной. Полоса распродажи — одна на страницу и не на первом экране (R13).
 - ОБЯЗАТЕЛЬНО: `brand` не используется как фон крупных блоков.
 
 ### 2.2 Типографика
@@ -122,7 +122,7 @@ estivo63.ru и исправлено по `MARKETING_AUDIT.md`. Решение в
 |---|---|---|
 | `.btn` + `.btn-dark` | `es-btn--dark` | CTA по умолчанию: `graphite`, текст `on-dark`, 14px 300, `radius-md`, высота ≥ 45px |
 | `.btn-outline` | `es-btn--outline` | граница и текст `graphite`, без заливки на hover |
-| `.btn-primary` | `es-btn--accent` | `accent`, текст `on-accent`, 16px 800. Только кнопка заявки (`_cart_lines.html`, `checkout.html`), промо-карточка (эпик b). Временное исключение — hero главной, пока его требует тест `E6HomeTests` |
+| `.btn-primary` | `es-btn--accent` | `accent`, текст `on-accent`, 16px 800. Только кнопка заявки (`_cart_lines.html`, `checkout.html`), промо-карточка (эпик b). Исключение владельца (22.10.2026): одна главная CTA в hero `home.html` |
 | `.btn-lg` / `.btn-block` | — | высота `--control-height` (60px) / во всю ширину |
 | `.btn-call` (эпик b/f) | `es-btn--call` | высота 60, обводка и текст `brand`, 800 |
 | `.icon-btn` | `es-icon-btn` | 44×44 (`--tap-min`), круг, 1px `ink`, прозрачный, hover — opacity (П3) |
