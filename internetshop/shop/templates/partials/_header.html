@@ -32,7 +32,7 @@
         x-effect="$scrollLock('mobile-menu', menu); $scrollLock('search', search)"
         @keydown.escape.window="if (search) closeSearch(); else if (menu) closeMenu()">
     <div class="mx-auto grid w-full max-w-[var(--container)] grid-cols-[1fr_auto_1fr] items-center gap-2 px-2 py-1 md:px-6 lg:grid-cols-[auto_1fr_auto] lg:gap-6">
-        <div class="flex items-center lg:hidden">
+        <div class="flex items-center gap-2.5 lg:hidden">
             <button type="button" class="icon-btn" x-ref="menuBtn" aria-label="Меню"
                     aria-controls="mobile-menu" aria-expanded="false" :aria-expanded="menu.toString()"
                     @click="menu = !menu">
@@ -57,7 +57,7 @@
             <a href="{% url 'contacts_page' %}" class="flex min-h-11 items-center hover:opacity-85">Контакты</a>
         </nav>
 
-        <div class="flex items-center justify-end">
+        <div class="flex items-center justify-end gap-2.5">
             <button type="button" class="icon-btn hidden lg:inline-flex" x-ref="searchBtnDesktop" aria-label="Поиск"
                     aria-controls="search-overlay" aria-expanded="false" :aria-expanded="search.toString()"
                     @click="openSearch()">
