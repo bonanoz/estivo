@@ -140,6 +140,9 @@
     line-height: 1.2;
     margin: 0 0 var(--space-3);
     text-wrap: balance;
+    /* long uppercase words (e.g. «конфиденциальности») overflow 390px otherwise */
+    hyphens: auto;
+    overflow-wrap: anywhere;
   }
   /* section titles (es-title): Cormorant Garamond 400, uppercase */
   h1,
