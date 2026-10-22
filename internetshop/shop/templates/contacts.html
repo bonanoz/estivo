@@ -43,7 +43,7 @@
 
 <section class="page-section pt-0">
     <div class="page-container">
-        <iframe src="https://yandex.ru/map-widget/v1/?text={{ site_info.address|urlencode }}&z=16"
+        <iframe src="https://yandex.ru/map-widget/v1/?ll={{ site_info.map_ll }}&pt={{ site_info.map_ll }},pm2rdm&z=17"
                 class="block h-[380px] w-full bg-surface-alt" loading="lazy"
                 title="Карта — {{ site_info.address }}"></iframe>
     </div>
