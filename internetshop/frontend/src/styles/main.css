@@ -20,31 +20,29 @@
 @source "../../../shop/templates";
 
 /*
- * Tokens. Values are defined in this @theme block; usage rules live in docs/design-system.md (brand source of truth), plus the
- * corrected tokens from the design-system (accent-text, line-strong, error). From DESIGN.md only the pill radius and
- * the motion duration scale are taken - never its palette or fonts.
+ * Tokens: values come from docs/design-system/estivo-tilda/tokens.css (see MAPPING.md there). Usage rules: README.md of
+ * that folder. Body font is Gilroy 300/800 only; headings are Cormorant Garamond.
  */
 @theme {
   --color-*: initial;
   --color-white: #ffffff;
-  --color-bg: #faf8f5;
+  --color-bg: #fdfdfd;
   --color-surface: #ffffff;
-  --color-surface-alt: #f2ede6;
-  --color-ink: #1c1a17;
-  --color-ink-soft: #55504a;
-  --color-ink-muted: #6e675e;
-  --color-line: #e4ddd3;
-  --color-line-strong: #948f88;
-  --color-accent: rgb(217, 120, 62);
-  --color-accent-dark: rgb(179, 92, 42);
-  --color-accent-text: #a1592e;
-  --color-accent-soft: rgba(217, 120, 62, 0.08);
-  --color-dark: #23201c;
-  --color-dark-ink: #f4efe8;
-  --color-error: #b3261e;
+  --color-surface-alt: #f4f4f4;
+  --color-ink: #281913;
+  --color-ink-black: #141414;
+  --color-ink-soft: #3c3c3c;
+  --color-ink-muted: #6d6d6d;
+  --color-graphite: #333333;
+  --color-brand: #b83400;
+  --color-accent: #d9783e;
+  --color-on-accent: var(--color-ink);
+  --color-on-dark: #ffffff;
+  --color-border-input: #c9c9c9;
+  --color-scrim: rgba(0, 0, 0, 0.6);
 
   --font-display: 'Cormorant Garamond', Georgia, serif;
-  --font-body: 'Gilroy', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-body: 'Gilroy', 'Helvetica Neue', Arial, sans-serif;
 
   /* Gilroy is only licensed in Light (300) and ExtraBold (800). */
   --weight-body-regular: 300;
@@ -59,15 +57,10 @@
   --space-7: 96px;
   --space-8: 128px;
 
-  --radius-sm: 6px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
-  --radius-pill: 50px;
-
-  --shadow-md:
-    0 2px 4px rgba(28, 26, 23, 0.05),
-    0 8px 16px rgba(28, 26, 23, 0.07),
-    0 16px 32px rgba(28, 26, 23, 0.08);
+  --radius-none: 0;
+  --radius-sm: 4px;
+  --radius-md: 5px;
+  --radius-pill: 30px;
 
   --z-dropdown: 10;
   --z-sticky: 20;
@@ -75,23 +68,15 @@
   --z-modal: 100;
   --z-toast: 1000;
 
-  --container: 1240px;
-  --container-narrow: 820px;
+  --container: 1160px;
+  --container-narrow: 692px;
+  --module: 224px;
+  --gutter: 10px;
+  --control-height: 60px;
+  --tap-min: 44px;
 
-  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
-  --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
-
-  /* design-system.md scale */
-  --dur-press: 120ms;
+  --ease: ease-in-out;
   --dur-fast: 200ms;
-  --dur-base: 300ms;
-  --dur-slow: 600ms;
-  /* DESIGN.md scale */
-  --duration-instant: 150ms;
-  --duration-fast: 200ms;
-  --duration-normal: 300ms;
-  --duration-slow: 400ms;
-  --duration-slower: 550ms;
 }
 
 @font-face {
@@ -128,8 +113,8 @@
     background-color: var(--color-bg);
     color: var(--color-ink);
     font-family: var(--font-body);
-    font-size: 17px;
-    line-height: 1.65;
+    font-size: 16px;
+    line-height: 24px;
     font-weight: var(--weight-body-regular);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
@@ -150,15 +135,18 @@
   h3,
   h4 {
     font-family: var(--font-display);
-    font-weight: 500;
-    line-height: 1.08;
+    font-weight: 400;
+    line-height: 1.2;
     margin: 0 0 var(--space-3);
-    letter-spacing: -0.01em;
     text-wrap: balance;
   }
-  h1 { font-size: clamp(2.6rem, 6vw, 5rem); }
-  h2 { font-size: clamp(2rem, 4vw, 3.2rem); }
-  h3 { font-size: clamp(1.4rem, 2.5vw, 1.9rem); }
+  /* section titles (es-title): Cormorant Garamond 400, uppercase */
+  h1,
+  h2 {
+    font-size: clamp(32px, 6vw, 50px);
+    text-transform: uppercase;
+  }
+  h3 { font-size: 22px; line-height: 26px; }
   h4 { font-size: 1.2rem; }
 
   p,
@@ -177,7 +165,8 @@
   }
 
   .lead {
-    font-size: clamp(1.1rem, 1.6vw, 1.35rem);
+    font-size: 20px;
+    line-height: 31px;
     color: var(--color-ink-soft);
   }
   .muted {
@@ -200,7 +189,7 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-accent-text);
+    outline: 2px solid var(--color-brand);
     outline-offset: 2px;
   }
 
@@ -232,10 +221,10 @@
     top: -100px;
     z-index: var(--z-toast);
     padding: var(--space-2) var(--space-3);
-    min-height: 44px;
+    min-height: var(--tap-min);
     display: inline-flex;
     align-items: center;
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius-md);
     background: var(--color-ink);
     color: var(--color-bg);
     font-weight: var(--weight-body-bold);
@@ -244,23 +233,22 @@
     top: var(--space-2);
   }
 
-  /* ---- Icon button (44x44 touch target) ---- */
+  /* ---- Icon button (44x44 touch target, round, 1px ink outline) ---- */
   .icon-btn {
     position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 44px;
-    height: 44px;
-    border-radius: var(--radius-pill);
+    width: var(--tap-min);
+    height: var(--tap-min);
+    border: 1px solid var(--color-ink);
+    border-radius: 50%;
+    background: transparent;
     color: var(--color-ink);
-    transition: background-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+    transition: opacity var(--dur-fast) var(--ease);
   }
   .icon-btn:hover {
-    background: var(--color-surface-alt);
-  }
-  .icon-btn:active {
-    background: var(--color-line);
+    opacity: 0.85;
   }
   .icon-btn[disabled],
   .icon-btn[aria-disabled='true'] {
@@ -271,18 +259,18 @@
 
   .count-dot {
     position: absolute;
-    top: 2px;
-    right: 0;
-    min-width: 20px;
-    height: 20px;
-    padding: 0 6px;
+    top: -4px;
+    right: -4px;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 5px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     border-radius: var(--radius-pill);
-    background: var(--color-accent-text);
+    background: var(--color-brand);
     color: var(--color-white);
-    font-size: 0.8rem;
+    font-size: 0.875rem;
     font-weight: var(--weight-body-bold);
     line-height: 1;
   }
@@ -293,58 +281,47 @@
     align-items: center;
     justify-content: center;
     gap: var(--space-2);
-    min-height: 44px;
+    min-height: 45px;
     padding: 12px 28px;
     border: 1px solid transparent;
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius-md);
     font-family: var(--font-body);
-    font-size: 0.98rem;
-    font-weight: var(--weight-body-bold);
-    line-height: 1;
+    font-size: 0.875rem;
+    font-weight: var(--weight-body-regular);
+    line-height: 1.2;
     text-align: center;
     text-decoration: none;
     cursor: pointer;
     position: relative;
-    transition:
-      background-color var(--dur-fast) var(--ease),
-      color var(--dur-fast) var(--ease),
-      border-color var(--dur-fast) var(--ease),
-      transform var(--dur-press) var(--ease);
+    transition: opacity var(--dur-fast) var(--ease);
   }
-  .btn:active {
-    transform: scale(0.97);
+  .btn:hover {
+    opacity: 0.85;
   }
   .btn-lg {
-    min-height: 52px;
+    min-height: var(--control-height);
     padding: 16px 36px;
-    font-size: 1.05rem;
+    font-size: 1rem;
   }
   .btn-block {
     display: flex;
     width: 100%;
   }
+  /* accent: only the request CTA (cart drawer, cart, checkout) */
   .btn-primary {
-    background: var(--color-accent-text);
-    color: var(--color-white);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    font-size: 1rem;
+    font-weight: var(--weight-body-bold);
   }
-  .btn-primary:hover {
-    background: var(--color-ink);
+  .btn-dark {
+    background: var(--color-graphite);
+    color: var(--color-on-dark);
   }
   .btn-outline {
     background: transparent;
-    color: var(--color-ink);
-    border-color: var(--color-line-strong);
-  }
-  .btn-outline:hover {
-    border-color: var(--color-ink);
-    background: var(--color-surface);
-  }
-  .btn-light {
-    background: var(--color-dark-ink);
-    color: var(--color-dark);
-  }
-  .btn-light:hover {
-    background: var(--color-white);
+    color: var(--color-graphite);
+    border-color: var(--color-graphite);
   }
   .btn[disabled],
   .btn[aria-disabled='true'] {
@@ -375,52 +352,45 @@
   }
   .btn-error,
   .btn[data-state='error'] {
-    border-color: var(--color-error);
-    color: var(--color-error);
+    border-color: var(--color-brand);
+    color: var(--color-brand);
   }
 
-  /* ---- Pill (filter / toggle) ---- */
   /* django.contrib.messages */
   .alert {
     margin-bottom: var(--space-3);
     padding: var(--space-3) var(--space-4);
-    border: 1px solid var(--color-accent-text);
+    border: 1px solid var(--color-brand);
     border-radius: var(--radius-sm);
-    background: var(--color-accent-soft);
-    color: var(--color-accent-text);
+    background: var(--color-surface-alt);
+    color: var(--color-brand);
     font-weight: var(--weight-body-bold);
   }
 
+  /* ---- Pill (filter / toggle) ---- */
   .pill {
     display: inline-flex;
     align-items: center;
-    min-height: 44px;
+    min-height: var(--tap-min);
     padding: 8px 18px;
-    border: 1px solid var(--color-line-strong);
-    border-radius: var(--radius-pill);
+    border: 1px solid var(--color-border-input);
+    border-radius: var(--radius-md);
     background: var(--color-surface);
     color: var(--color-ink);
     font-size: 0.95rem;
     font-weight: var(--weight-body-bold);
     cursor: pointer;
-    transition:
-      color var(--dur-fast) var(--ease),
-      background-color var(--dur-fast) var(--ease),
-      border-color var(--dur-fast) var(--ease);
+    transition: opacity var(--dur-fast) var(--ease);
   }
   .pill:hover {
-    color: var(--color-accent-text);
-    border-color: var(--color-accent-text);
-  }
-  .pill:active {
-    background: var(--color-surface-alt);
+    opacity: 0.85;
   }
   .pill[aria-pressed='true'],
   .pill[aria-current='page'],
   .pill.is-active {
-    background: var(--color-ink);
-    border-color: var(--color-ink);
-    color: var(--color-bg);
+    background: var(--color-graphite);
+    border-color: var(--color-graphite);
+    color: var(--color-on-dark);
   }
   .pill[disabled],
   .pill[aria-disabled='true'] {
@@ -435,8 +405,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 44px;
-    height: 44px;
+    width: var(--tap-min);
+    height: var(--tap-min);
     cursor: pointer;
   }
   .swatch input {
@@ -453,11 +423,11 @@
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    border: 1px solid var(--color-line-strong);
+    border: 1px solid var(--color-border-input);
     transition: outline-color var(--dur-fast) var(--ease);
   }
   .swatch:hover .swatch__dot {
-    outline: 2px solid var(--color-line-strong);
+    outline: 2px solid var(--color-border-input);
     outline-offset: 2px;
   }
   .swatch input:checked + .swatch__dot {
@@ -465,7 +435,7 @@
     outline-offset: 2px;
   }
   .swatch input:focus-visible + .swatch__dot {
-    outline: 2px solid var(--color-accent-text);
+    outline: 2px solid var(--color-brand);
     outline-offset: 4px;
   }
   .swatch input:disabled + .swatch__dot {
@@ -477,7 +447,7 @@
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    border: 1px solid var(--color-line-strong);
+    border: 1px solid var(--color-border-input);
   }
 
   /* ---- Form ---- */
@@ -488,22 +458,20 @@
     margin-bottom: var(--space-3);
   }
   .form-field > label {
-    font-size: 0.85rem;
+    font-size: 0.875rem;
     font-weight: var(--weight-body-bold);
     color: var(--color-ink-soft);
   }
   .form-input {
     width: 100%;
-    min-height: 44px;
+    min-height: var(--control-height);
     padding: 12px 16px;
-    border: 1px solid var(--color-line-strong);
+    border: 1px solid var(--color-border-input);
     border-radius: var(--radius-md);
     background: var(--color-surface);
     color: var(--color-ink);
     font-size: 1rem; /* never below 1rem: iOS zooms on focus */
-    transition:
-      border-color var(--dur-fast) var(--ease),
-      outline-color var(--dur-fast) var(--ease);
+    transition: border-color var(--dur-fast) var(--ease);
   }
   .form-input::placeholder {
     color: var(--color-ink-muted);
@@ -513,13 +481,10 @@
   }
   .form-input:focus,
   .form-input:focus-visible {
-    outline: none;
-    border-color: var(--color-accent-text);
-    outline: 2px solid var(--color-accent-text);
-    outline-offset: 1px;
+    border-color: var(--color-graphite);
   }
   .form-input[aria-invalid='true'] {
-    border-color: var(--color-error);
+    border-color: var(--color-brand);
   }
   .form-input[disabled] {
     background: var(--color-surface-alt);
@@ -528,12 +493,12 @@
   }
   .form-errors,
   .form-error {
-    color: var(--color-error);
-    font-size: 0.85rem;
+    color: var(--color-brand);
+    font-size: 0.875rem;
   }
   .form-note {
     color: var(--color-ink-soft);
-    font-size: 0.85rem;
+    font-size: 0.875rem;
   }
 
   /* ---- Badge (sentence case, readable size) ---- */
@@ -542,15 +507,15 @@
     align-items: center;
     min-height: 24px;
     padding: 2px 10px;
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius-md);
     background: var(--color-ink);
     color: var(--color-bg);
-    font-size: 0.8rem;
+    font-size: 0.875rem;
     font-weight: var(--weight-body-bold);
     line-height: 1.2;
   }
   .badge-new {
-    background: var(--color-accent-text);
+    background: var(--color-brand);
     color: var(--color-white);
   }
   .badge-hit {
@@ -558,23 +523,22 @@
     color: var(--color-bg);
   }
   .badge-sale {
-    background: var(--color-error);
+    background: var(--color-brand);
     color: var(--color-white);
   }
 
-  /* ---- Product card ---- */
+  /* ---- Product card (square, no shadow, hover = opacity only) ---- */
   .product-card {
     position: relative;
     display: flex;
     flex-direction: column;
     height: 100%;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-none);
     background: var(--color-surface);
     overflow: hidden;
-    transition: transform var(--dur-base) var(--ease);
   }
   .product-card:focus-within {
-    outline: 2px solid var(--color-accent-text);
+    outline: 2px solid var(--color-brand);
     outline-offset: 2px;
   }
   .product-card__media {
@@ -588,7 +552,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform var(--dur-slow) var(--ease);
+    transition: opacity var(--dur-fast) var(--ease);
   }
   .product-card__badges {
     position: absolute;
@@ -608,7 +572,7 @@
     padding: var(--space-3);
   }
   .product-card__meta {
-    font-size: 0.85rem;
+    font-size: 0.875rem;
     color: var(--color-ink-soft);
   }
   .product-card__title {
@@ -651,7 +615,7 @@
     align-items: center;
     gap: var(--space-1);
     min-height: 20px;
-    font-size: 0.85rem;
+    font-size: 0.875rem;
     color: var(--color-ink-soft);
   }
   .product-card__price {
@@ -671,7 +635,7 @@
   }
   .product-card__price small {
     font-family: var(--font-body);
-    font-size: 0.85rem;
+    font-size: 0.875rem;
     font-weight: var(--weight-body-regular);
     color: var(--color-ink-soft);
   }
@@ -689,7 +653,7 @@
     background: var(--color-surface);
   }
   .product-card__heart[aria-pressed='true'] {
-    color: var(--color-accent-text);
+    color: var(--color-brand);
   }
   .product-card__heart[aria-pressed='true'] svg {
     fill: currentColor;
@@ -705,11 +669,8 @@
     gap: 4px;
   }
   @media (hover: hover) and (pointer: fine) {
-    .product-card:hover {
-      transform: translateY(-2px);
-    }
     .product-card:hover .product-card__media img {
-      transform: scale(1.04);
+      opacity: 0.85;
     }
   }
 }

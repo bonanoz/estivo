@@ -1,4 +1,4 @@
-{% comment %}
+{% load static %}{% comment %}
 Шапка (UX.md §1). На мобильном: меню и поиск слева, логотип по центру, избранное и корзина справа.
 На десктопе: логотип, горизонтальное меню, поиск/избранное/корзина.
 Сокращённая версия для оформления заявки: {% include 'partials/_header.html' with minimal=True %}
@@ -6,9 +6,9 @@
 {% endcomment %}
 {% if minimal %}
 <header class="sticky top-0 z-[var(--z-sticky)] bg-bg">
-    <div class="mx-auto flex w-full max-w-[1240px] items-center justify-between gap-4 px-4 py-2 md:px-6">
-        <a href="{% url 'home' %}" class="flex min-h-11 items-center font-display text-[1.75rem] font-medium tracking-tight">{{ site_info.brand_name }}</a>
-        <a href="tel:{{ site_info.phone_href }}" class="flex min-h-11 items-center font-extrabold text-[0.95rem] hover:text-accent-text">{{ site_info.phone }}</a>
+    <div class="mx-auto flex w-full max-w-[var(--container)] items-center justify-between gap-4 px-4 py-2 md:px-6">
+        <a href="{% url 'home' %}" class="flex min-h-11 items-center"><img src="{% static 'img/estivo-logo.svg' %}" alt="ESTIVO" width="140" height="56" class="h-auto w-[140px]"></a>
+        <a href="tel:{{ site_info.phone_href }}" class="flex min-h-11 items-center font-extrabold text-[0.95rem] hover:opacity-85">{{ site_info.phone }}</a>
     </div>
 </header>
 {% else %}
@@ -31,47 +31,47 @@
         }"
         x-effect="$scrollLock('mobile-menu', menu); $scrollLock('search', search)"
         @keydown.escape.window="if (search) closeSearch(); else if (menu) closeMenu()">
-    <div class="mx-auto grid w-full max-w-[1240px] grid-cols-[1fr_auto_1fr] items-center gap-2 px-2 py-1 md:px-6 lg:grid-cols-[auto_1fr_auto] lg:gap-6">
+    <div class="mx-auto grid w-full max-w-[var(--container)] grid-cols-[1fr_auto_1fr] items-center gap-2 px-2 py-1 md:px-6 lg:grid-cols-[auto_1fr_auto] lg:gap-6">
         <div class="flex items-center lg:hidden">
             <button type="button" class="icon-btn" x-ref="menuBtn" aria-label="Меню"
                     aria-controls="mobile-menu" aria-expanded="false" :aria-expanded="menu.toString()"
                     @click="menu = !menu">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
             </button>
             <button type="button" class="icon-btn" x-ref="searchBtnMobile" aria-label="Поиск"
                     aria-controls="search-overlay" aria-expanded="false" :aria-expanded="search.toString()"
                     @click="openSearch()">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
             </button>
         </div>
 
-        <a href="{% url 'home' %}" class="flex min-h-11 items-center justify-self-center font-display text-[1.75rem] font-medium tracking-tight lg:justify-self-start">{{ site_info.brand_name }}</a>
+        <a href="{% url 'home' %}" class="flex min-h-11 items-center justify-self-center lg:justify-self-start"><img src="{% static 'img/estivo-logo.svg' %}" alt="ESTIVO" width="140" height="56" class="h-auto w-[140px]"></a>
 
         <nav class="hidden items-center justify-center gap-6 lg:flex" aria-label="Основная навигация">
-            <a href="{% url 'catalog_list' %}" class="flex min-h-11 items-center hover:text-accent-text">Каталог</a>
-            <a href="{% url 'b2b_page' %}" class="flex min-h-11 items-center hover:text-accent-text">Бизнесу</a>
-            <a href="{% url 'designers_page' %}" class="flex min-h-11 items-center hover:text-accent-text">Дизайнерам</a>
-            <a href="{% url 'about_page' %}" class="flex min-h-11 items-center hover:text-accent-text">О нас</a>
-            <a href="{% url 'delivery_payment_page' %}" class="flex min-h-11 items-center hover:text-accent-text">Доставка</a>
-            <a href="{% url 'faq_page' %}" class="flex min-h-11 items-center hover:text-accent-text">FAQ</a>
-            <a href="{% url 'contacts_page' %}" class="flex min-h-11 items-center hover:text-accent-text">Контакты</a>
+            <a href="{% url 'catalog_list' %}" class="flex min-h-11 items-center hover:opacity-85">Каталог</a>
+            <a href="{% url 'b2b_page' %}" class="flex min-h-11 items-center hover:opacity-85">Бизнесу</a>
+            <a href="{% url 'designers_page' %}" class="flex min-h-11 items-center hover:opacity-85">Дизайнерам</a>
+            <a href="{% url 'about_page' %}" class="flex min-h-11 items-center hover:opacity-85">О нас</a>
+            <a href="{% url 'delivery_payment_page' %}" class="flex min-h-11 items-center hover:opacity-85">Доставка</a>
+            <a href="{% url 'faq_page' %}" class="flex min-h-11 items-center hover:opacity-85">FAQ</a>
+            <a href="{% url 'contacts_page' %}" class="flex min-h-11 items-center hover:opacity-85">Контакты</a>
         </nav>
 
         <div class="flex items-center justify-end">
             <button type="button" class="icon-btn hidden lg:inline-flex" x-ref="searchBtnDesktop" aria-label="Поиск"
                     aria-controls="search-overlay" aria-expanded="false" :aria-expanded="search.toString()"
                     @click="openSearch()">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
             </button>
             <a href="/wishlist/" class="icon-btn" aria-label="Избранное">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg>
                 <span id="wishlist-count" data-wishlist-count class="count-dot"{% if not wishlist.count %} hidden{% endif %}>{{ wishlist.count|default:0 }}</span>
             </a>
             <a href="{% url 'cart_detail' %}" class="icon-btn" aria-label="Корзина">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6h15l-1.5 9h-12z"/><path d="M6 6 5 3H2"/><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/></svg>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6h15l-1.5 9h-12z"/><path d="M6 6 5 3H2"/><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/></svg>
                 <span id="cart-count" data-cart-count class="count-dot"{% if not cart.count %} hidden{% endif %}>{{ cart.count }}</span>
             </a>
-            <a href="tel:{{ site_info.phone_href }}" class="ml-2 hidden min-h-11 items-center px-2 hover:text-accent-text xl:flex">{{ site_info.phone }}</a>
+            <a href="tel:{{ site_info.phone_href }}" class="ml-2 hidden min-h-11 items-center px-2 hover:opacity-85 xl:flex">{{ site_info.phone }}</a>
         </div>
     </div>
 
@@ -99,13 +99,13 @@
                 <form action="{% url 'catalog_list' %}" method="get" role="search" class="flex min-w-0 flex-1 items-center gap-2">
                     <label for="search-input" class="sr-only">Поиск по каталогу</label>
                     <input id="search-input" x-ref="query" type="search" name="search" autocomplete="off"
-                           placeholder="Название, артикул, материал" class="form-input rounded-pill"
+                           placeholder="Название, артикул, материал" class="form-input rounded-md"
                            hx-get="/search/suggest/" hx-trigger="input changed delay:250ms, search"
                            hx-target="#search-suggest" hx-params="search" hx-swap="innerHTML">
-                    <button type="submit" class="btn btn-primary">Найти</button>
+                    <button type="submit" class="btn btn-dark">Найти</button>
                 </form>
                 <button type="button" class="icon-btn" aria-label="Закрыть поиск" @click="closeSearch()">
-                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
                 </button>
             </div>
             <div id="search-suggest" class="mt-4" aria-live="polite"></div>

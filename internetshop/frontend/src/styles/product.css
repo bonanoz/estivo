@@ -6,7 +6,7 @@
   /* Square on phones, portrait on desktop: the product picture must dominate the first screen. */
   aspect-ratio: 1 / 1;
   overflow: hidden;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-none);
   background: var(--color-surface-alt);
 }
 @media (min-width: 1024px) {
@@ -49,7 +49,7 @@
 .pdp-gallery__strip button {
   display: block;
   width: 96px;
-  min-height: 44px;
+  min-height: var(--tap-min);
   border: 2px solid transparent;
   border-radius: var(--radius-sm);
   overflow: hidden;
@@ -72,8 +72,8 @@
 }
 .pdp-gallery__progress {
   height: 2px;
-  background: var(--color-line);
-  border-radius: var(--radius-pill);
+  background: var(--color-ink);
+  border-radius: var(--radius-md);
   overflow: hidden;
 }
 .pdp-gallery__progress span {
@@ -81,7 +81,7 @@
   height: 100%;
   width: 100%;
   background: var(--color-ink);
-  transition: margin-left var(--dur-press) linear;
+  transition: margin-left var(--dur-fast) linear;
 }
 
 /* ---- Buy column ---- */
@@ -116,8 +116,8 @@
 .pdp-heart {
   position: relative;
   flex: 0 0 auto;
-  width: 44px;
-  height: 44px;
+  width: var(--tap-min);
+  height: var(--tap-min);
 }
 /* the shared card heart is absolutely positioned; inside the PDP it sits in its own 44px box */
 .pdp-heart .product-card__heart {
@@ -128,12 +128,12 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  min-height: 44px;
+  min-height: var(--tap-min);
   color: var(--color-ink);
   text-decoration: none;
 }
 .pdp-rating:hover .pdp-rating__count {
-  color: var(--color-accent-text);
+  color: var(--color-brand);
   text-decoration: underline;
 }
 .pdp-rating__count {
@@ -143,7 +143,7 @@
   display: inline-flex;
   align-items: center;
   gap: 2px;
-  color: var(--color-accent-text);
+  color: var(--color-brand);
 }
 .star {
   fill: currentColor;
@@ -226,7 +226,7 @@
   margin: var(--space-4) 0;
   padding: var(--space-3);
   list-style: none;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-none);
   background: var(--color-surface-alt);
 }
 .pdp-trust li {
@@ -237,7 +237,7 @@
 }
 .pdp-trust svg {
   flex: 0 0 auto;
-  color: var(--color-accent-text);
+  color: var(--color-brand);
 }
 
 /* ---- Accordions (native <details>: works without JS, keyboard-operable) ---- */
@@ -247,7 +247,7 @@
 }
 .pdp-acc {
   padding: 0 var(--space-3);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-none);
   background: var(--color-surface);
 }
 .pdp-acc > summary {
@@ -277,7 +277,7 @@
   transform: rotate(-135deg);
 }
 .pdp-acc > summary:hover {
-  color: var(--color-accent-text);
+  color: var(--color-brand);
 }
 .pdp-acc__body {
   padding-bottom: var(--space-3);
@@ -288,7 +288,7 @@
   margin: 0 0 var(--space-2);
 }
 .pdp-acc__body a {
-  color: var(--color-accent-text);
+  color: var(--color-brand);
   text-decoration: underline;
 }
 .pdp-acc .spec-list {
@@ -373,7 +373,7 @@
 }
 .review-item {
   padding: var(--space-3);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-none);
   background: var(--color-surface);
 }
 .review-item__top {
@@ -431,8 +431,8 @@
 }
 .review-success {
   padding: var(--space-3);
-  border-radius: var(--radius-md);
-  background: var(--color-accent-soft);
+  border-radius: var(--radius-none);
+  background: var(--color-surface-alt);
 }
 .review-success p {
   margin: 0;
@@ -458,13 +458,13 @@
   visibility: hidden;
   transform: translateY(100%);
   transition:
-    transform var(--dur-base) var(--ease),
-    visibility 0s linear var(--dur-base);
+    transform var(--dur-fast) var(--ease),
+    visibility 0s linear var(--dur-fast);
 }
 .pdp-sticky.is-visible {
   visibility: visible;
   transform: none;
-  transition: transform var(--dur-base) var(--ease);
+  transition: transform var(--dur-fast) var(--ease);
 }
 .pdp-sticky__info {
   display: flex;

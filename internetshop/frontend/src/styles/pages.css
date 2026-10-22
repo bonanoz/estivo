@@ -28,8 +28,8 @@
   background: var(--color-surface-alt);
 }
 .page-section--dark {
-  background: var(--color-dark);
-  color: var(--color-dark-ink);
+  background: var(--color-surface-alt);
+  color: var(--color-ink);
 }
 
 .page-head {
@@ -68,7 +68,7 @@
   position: relative;
   overflow: hidden;
   aspect-ratio: 4 / 3;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-none);
   background: var(--color-surface-alt);
 }
 .page-media img {
@@ -121,7 +121,7 @@
 }
 .page-section--dark .page-h2,
 .page-section--dark .page-h3 {
-  color: var(--color-dark-ink);
+  color: var(--color-ink);
 }
 
 .page-lead {
@@ -132,8 +132,7 @@
   color: var(--color-ink-soft);
 }
 .page-section--dark .page-lead {
-  color: var(--color-dark-ink);
-  opacity: 0.8;
+  color: var(--color-ink);
 }
 
 .page-note {
@@ -207,7 +206,7 @@
 
 /* ---- FAQ accordion (native details, works without JS) ---- */
 .faq-item {
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-none);
   background: var(--color-surface);
   padding: 0 var(--space-3);
 }
@@ -219,7 +218,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
-  min-height: 44px;
+  min-height: var(--tap-min);
   padding-block: var(--space-2);
   cursor: pointer;
   list-style: none;
@@ -230,7 +229,7 @@
   display: none;
 }
 .faq-item__summary:hover {
-  color: var(--color-accent-text);
+  color: var(--color-brand);
 }
 .faq-item__icon {
   flex: none;
@@ -254,14 +253,14 @@
   align-content: start;
   gap: var(--space-2);
   padding: var(--space-4);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-none);
   background: var(--color-surface);
   color: var(--color-ink);
   text-decoration: none;
   transition: background-color var(--dur-fast) var(--ease);
 }
 .page-tile:hover {
-  background: var(--color-accent-soft);
+  background: var(--color-surface-alt);
 }
 .page-tile:active {
   background: var(--color-surface-alt);

@@ -2,7 +2,7 @@
 Переиспользуемая лид-форма. Ожидает в контексте `form` (LeadForm).
 Постит на текущий URL (страницы b2b/designers/contacts обрабатывают POST сами).
 {% endcomment %}
-<form method="post" class="lead-form rounded-lg bg-surface p-6 shadow-none md:p-10" data-once>
+<form method="post" class="lead-form bg-surface p-6 md:p-10" data-once>
     {% csrf_token %}
     {% if form.non_field_errors %}<div class="form-errors mb-4" role="alert">{{ form.non_field_errors }}</div>{% endif %}
 
@@ -32,6 +32,6 @@
         {{ form.website }}
     </div>
 
-    <button type="submit" class="btn btn-primary btn-block btn-lg">Оставить заявку</button>
+    <button type="submit" class="btn btn-dark btn-block btn-lg">Оставить заявку</button>
     <p class="form-note mt-3">Нажимая кнопку, вы соглашаетесь с обработкой персональных данных.</p>
 </form>
