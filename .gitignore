@@ -26,3 +26,10 @@ internetshop/media/
 # Vite build output and Node deps
 internetshop/shop/static/dist/
 node_modules/
+
+# Логи браузера Playwright MCP и скриншоты сравнения tasteskill
+.playwright-mcp/
+.taste-skill/compare/
+
+# Выгрузка базы: содержит заявки и заказы с персональными данными
+internetshop/shop_data.json
