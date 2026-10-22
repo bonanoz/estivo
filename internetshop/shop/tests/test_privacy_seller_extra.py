@@ -8,4 +8,4 @@ class RequisitesRenderTests(TestCase):
             html = self.client.get(reverse(name)).content.decode()
             for bad in ('ОГРН ,', 'ОГРН  ·', 'адрес: .', '323632700013220'):
                 self.assertNotIn(bad, html, name)
-            self.assertIn('[уточнить: ОГРН]', html, name)
+            self.assertIn('ОГРН 1146320022089', html, name)
