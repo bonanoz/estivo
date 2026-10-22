@@ -13,7 +13,7 @@ SITE_INFO = {
     'social_links': {
         'instagram': 'https://www.instagram.com/estivo.tlt',
         'whatsapp': 'https://wa.me/79272689404',
-        'telegram': 'https://t.me/',  # [уточнить: ссылка на диалог] — заглушка
+        'telegram': 'https://t.me/estivo63',
         'vk': 'https://vk.com/estivo_tlt',
         'pinterest': 'https://pin.it/4AWL8Yise',
     },
