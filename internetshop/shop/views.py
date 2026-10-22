@@ -374,6 +374,10 @@ def warranty_page(request):
     return render(request, 'warranty.html', {'breadcrumbs': _crumbs('Гарантия')})
 
 
+def privacy_page(request):
+    return render(request, 'privacy.html', {'breadcrumbs': _crumbs('Политика конфиденциальности')})
+
+
 def faq_page(request):
     return render(request, 'faq.html', {'faq_items': FAQ_ITEMS, 'breadcrumbs': _crumbs('Вопросы и ответы')})
 

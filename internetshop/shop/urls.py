@@ -21,6 +21,7 @@ urlpatterns = [
     path('for-designers/', views.designers_page, name='designers_page'),
     path('o-nas/', views.about_page, name='about_page'),
     path('dostavka-i-oplata/', views.delivery_payment_page, name='delivery_payment_page'),
+    path('privacy/', views.privacy_page, name='privacy_page'),
     path('garantiya/', views.warranty_page, name='warranty_page'),
     path('faq/', views.faq_page, name='faq_page'),
     path('kontakty/', views.contacts_page, name='contacts_page'),

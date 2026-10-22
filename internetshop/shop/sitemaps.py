@@ -25,7 +25,7 @@ class StaticViewSitemap(Sitemap):
     def items(self):
         return [
             'home', 'catalog_list', 'b2b_page', 'designers_page', 'about_page',
-            'delivery_payment_page', 'warranty_page', 'faq_page', 'contacts_page',
+            'delivery_payment_page', 'warranty_page', 'faq_page', 'contacts_page', 'privacy_page',
         ]
 
     def location(self, item):

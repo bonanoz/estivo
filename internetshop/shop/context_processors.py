@@ -1,9 +1,9 @@
 SITE_INFO = {
     'brand_name': 'ESTIVO',
-    'phone': '+7 927 200 43 03',
-    'phone_href': '+79272004303',
+    'phone': '+7 927 268-94-04',
+    'phone_href': '+79272689404',
     'email': 'esti-vo@mail.ru',
-    'address': 'г. Тольятти, б-р Туполева 12А, офис 2-4',
+    'address': '[уточнить: адрес шоурума]',
     'work_hours': [
         ('Пн-Пт', '10:00–19:00'),
         ('Сб', '10:00–18:00'),
@@ -12,14 +12,15 @@ SITE_INFO = {
     'work_hours_note': 'Работаем по предварительной записи',
     'social_links': {
         'instagram': 'https://www.instagram.com/estivo.tlt',
-        'whatsapp': 'https://wa.me/79272004303',
-        'telegram': 'https://t.me/+7zVfVsf1abszODYy',
+        'whatsapp': 'https://wa.me/79272689404',
+        'telegram': 'https://t.me/',  # [уточнить: ссылка на диалог] — заглушка
         'vk': 'https://vk.com/estivo_tlt',
         'pinterest': 'https://pin.it/4AWL8Yise',
     },
-    'legal_name': 'ИП Мелихова Мирослава Сергеевна',
-    'inn': '632147606449',
-    'ogrnip': '323632700013220',
+    'legal_name': 'ООО «Эстиво»',
+    'inn': '6321368220',
+    'ogrn': '[уточнить: ОГРН]',
+    'legal_address': '[уточнить: юридический адрес]',
 }
 
 

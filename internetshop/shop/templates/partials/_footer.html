@@ -75,7 +75,7 @@
         </div>
 
         <div class="mt-10 flex flex-col gap-2 pt-6 text-[0.875rem] opacity-80 md:flex-row md:justify-between">
-            <span>{{ site_info.legal_name }} · ИНН {{ site_info.inn }} · ОГРНИП {{ site_info.ogrnip }}</span>
+            <span>{{ site_info.legal_name }} · ИНН {{ site_info.inn }} · ОГРН {{ site_info.ogrn }} · {{ site_info.legal_address }} · <a href="{% url 'privacy_page' %}" class="underline">Политика конфиденциальности</a></span>
             <span>© {{ site_info.brand_name }}. Информация на сайте не является публичной офертой.</span>
         </div>
     </div>

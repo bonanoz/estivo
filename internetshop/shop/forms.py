@@ -51,7 +51,7 @@ class OrderForm(HoneypotMixin, AriaErrorsMixin, forms.ModelForm):
         fields = ['customer_name', 'customer_phone', 'customer_email', 'delivery_address', 'comment']
         widgets = {
             'customer_name': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Ваше имя'}),
-            'customer_phone': forms.TextInput(attrs={'class': 'form-input', 'placeholder': '+7 900 000-00-00'}),
+            'customer_phone': forms.TextInput(attrs={'class': 'form-input', 'placeholder': '+7 (___) ___-__-__'}),
             'customer_email': forms.EmailInput(attrs={'class': 'form-input', 'placeholder': 'Email (необязательно)'}),
             'delivery_address': forms.Textarea(attrs={'class': 'form-input', 'rows': 2, 'placeholder': 'Адрес доставки'}),
             'comment': forms.Textarea(attrs={'class': 'form-input', 'rows': 2, 'placeholder': 'Комментарий к заявке'}),
@@ -72,7 +72,7 @@ class LeadForm(HoneypotMixin, AriaErrorsMixin, forms.ModelForm):
         fields = ['name', 'phone', 'email', 'lead_type', 'message']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Ваше имя'}),
-            'phone': forms.TextInput(attrs={'class': 'form-input', 'placeholder': '+7 900 000-00-00'}),
+            'phone': forms.TextInput(attrs={'class': 'form-input', 'placeholder': '+7 (___) ___-__-__'}),
             'email': forms.EmailInput(attrs={'class': 'form-input', 'placeholder': 'Email (необязательно)'}),
             'lead_type': forms.HiddenInput(),
             'message': forms.Textarea(attrs={'class': 'form-input', 'rows': 3, 'placeholder': 'Расскажите о вашем проекте'}),
