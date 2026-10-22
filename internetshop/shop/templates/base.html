@@ -44,7 +44,7 @@
 
     <main id="main">
         {% if messages %}
-        <div class="mx-auto w-full max-w-[1240px] px-4 pt-4 md:px-6">
+        <div class="mx-auto w-full max-w-[var(--container)] px-4 pt-4 md:px-6">
             {% for message in messages %}
             <div class="alert" role="status">{{ message }}</div>
             {% endfor %}

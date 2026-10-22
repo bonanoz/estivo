@@ -8,7 +8,7 @@
 <div class="catalog-page" x-data="catalogFilters"
      x-effect="$scrollLock('filters', open)"
      @keydown.escape.window="if (open) hide()">
-    <div class="mx-auto w-full max-w-[1240px] px-4 pt-4 md:px-6">
+    <div class="mx-auto w-full max-w-[var(--container)] px-4 pt-4 md:px-6">
         {% include 'partials/_breadcrumbs.html' with crumbs=breadcrumbs %}
 
         <div class="catalog-banner">
@@ -30,10 +30,10 @@
 
         {# Липкая панель: фильтры, число товаров, сортировка #}
         <div class="catalog-bar">
-            <div class="catalog-bar__inner mx-auto flex w-full max-w-[1240px] items-center justify-between gap-3 px-4 md:px-6">
+            <div class="catalog-bar__inner mx-auto flex w-full max-w-[var(--container)] items-center justify-between gap-3 px-4 md:px-6">
                 <button type="button" class="pill js-only" aria-haspopup="dialog" aria-controls="filter-panel"
                         :aria-expanded="open.toString()" aria-expanded="false" @click="show($el)">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>
                     Фильтры{% if active_filters %} · {{ active_filters|length }}{% endif %}
                 </button>
                 <p class="catalog-bar__count m-0">Товаров: {{ total_count }}</p>
@@ -56,7 +56,7 @@
                 <div class="filter-panel__head">
                     <h2 id="filter-title" class="filter-panel__title">Фильтры</h2>
                     <button type="button" class="icon-btn js-only" aria-label="Закрыть фильтры" @click="hide()">
-                        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
                     </button>
                 </div>
 
@@ -148,13 +148,13 @@
                        hx-include="closest form" hx-target="this" hx-swap="innerHTML"
                        {% if current_material %}hx-vals='{"material": "{{ current_material.slug }}"{% if current_category %}, "category": "{{ current_category.slug }}"{% endif %}}'{% endif %}>Найдено: {{ total_count }}</p>
                     <a href="{{ request.path }}" class="btn btn-outline">Сбросить</a>
-                    <button type="submit" class="btn btn-primary">Применить</button>
+                    <button type="submit" class="btn btn-dark">Применить</button>
                 </div>
             </div>
         </div>
     </form>
 
-    <div class="mx-auto w-full max-w-[1240px] px-4 pb-6 pt-5 md:px-6" id="catalog-results">
+    <div class="mx-auto w-full max-w-[var(--container)] px-4 pb-6 pt-5 md:px-6" id="catalog-results">
         {% if page_obj.object_list %}
         <div class="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5 lg:grid-cols-4">
             {% for product in page_obj %}
@@ -167,7 +167,7 @@
             <h2 class="catalog-empty__title">Ничего не найдено</h2>
             <p class="catalog-empty__text">Попробуйте изменить или сбросить фильтры. Если не нашли нужное, оставьте заявку: подберём мебель под вашу задачу.</p>
             <div class="catalog-empty__actions">
-                <a href="{{ request.path }}" class="btn btn-primary">Сбросить фильтры</a>
+                <a href="{{ request.path }}" class="btn btn-dark">Сбросить фильтры</a>
                 <a href="{% url 'contacts_page' %}" class="btn btn-outline">Оставить заявку</a>
             </div>
         </div>
@@ -185,7 +185,7 @@
     </div>
 
     <section class="catalog-seo" aria-labelledby="catalog-seo-title">
-        <div class="mx-auto w-full max-w-[1240px] px-4 md:px-6">
+        <div class="mx-auto w-full max-w-[var(--container)] px-4 md:px-6">
             <div class="catalog-seo__grid">
                 <div class="catalog-seo__text">
                     <h2 id="catalog-seo-title" class="catalog-section-title">

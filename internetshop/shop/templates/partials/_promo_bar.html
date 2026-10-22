@@ -15,16 +15,16 @@
         }
      }"
      x-show="open"
-     class="relative bg-dark text-dark-ink">
-    <div class="mx-auto flex w-full max-w-[1240px] items-center justify-center gap-2 px-4 py-1 pr-14 text-center text-[0.95rem] md:px-6">
+     class="relative bg-surface-alt text-ink">
+    <div class="mx-auto flex w-full max-w-[var(--container)] items-center justify-center gap-2 px-4 py-1 pr-14 text-center text-[0.875rem] md:px-6">
         {% if site_settings.promo_url %}
-        <a href="{{ site_settings.promo_url }}" class="py-2 underline underline-offset-4 hover:text-white">{{ site_settings.promo_text }}</a>
+        <a href="{{ site_settings.promo_url }}" class="py-2 underline underline-offset-4 hover:opacity-85">{{ site_settings.promo_text }}</a>
         {% else %}
         <p class="m-0 py-2">{{ site_settings.promo_text }}</p>
         {% endif %}
     </div>
-    <button type="button" class="icon-btn absolute right-1 top-1/2 -translate-y-1/2 text-dark-ink! hover:bg-white/10!"
+    <button type="button" class="icon-btn absolute right-1 top-1/2 -translate-y-1/2"
             aria-label="Закрыть сообщение" @click="close()">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
     </button>
 </div>

@@ -5,7 +5,7 @@
 
 {% block content %}
 <section class="wishlist-page">
-    <div class="mx-auto w-full max-w-[1240px] px-4 py-8 md:px-6 md:py-12">
+    <div class="mx-auto w-full max-w-[var(--container)] px-4 py-8 md:px-6 md:py-12">
         {% include 'partials/_breadcrumbs.html' with crumbs=breadcrumbs %}
         <h1 class="wishlist-page__title">Избранное</h1>
         {% if products %}
@@ -18,7 +18,7 @@
         <div class="cart-empty">
             <h2 class="cart-empty__title">Здесь пока пусто</h2>
             <p class="cart-empty__text">Нажмите на сердечко у понравившегося товара, чтобы сохранить его и вернуться позже.</p>
-            <a href="{% url 'catalog_list' %}" class="btn btn-primary btn-lg">Перейти в каталог</a>
+            <a href="{% url 'catalog_list' %}" class="btn btn-dark btn-lg">Перейти в каталог</a>
         </div>
         {% endif %}
     </div>
