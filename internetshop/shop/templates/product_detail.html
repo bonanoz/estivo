@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% load static humanize l10n shop_tags %}
 
-{% block meta_title %}{{ product.name }}{% if product.material %} из {{ product.material.name|lower }}{% endif %} | ESTIVO{% endblock %}
+{% block meta_title %}{{ product.name }}{% if product.material %} из {{ product.material.name|material_genitive }}{% endif %} | ESTIVO{% endblock %}
 {% block meta_description %}{{ product.short_description|default:product.description|truncatewords:24 }}{% endblock %}
-{% block og_title %}{{ product.name }}{% if product.material %} из {{ product.material.name|lower }}{% endif %}{% endblock %}
+{% block og_title %}{{ product.name }}{% if product.material %} из {{ product.material.name|material_genitive }}{% endif %}{% endblock %}
 {% block og_image %}{% if product.main_image %}{{ request.scheme }}://{{ request.get_host }}{{ product.main_image.url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/placeholders/product.svg' %}{% endif %}{% endblock %}
 
 
@@ -153,11 +153,11 @@
             <ul class="pdp-trust">
                 <li>
                     <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3Z"/><path d="m9 12 2 2 4-4"/></svg>
-                    <span>Гарантия {{ product.warranty_years }} {% if product.warranty_years == 1 %}год{% elif product.warranty_years >= 2 and product.warranty_years <= 4 %}года{% else %}лет{% endif %}</span>
+                    <span><a href="{% url 'warranty_page' %}">Гарантия {{ product.warranty_years }} {% if product.warranty_years == 1 %}год{% elif product.warranty_years >= 2 and product.warranty_years <= 4 %}года{% else %}лет{% endif %}</a></span>
                 </li>
                 <li>
                     <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.5"/><circle cx="17" cy="17.5" r="1.5"/></svg>
-                    <span>Доставка по России от 3 дней</span>
+                    <span>{% if product.is_available %}Отгрузка в течение 3 дней{% else %}Изготовление от 4 недель{% endif %} · доставка ТК до двери</span>
                 </li>
                 <li>
                     <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 21c0-6 4-9 10-10-1 6-4 10-10 10Z"/><path d="M7 21c0-4 1-7 4-10"/></svg>
@@ -171,14 +171,16 @@
                     <summary>Размеры и характеристики</summary>
                     <ul class="spec-list">
                         <li><span>Нагрузка</span><span>до {{ product.max_load_kg }} кг</span></li>
-                        {% if product.temp_min_c is not None and product.temp_max_c is not None %}
-                        <li><span>Температура эксплуатации</span><span>{{ product.temp_min_c }}…+{{ product.temp_max_c }}°C</span></li>
-                        {% endif %}
+                        {# Температура — только у ротанга (решение владельца); у остальных материалов не выводится. #}
+                        {% if product.temp_min_c is not None and product.temp_max_c is not None %}{% if not product.material or product.material.name == 'Ротанг' %}
+                        <li><span>Температура эксплуатации</span><span>{% if product.temp_min_c < 0 %}−{% endif %}{{ product.temp_min_c|stringformat:"d"|cut:"-" }}…+{{ product.temp_max_c }}°C</span></li>
+                        {% endif %}{% endif %}
+                        <li><span>Материалы</span><span>каркас — металл, порошковая окраска</span></li>
                         {% if product.length_cm or product.width_cm or product.height_cm %}
                         <li><span>Габариты (Д×Ш×В)</span><span>{{ product.length_cm|default:"—" }} × {{ product.width_cm|default:"—" }} × {{ product.height_cm|default:"—" }} см</span></li>
                         {% endif %}
                         {% if product.weight_kg %}<li><span>Вес</span><span>{{ product.weight_kg }} кг</span></li>{% endif %}
-                        <li><span>Наличие</span><span>{% if product.is_available %}В наличии / под заказ{% else %}Под заказ{% endif %}</span></li>
+                        <li><span>Срок</span><span>{% if product.is_available %}Отгрузка в течение 3 дней{% else %}Изготовление от 4 недель{% endif %}</span></li>
                     </ul>
                 </details>
                 <details class="pdp-acc">
@@ -191,7 +193,7 @@
                 <details class="pdp-acc">
                     <summary>Доставка и гарантия</summary>
                     <div class="pdp-acc__body">
-                        <p>Доставляем по всей России, срок от 3 дней. Гарантия на изделие: {{ product.warranty_years }} {% if product.warranty_years == 1 %}год{% elif product.warranty_years >= 2 and product.warranty_years <= 4 %}года{% else %}лет{% endif %}.</p>
+                        <p>Доставляем по всей России транспортной компанией до двери. Работаем по договору: 50% предоплата, 50% — после фото- и видеоотчёта. Гарантия на изделие: {{ product.warranty_years }} {% if product.warranty_years == 1 %}год{% elif product.warranty_years >= 2 and product.warranty_years <= 4 %}года{% else %}лет{% endif %}.</p>
                         <p><a href="{% url 'delivery_payment_page' %}">Условия доставки и оплаты</a> · <a href="{% url 'warranty_page' %}">Гарантия</a></p>
                     </div>
                 </details>
@@ -206,11 +208,14 @@
     </section>
     {% endif %}
 
+    {% include 'partials/_why_estivo.html' %}
+
     {% include 'partials/_reviews.html' with stats=stats %}
 
     {% if related_products %}
     <section class="pdp-section" aria-labelledby="related-title">
         <h2 id="related-title" class="pdp-h2">Вам может подойти</h2>
+        <p><a href="{% url 'catalog_list' %}" class="underline">Другие модели</a></p>
         <ul class="pdp-carousel">
             {% for item in related_products %}
             <li>{% include 'partials/_product_card.html' with product=item %}</li>

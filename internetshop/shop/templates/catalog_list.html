@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static shop_tags %}
 
 {% block meta_title %}{{ meta_title|default:"Каталог плетёной мебели ручной работы | ESTIVO" }}{% endblock %}
 {% block meta_description %}{{ meta_description|default:"Каталог плетёной мебели ручной работы ESTIVO: кресла, диваны, столы, шезлонги и комплекты из роупа и ротанга. Гарантия 3 года." }}{% endblock %}
@@ -13,14 +13,14 @@
 
         <div class="catalog-banner">
             <h1 class="catalog-banner__title">
-                {% if current_category %}{{ current_category.name }} из {{ current_material.name|lower }}
+                {% if current_category %}{{ current_category.name }} из {{ current_material.name|material_genitive }}
                 {% elif current_material %}{{ current_material.name }}
                 {% elif search %}Поиск: «{{ search }}»
                 {% else %}Вся мебель{% endif %}
             </h1>
             <p class="catalog-banner__text">
                 {% if current_material and current_material.description %}{{ current_material.description|truncatewords:28 }}
-                {% else %}Плетёная мебель ручной работы для дома, террасы и бизнеса. Гарантия 3 года, доставка по России от 3 дней.{% endif %}
+                {% else %}Плетёная мебель ручной работы для дома, террасы и бизнеса. Гарантия 3 года, изготовление от 4 недель, доставка ТК до двери.{% endif %}
             </p>
         </div>
     </div>
@@ -192,7 +192,7 @@
             <div class="catalog-seo__grid">
                 <div class="catalog-seo__text">
                     <h2 id="catalog-seo-title" class="catalog-section-title">
-                        {% if current_category %}{{ current_category.name }} из {{ current_material.name|lower }} ручной работы
+                        {% if current_category %}{{ current_category.name }} из {{ current_material.name|material_genitive }} ручной работы
                         {% elif current_material %}Мебель из материала «{{ current_material.name|lower }}»
                         {% else %}Плетёная мебель ESTIVO{% endif %}
                     </h2>
@@ -216,6 +216,8 @@
         </div>
     </section>
 </div>
+
+{% include 'partials/_why_estivo.html' %}
 
 {% include 'partials/_cta_section.html' %}
 {% endblock %}

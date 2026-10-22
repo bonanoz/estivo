@@ -27,7 +27,8 @@
         <ul class="cart-trust">
             <li><strong>Ручная работа</strong><span>Каждое изделие плетут мастера мастерской ESTIVO.</span></li>
             <li><strong>Гарантия 3 года</strong><span>На каркас и плетение при правильной эксплуатации.</span></li>
-            <li><strong>Доставка по России</strong><span>От 3 дней, аккуратная упаковка для транспортировки.</span></li>
+            <li><strong>Изготовление от 4 недель</strong><span>Делаем по каталогу и в ваш размер.</span></li>
+            <li><strong>Оплата 50% / 50%</strong><span>Договор: предоплата 50%, остальное — после фото- и видеоотчёта.</span></li>
         </ul>
         {% if bestsellers %}
         <section id="cart-recs" class="cart-empty__recs" aria-labelledby="cart-recs-title">
@@ -50,12 +51,12 @@
             {% if ctx != 'drawer' %}<h2 class="cart-summary__title">Ваша заявка</h2>{% endif %}
             <div class="cart-summary__row"><span>Товаров</span><span>{{ cart.count }}</span></div>
             <div class="cart-summary__row cart-summary__total"><span>Итого</span><span>{{ cart.total_price|intcomma }}&nbsp;₽</span></div>
-            <p class="cart-summary__note">Это предварительный расчёт. Оплаты на сайте нет: менеджер перезвонит в течение [уточнить: время], уточнит цвет, сроки и стоимость доставки.</p>
+            <p class="cart-summary__note">Это предварительный расчёт. Оплаты на сайте нет: менеджер перезвонит, уточнит цвет, сроки и стоимость доставки.</p>
             <ul class="es-facts">
-                <li><b>Срок</b>Отгрузка в течение 3 дней / изготовление от 4 недель</li>
+                <li><b>Срок</b>Отгрузка в течение 3 дней</li>
                 <li><b>Доставка</b>ТК до двери</li>
-                <li><b>Гарантия</b><a href="{% url 'warranty_page' %}">3 года</a></li>
-                <li><b>Оплата</b>Договор, 50/50 после фото- и видеоотчёта</li>
+                <li><b>Гарантия 3 года</b><a href="{% url 'warranty_page' %}">Условия гарантии</a></li>
+                <li><b>Оплата</b>Договор: 50% предоплата, 50% после фото- и видеоотчёта</li>
             </ul>
             <a href="{% url 'checkout' %}" class="btn btn-primary btn-block btn-lg">Перейти к заявке</a>
             {% if ctx == 'drawer' %}

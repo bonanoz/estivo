@@ -7,6 +7,14 @@ from shop.models import Product, Review
 register = template.Library()
 
 FOOTER_CATEGORY_LIMIT = 12
+# shortcut: родительный падеж материалов — словарь, а не поле модели; новый материал вне словаря даст lower() без склонения.
+MATERIAL_GENITIVE = {'ротанг': 'ротанга', 'роуп': 'роупа', 'шпон': 'шпона', 'hpl': 'HPL'}
+
+
+@register.filter
+def material_genitive(name):
+    """«Ротанг» -> «ротанга» (для «Кресла из ротанга»)."""
+    return MATERIAL_GENITIVE.get(name.lower(), name.lower())
 
 
 @register.simple_tag
@@ -28,7 +36,7 @@ def footer_data():
         categories.append({
             'material_slug': material_slug,
             'category_slug': category_slug,
-            'label': f'{category_name} из {material_name.lower()}',
+            'label': f'{category_name} из {material_genitive(material_name)}',
         })
         if len(categories) >= FOOTER_CATEGORY_LIMIT:
             break
