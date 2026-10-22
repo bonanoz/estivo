@@ -33,3 +33,7 @@ node_modules/
 
 # Выгрузка базы: содержит заявки и заказы с персональными данными
 internetshop/shop_data.json
+
+# Junction-ссылки на .agents/skills, их создаёт установщик skills (см. skills-lock.json)
+.claude/skills/supabase/
+.claude/skills/supabase-postgres-best-practices/
