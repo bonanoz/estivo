@@ -215,8 +215,9 @@ class Product(models.Model):
 
     max_load_kg = models.IntegerField('Нагрузка на посадочное место, кг', default=120)
     warranty_years = models.IntegerField('Гарантия, лет', default=3)
-    temp_min_c = models.IntegerField('Мин. температура эксплуатации, °C', default=-70)
-    temp_max_c = models.IntegerField('Макс. температура эксплуатации, °C', default=70)
+    temp_min_c = models.IntegerField('Мин. температура эксплуатации, °C', null=True, blank=True)
+    temp_max_c = models.IntegerField('Макс. температура эксплуатации, °C', null=True, blank=True)
+    tilda_id = models.BigIntegerField('ID товара в Tilda', null=True, blank=True, unique=True)
 
     # Габариты (см) и вес (кг) — показываются в характеристиках, если заданы.
     length_cm = models.IntegerField('Длина, см', null=True, blank=True)

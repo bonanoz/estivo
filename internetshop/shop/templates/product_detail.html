@@ -171,7 +171,9 @@
                     <summary>Размеры и характеристики</summary>
                     <ul class="spec-list">
                         <li><span>Нагрузка</span><span>до {{ product.max_load_kg }} кг</span></li>
+                        {% if product.temp_min_c is not None and product.temp_max_c is not None %}
                         <li><span>Температура эксплуатации</span><span>{{ product.temp_min_c }}…+{{ product.temp_max_c }}°C</span></li>
+                        {% endif %}
                         {% if product.length_cm or product.width_cm or product.height_cm %}
                         <li><span>Габариты (Д×Ш×В)</span><span>{{ product.length_cm|default:"—" }} × {{ product.width_cm|default:"—" }} × {{ product.height_cm|default:"—" }} см</span></li>
                         {% endif %}
