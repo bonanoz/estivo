@@ -157,7 +157,15 @@
                 </li>
                 <li>
                     <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.5"/><circle cx="17" cy="17.5" r="1.5"/></svg>
-                    <span>В наличии — Отгрузка в течение 3 дней, под заказ — Изготовление от 4 недель · доставка ТК до двери</span>
+                    <span>В наличии: Отгрузка в течение 3 дней</span>
+                </li>
+                <li>
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.5"/><circle cx="17" cy="17.5" r="1.5"/></svg>
+                    <span>Под заказ: Изготовление от 4 недель</span>
+                </li>
+                <li>
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.5"/><circle cx="17" cy="17.5" r="1.5"/></svg>
+                    <span>Доставка ТК до двери</span>
                 </li>
                 <li>
                     <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 21c0-6 4-9 10-10-1 6-4 10-10 10Z"/><path d="M7 21c0-4 1-7 4-10"/></svg>
@@ -172,7 +180,7 @@
                     <ul class="spec-list">
                         <li><span>Нагрузка</span><span>до {{ product.max_load_kg }} кг</span></li>
                         {# Температура — только у ротанга (решение владельца); у остальных материалов не выводится. #}
-                        {% if product.temp_min_c is not None and product.temp_max_c is not None %}{% if not product.material or product.material.name == 'Ротанг' %}
+                        {% if product.temp_min_c is not None and product.temp_max_c is not None %}{% if not product.material or product.material.slug == 'rotang' %}
                         <li><span>Температура эксплуатации</span><span>{% if product.temp_min_c < 0 %}−{% endif %}{{ product.temp_min_c|stringformat:"d"|cut:"-" }}…+{{ product.temp_max_c }}°C</span></li>
                         {% endif %}{% endif %}
                         <li><span>Материалы</span><span>каркас — металл, порошковая окраска</span></li>
@@ -180,7 +188,8 @@
                         <li><span>Габариты (Д×Ш×В)</span><span>{{ product.length_cm|default:"—" }} × {{ product.width_cm|default:"—" }} × {{ product.height_cm|default:"—" }} см</span></li>
                         {% endif %}
                         {% if product.weight_kg %}<li><span>Вес</span><span>{{ product.weight_kg }} кг</span></li>{% endif %}
-                        <li><span>Срок</span><span>В наличии — Отгрузка в течение 3 дней, под заказ — Изготовление от 4 недель</span></li>
+                        <li><span>В наличии</span><span>Отгрузка в течение 3 дней</span></li>
+                        <li><span>Под заказ</span><span>Изготовление от 4 недель</span></li>
                     </ul>
                 </details>
                 <details class="pdp-acc">
