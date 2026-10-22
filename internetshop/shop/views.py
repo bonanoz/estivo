@@ -149,7 +149,7 @@ def _catalog_context(request, products, skip=()):
     if 'sale' in request.GET.getlist('flag'):
         # Промо-карточки: только скидка с датой окончания не раньше сегодня.
         offers = Product.objects.filter(
-            is_available=True, old_price__gt=F('price'), offer_ends_at__gte=timezone.localdate(),
+            is_available=True, price__gt=0, old_price__gt=F('price'), offer_ends_at__gte=timezone.localdate(),
         ).order_by('offer_ends_at')[:3]
     return {
         'offers': offers,

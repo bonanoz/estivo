@@ -47,9 +47,9 @@
             {% for item in cart %}{% if ctx == 'drawer' %}{% include 'partials/htmx/_cart_line.html' with item=item idx=forloop.counter mode='drawer' %}{% else %}{% include 'partials/htmx/_cart_line.html' with item=item idx=forloop.counter mode='page' %}{% endif %}{% endfor %}
         </ul>
         <div class="cart-summary">
+            {% if ctx != 'drawer' %}<h2 class="cart-summary__title">Ваша заявка</h2>{% endif %}
             <div class="cart-summary__row"><span>Товаров</span><span>{{ cart.count }}</span></div>
             <div class="cart-summary__row cart-summary__total"><span>Итого</span><span>{{ cart.total_price|intcomma }}&nbsp;₽</span></div>
-            {% if ctx != 'drawer' %}<h2 class="cart-summary__title">Ваша заявка</h2>{% endif %}
             <p class="cart-summary__note">Это предварительный расчёт. Оплаты на сайте нет: менеджер перезвонит в течение [уточнить: время], уточнит цвет, сроки и стоимость доставки.</p>
             <ul class="es-facts">
                 <li><b>Срок</b>Отгрузка в течение 3 дней / изготовление от 4 недель</li>
@@ -68,4 +68,4 @@
     </div>
     {% endif %}
 </div>
-<span hx-swap-oob="innerHTML:[data-cart-count]" data-cart-count>{{ cart.count }}</span>
+{% if not full %}<span hx-swap-oob="innerHTML:[data-cart-count]" data-cart-count>{{ cart.count }}</span>{% endif %}
