@@ -1,0 +1,63 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant:wght@400;500;600&display=swap");
+
+/* ESTIVO components: plain CSS classes, no script. Values come from tokens.css. */
+.es { font-family: var(--font-body); color: var(--ink); -webkit-font-smoothing: antialiased; }
+.es-upper { text-transform: uppercase; }
+
+/* Button */
+.es-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box;
+  min-height: 45px; padding: 0 30px; border: 1px solid transparent; border-radius: var(--radius-md);
+  font: 400 14px/16.8px var(--font-body); text-decoration: none; cursor: pointer; transition: opacity .2s ease-in-out; }
+.es-btn:hover { opacity: .85; }
+.es-btn:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.es-btn--dark { background: var(--graphite); color: var(--on-dark); }
+.es-btn--outline { background: transparent; color: var(--graphite); border-color: var(--graphite); }
+.es-btn--accent { background: var(--accent); color: var(--on-accent); font: 500 16px/22.4px var(--font-body); }
+.es-btn--call { height: var(--control-height); background: transparent; color: var(--brand); border-color: var(--brand); font: 500 16px/22.4px var(--font-body); }
+.es-btn--promo { min-height: var(--tap-min); padding: 0 18px; border-radius: var(--radius-sm); background: var(--accent); color: var(--on-accent);
+  font: 600 14px/17px var(--font-body); text-transform: uppercase; }
+.es-btn--pill { min-height: var(--tap-min); border-radius: var(--radius-pill); background: var(--ink-black); color: var(--on-dark); font: 600 14px/17px var(--font-body); text-transform: uppercase; }
+/* Round header icon (wishlist, cart, menu) and slider arrows: never below tap-min (audit R22). */
+.es-icon-btn { display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box;
+  width: var(--tap-min); height: var(--tap-min); padding: 0; border: 1px solid var(--ink); border-radius: 50%; background: transparent; color: var(--ink); cursor: pointer; transition: opacity .2s ease-in-out; }
+.es-icon-btn:hover { opacity: .85; }
+.es-icon-btn:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+/* Section heading: eyebrow + display title */
+.es-eyebrow { display: block; margin: 0 0 20px; font: 400 14px/17px var(--font-body); color: var(--brand); }
+.es-title { margin: 0; font: 400 clamp(32px, 6vw, 50px)/1.2 var(--font-display); text-transform: uppercase; color: var(--ink); }
+.es-title--promo { font: 600 30px/47px var(--font-display); color: var(--ink-black); }
+.es-text { margin: 0; font: 400 16px/24px var(--font-body); color: var(--ink); }
+
+/* Text field */
+.es-input { box-sizing: border-box; width: 100%; height: var(--control-height); padding: 0 20px; background: transparent;
+  border: 1px solid var(--border-input); border-radius: var(--radius-md); font: 400 16px/1.33 var(--font-body); color: var(--graphite); outline: none; }
+.es-input::placeholder { color: var(--muted); }
+.es-input:focus { border-color: var(--graphite); }
+.es-input--error { border-color: var(--brand); }
+.es-field-error { margin-top: 6px; font: 400 14px/17px var(--font-body); color: var(--brand); }
+
+/* Radio and checkbox rows: labels in the body font, not the browser serif (audit 4.5) */
+.es-choice { display: flex; align-items: center; gap: 12px; min-height: var(--tap-min); font: 400 16px/24px var(--font-body); color: var(--ink); cursor: pointer; }
+.es-choice input { width: 20px; height: 20px; margin: 0; accent-color: var(--graphite); }
+
+/* Cards */
+.es-card { box-sizing: border-box; padding: 20px; border: 1px solid var(--ink); border-radius: var(--radius-none); background: transparent; }
+.es-tile { box-sizing: border-box; padding: 20px; background: var(--surface-muted); border-radius: var(--radius-none); }
+.es-card__icon { width: 30px; height: 30px; margin-bottom: 20px; color: var(--brand); }
+.es-tile__author { margin: 20px 0 0; font: 400 14px/17px var(--font-body); color: var(--muted); }
+
+/* Fact strip: срок · доставка · гарантия · рассрочка under a price and in the request panel (audit R06) */
+.es-facts { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 0; padding: 16px 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); list-style: none; }
+.es-facts li { font: 400 14px/17px var(--font-body); color: var(--ink); }
+.es-facts b { display: block; font-weight: 400; color: var(--muted); }
+
+/* Promo banner */
+.es-banner { box-sizing: border-box; padding: 40px; background: var(--accent); color: var(--on-dark); }
+.es-banner__title { margin: 0 0 24px; font: 400 clamp(40px, 9vw, 100px)/1.2 var(--font-body); text-transform: uppercase; }
+.es-banner .es-btn--dark { border-color: var(--accent); text-transform: uppercase; }
+
+/* Contact block */
+.es-contact__label { display: block; margin-bottom: 8px; font: 400 14px/17px var(--font-body); color: var(--muted); }
+.es-contact__value { font: 400 16px/24px var(--font-body); color: var(--ink); text-decoration: none; }
+.es-contact__value--phone { color: var(--brand); }

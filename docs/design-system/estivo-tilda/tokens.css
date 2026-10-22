@@ -1,0 +1,49 @@
+/* ESTIVO — generated from tokens.json */
+:root, [data-theme="light"] {
+  --surface: #fdfdfd;
+  --surface-white: #ffffff;
+  --surface-muted: #f4f4f4;
+  --ink: #281913;
+  --ink-black: #141414;
+  --ink-soft: #3c3c3c;
+  --graphite: #333333;
+  --brand: #b83400;
+  --accent: #d9783e;
+  --muted: #6d6d6d;
+  --border-input: #c9c9c9;
+  --on-dark: #ffffff;
+  --on-accent: var(--ink);
+  --scrim: rgba(0, 0, 0, 0.6);
+}
+:root {
+  --gutter: 10px;
+  --control-height: 60px;
+  --tap-min: 44px;
+  --module: 224px;
+  --container: 1160px;
+  --radius-none: 0px;
+  --radius-sm: 4px;
+  --radius-md: 5px;
+  --radius-pill: 30px;
+  --font-display: "Cormorant", "Cormorant Garamond", Georgia, serif;
+  --font-body: "Gilroy", "Helvetica Neue", Arial, sans-serif;
+}
+.hero { font-family: var(--font-display); font-size: 51px; line-height: 61px; font-weight: 400; }
+.section-title { font-family: var(--font-display); font-size: 50px; line-height: 60px; font-weight: 400; }
+.promo-cover { font-family: var(--font-display); font-size: 36px; line-height: 46.8px; font-weight: 600; }
+.modal-title { font-family: var(--font-display); font-size: 35px; line-height: 42px; font-weight: 500; }
+.promo-title { font-family: var(--font-display); font-size: 30px; line-height: 47px; font-weight: 600; }
+.material-title { font-family: var(--font-display); font-size: 22px; line-height: 26px; font-weight: 400; }
+.promo-note { font-family: var(--font-display); font-size: 18px; line-height: 27.9px; font-weight: 400; }
+.banner { font-family: var(--font-body); font-size: 100px; line-height: 120px; font-weight: 400; }
+.lead { font-family: var(--font-body); font-size: 20px; line-height: 31px; font-weight: 400; }
+.step-title { font-family: var(--font-body); font-size: 20px; line-height: 27px; font-weight: 600; }
+.button-lg { font-family: var(--font-body); font-size: 16px; line-height: 22.4px; font-weight: 500; }
+.body-loose { font-family: var(--font-body); font-size: 16px; line-height: 25px; font-weight: 400; }
+.body { font-family: var(--font-body); font-size: 16px; line-height: 24px; font-weight: 400; }
+.button { font-family: var(--font-body); font-size: 14px; line-height: 16.8px; font-weight: 400; }
+.contact-accent { font-family: var(--font-body); font-size: 14px; line-height: 17px; font-weight: 500; }
+.nav { font-family: var(--font-body); font-size: 14px; line-height: 17px; font-weight: 400; }
+.eyebrow { font-family: var(--font-body); font-size: 14px; line-height: 17px; font-weight: 400; }
+.caption { font-family: var(--font-body); font-size: 14px; line-height: 17px; font-weight: 400; }
+.promo-button { font-family: var(--font-body); font-size: 14px; line-height: 17px; font-weight: 600; }

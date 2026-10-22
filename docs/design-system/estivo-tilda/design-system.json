@@ -1,0 +1,23 @@
+{
+  "v": 3,
+  "layout": "files",
+  "createdOnFiles": {"v": 1, "at": "2026-10-20T19:10:00Z"},
+  "title": "ESTIVO",
+  "namespace": "Estivo",
+  "libraries": [],
+  "sections": {},
+  "groups": ["Logos"],
+  "assetGroups": {
+    "Logos": {
+      "name": "Logos",
+      "tile": "l",
+      "order": ["estivo-logo.svg"],
+      "files": {
+        "estivo-logo.svg": {"name": "estivo-logo.svg", "blob": "3bb3bf109bf5cc3f3140daa2f074e569", "size": 9996, "type": "image/svg+xml"}
+      }
+    }
+  },
+  "blobs": {},
+  "docs": {"readme": "project/README.md", "sections": []},
+  "lastChange": {"by": "makar", "at": "2026-10-20T19:25:00Z", "via": "Claude Code", "note": "Added on-accent (ink) for button labels on accent: 5.4:1"}
+}
