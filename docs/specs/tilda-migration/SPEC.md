@@ -5,7 +5,7 @@
 - **создано:** 22.10.2026
 - **команда тестов:** из `internetshop/`: `python manage.py test`; из `internetshop/frontend/`: `npm run build` (включает `tsc --noEmit`); для UI-эпиков — дизайн-проверки из `CLAUDE.md` (lint `design-taste-frontend` + чек-лист ui-ux-pro-max)
 - **статус:** утверждено владельцем 22.10.2026 (SPEC и план схемы БД). Пайплайн: тесты до кода, воркер в отдельном worktree, ревью, merge по одному эпику. Тесты-контракт пишутся перед каждым эпиком (а не сразу для всех), чтобы после каждого merge полный прогон был зелёным.
-- **статусы эпиков:** a — done; b–g — todo
+- **статусы эпиков:** a — done; b — in_progress (b1 макеты на показе); c–g — todo
 
 ## Задача
 
@@ -227,3 +227,4 @@
 - 22.10.2026 — (a) a1–a4: контракт `test_design_tokens.py` (26 тестов), воркер с 1-й попытки, ревью APPROVE, merge; 211/211 зелёные. Открыто: `.btn-primary` в hero главной оставлен из-за старого теста `E6HomeTests.test_hero_has_h1_and_single_primary_cta` (MAPPING велит `.btn-dark`) — решить до (b); `.page-section--dark` теперь светлый (П4), имя класса устарело; на checkout accent-кнопка «Отправить заявку» vs «Получить расчёт» в MAPPING — тексты в (f).
 - 22.10.2026 — a5 после «да» владельца: `docs/design-system.md` переписан под estivo-tilda, `DESIGN.md`/`UX.md` удалены, `CLAUDE.md` (источник дизайна, allow-list, Gilroy — П8), `README.md`, `.taste-skill/direction.json`, `.claude/skills/design-system/SKILL.md` и 4 комментария со ссылкой на `UX.md` поправлены. Исторические `docs/specs/furniture-store-redesign/*` не трогались. 211/211 зелёные. Эпик (a) закрыт.
 - 22.10.2026 — решение владельца: `.btn-primary` (accent) в hero главной остаётся **постоянным исключением** из правила «accent только у кнопки заявки и полосы распродажи»; тест `E6HomeTests.test_hero_has_h1_and_single_primary_cta` не меняется. Каждый следующий эпик — в новом чате: `/pipeline resume tilda-migration`, начиная с (b).
+- 22.10.2026 — старт (b). Решения владельца: макеты b1 в `estivo-tilda/components/` — **да** (только новые папки `ProductCard`, `OfferCard`, `RequestPanel`; стили инлайн в `preview.html`, `bundle.css` не меняется); поле `Product.offer_ends_at` — **да**. b1 сделан оркестратором (документ, не код эпика): 3 макета + README, проверка 1000/390 — без горизонтальной прокрутки, текст ≥ 14px, контролы ≥ 44px (кроме инлайн-ссылки «3 года» в тексте). Стоп на показ.
