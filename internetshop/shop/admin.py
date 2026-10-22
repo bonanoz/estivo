@@ -67,7 +67,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = ('name', 'material', 'category', 'price', 'is_available', 'is_featured', 'is_new', 'is_bestseller')
     list_editable = ('is_new', 'is_bestseller')
     list_filter = ('material', 'category', 'collection', 'is_available', 'is_featured', 'is_new', 'is_bestseller')
-    search_fields = ('name', 'sku', 'description')
+    search_fields = ('name', 'sku', 'description', 'tilda_id')
     prepopulated_fields = {'slug': ('name',)}
     filter_horizontal = ('available_colors',)
     inlines = [ProductImageInline]
