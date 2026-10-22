@@ -11,8 +11,15 @@
   .es-request__photo { aspect-ratio: 1 / 1; background: var(--surface-muted); }
   .es-request__name { margin: 0; font: 300 16px/24px var(--font-body); color: var(--ink); }
   .es-request__meta { display: block; font: 300 14px/17px var(--font-body); color: var(--muted); }
-  .es-request__qty { display: flex; align-items: center; gap: 8px; margin-top: 6px; font: 300 14px/17px var(--font-body); }
-  .es-request__qty .es-icon-btn { font: 300 16px/1 var(--font-body); }
+  /* Compact stepper: 32px to the eye, 44px to the finger via ::after (R22). */
+  .es-request__qty { display: inline-flex; align-items: center; margin-top: 8px; height: 32px; border: 1px solid var(--border-input); border-radius: var(--radius-md);
+    font: 300 14px/17px var(--font-body); color: var(--ink); }
+  .es-request__qty span { min-width: 24px; text-align: center; }
+  .es-request__step { position: relative; width: 32px; height: 100%; padding: 0; border: 0; background: transparent; color: var(--ink);
+    font: 300 16px/1 var(--font-body); cursor: pointer; transition: opacity .2s ease-in-out; }
+  .es-request__step::after { content: ""; position: absolute; inset: -6px; }
+  .es-request__step:hover { opacity: .85; }
+  .es-request__step:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
   .es-request__sum { display: flex; justify-content: space-between; font: 800 16px/24px var(--font-body); color: var(--ink); }
   .es-request__note { margin: 0; font: 300 14px/20px var(--font-body); color: var(--ink-soft); }
   .es-request .es-btn--accent { width: 100%; }
@@ -33,7 +40,7 @@
         <div>
           <p class="es-request__name">Кресло-кокон, роуп</p>
           <span class="es-request__meta">Плетение: Графит · Подушки: Песок</span>
-          <div class="es-request__qty"><button class="es-icon-btn" type="button" aria-label="Меньше">−</button>1<button class="es-icon-btn" type="button" aria-label="Больше">+</button></div>
+          <div class="es-request__qty"><button class="es-request__step" type="button" aria-label="Меньше">−</button><span>1</span><button class="es-request__step" type="button" aria-label="Больше">+</button></div>
         </div>
         <span class="es-request__name">64 900 ₽</span>
       </li>
@@ -42,7 +49,7 @@
         <div>
           <p class="es-request__name">Комплект: диван, 2 кресла, стол</p>
           <span class="es-request__meta">Арт. К-60 · Плетение: Песок</span>
-          <div class="es-request__qty"><button class="es-icon-btn" type="button" aria-label="Меньше">−</button>1<button class="es-icon-btn" type="button" aria-label="Больше">+</button></div>
+          <div class="es-request__qty"><button class="es-request__step" type="button" aria-label="Меньше">−</button><span>1</span><button class="es-request__step" type="button" aria-label="Больше">+</button></div>
         </div>
         <span class="es-request__name">189 000 ₽</span>
       </li>
