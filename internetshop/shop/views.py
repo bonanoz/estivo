@@ -493,7 +493,7 @@ def wishlist_page(request):
 
 
 def cart_detail(request):
-    # Для пустого состояния корзины: подборка хитов (UX.md §8.4)
+    # Для пустого состояния корзины: подборка хитов
     bestsellers = _bestsellers(4) if Cart(request).is_empty else []
     # Откат удаления без JS: имя удалённой позиции кладут в сессию cart_remove/cart_update.
     removed_name = request.session.pop(REMOVED_NOTICE_KEY, None)

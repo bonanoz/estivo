@@ -14,19 +14,15 @@ Deliver implementation-ready design-system guidance for ESTIVO (плетёная
 - Product/brand: ESTIVO — плетёная мебель ручной работы (роуп, ротанг, шпон, HPL)
 - URL: https://estivo63.ru
 - Audience: public visitors — private buyers, interior designers, B2B (hotels, restaurants); mobile-heavy
-- Product surface: public lead-generation storefront (Django templates + vanilla CSS/JS), not a dashboard
+- Product surface: public lead-generation storefront (Django templates + Tailwind v4 + htmx + Alpine), not a dashboard
 
 ## Style Foundations
-Source of truth for values is `internetshop/shop/static/css/variables.css`; the full guide is `docs/design-system.md`.
-Read both before writing guidance — never invent token values. (Values previously here were scraped from the
-Tilda page and were wrong: Times New Roman, 0px font size, black surface.)
-- Visual style: quiet premium — warm light background, large serif headings, photos as hero, terracotta only as accent
-- Fonts: headings `--font-display` (Cormorant Garamond, weight 500); body `--font-body` (Gilroy) with ONLY `--weight-body-regular` (300) and `--weight-body-bold` (800) — other body weights are forbidden (font license)
-- Type scale: h1 `clamp(2.6rem,6vw,5rem)`, h2 `clamp(2rem,4vw,3.2rem)`, h3 `clamp(1.4rem,2.5vw,1.9rem)`, body `1rem`, small text not below `0.8rem`
-- Colors: `--color-bg #faf8f5`, `--color-surface #fff`, `--color-surface-alt #f2ede6`, `--color-ink #1c1a17`, `--color-ink-soft #55504a`, `--color-ink-muted #6e675e`, `--color-line #e4ddd3`, `--color-accent rgb(217,120,62)`, `--color-accent-dark rgb(179,92,42)`, `--color-dark #23201c`, `--color-dark-ink #f4efe8`
-- Contrast caveat: `--color-accent` fails AA for small text on light backgrounds (2.95:1 on bg); use proposed `--color-accent-text #a1592e` for terracotta text, `--color-line-strong #948f88` for control borders, `--color-error #b3261e` for errors (see docs/design-system.md §2.1)
-- Spacing: `--space-1..8` = 4, 8, 16, 24, 40, 64, 96, 128px
-- Radius/shadow/motion: `--radius-sm 6px`, `--radius-md 12px`, `--radius-lg 20px`; `--shadow-sm`, `--shadow-md` (multi-layer); easing `--ease cubic-bezier(0.22,0.61,0.36,1)`; breakpoints mobile <640, tablet 640–960, desktop >960
+Style source is `docs/design-system/estivo-tilda/` (README, tokens, components; `MAPPING.md` maps it onto the
+project); values in code are the `@theme` block in `internetshop/frontend/src/styles/main.css`; the applied guide is
+`docs/design-system.md`. Read them before writing guidance — never invent token values, never copy them here.
+- Visual style: quiet, light, editorial — near-white ground, dark-brown text, big uppercase serif headings, `brand` rust for small signals, `accent` terracotta only for the request button and the sale strip
+- Fonts: headings Cormorant Garamond 400; body Gilroy ONLY 300/800 via `--weight-body-regular`/`--weight-body-bold` (font license); nothing below 14px
+- No shadows, no gradients, square photos and cards, controls `--radius-md`, hover = opacity 0.85, focus 2px `--color-brand`, tap targets ≥ `--tap-min` (44px)
 
 ## Accessibility
 - Target: WCAG 2.2 AA

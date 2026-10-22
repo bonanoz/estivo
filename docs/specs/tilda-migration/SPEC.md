@@ -5,7 +5,7 @@
 - **создано:** 22.10.2026
 - **команда тестов:** из `internetshop/`: `python manage.py test`; из `internetshop/frontend/`: `npm run build` (включает `tsc --noEmit`); для UI-эпиков — дизайн-проверки из `CLAUDE.md` (lint `design-taste-frontend` + чек-лист ui-ux-pro-max)
 - **статус:** утверждено владельцем 22.10.2026 (SPEC и план схемы БД). Пайплайн: тесты до кода, воркер в отдельном worktree, ревью, merge по одному эпику. Тесты-контракт пишутся перед каждым эпиком (а не сразу для всех), чтобы после каждого merge полный прогон был зелёным.
-- **статусы эпиков:** a — a1–a4 done, a5 ждёт отдельного «да»; b–g — todo
+- **статусы эпиков:** a — done; b–g — todo
 
 ## Задача
 
@@ -94,8 +94,8 @@
 - [ ] Нет `font-size` < 14px в CSS (включая `rem` < 0.875) — тест по исходникам.
 - [ ] `npm run build` и `python manage.py test` зелёные.
 - [ ] В браузере 1440 и 390: главная, каталог, карточка, корзина, форма — нет горизонтальной прокрутки (`scrollWidth <= innerWidth`), все интерактивные элементы ≥ 44×44, текст ≥ 14px (скрипт Playwright, результат приложен к ревью).
-- [ ] Lint `design-taste-frontend` без FAIL вне allow-list; allow-list обновлён под estivo-tilda (ссылка в `CLAUDE.md` больше не на redesign SPEC).
-- [ ] a5 выполнен только после явного «да» владельца.
+- [x] Lint `design-taste-frontend` без FAIL вне allow-list; allow-list обновлён под estivo-tilda (ссылка в `CLAUDE.md` больше не на redesign SPEC).
+- [x] a5 выполнен только после явного «да» владельца.
 
 ### (b) Недостающие компоненты: карточка товара, промо-карточка, панель заявки
 
@@ -225,3 +225,4 @@
 - 22.10.2026 — опрос по разделу 0, `MAPPING.md`, этот черновик. Замер на живом сайте: кнопки шапки (П3 в `MAPPING.md`). Код не менялся.
 - 22.10.2026 — владелец утвердил SPEC и план схемы БД. Старт пайплайна с эпика (a); a5 — только после отдельного «да».
 - 22.10.2026 — (a) a1–a4: контракт `test_design_tokens.py` (26 тестов), воркер с 1-й попытки, ревью APPROVE, merge; 211/211 зелёные. Открыто: `.btn-primary` в hero главной оставлен из-за старого теста `E6HomeTests.test_hero_has_h1_and_single_primary_cta` (MAPPING велит `.btn-dark`) — решить до (b); `.page-section--dark` теперь светлый (П4), имя класса устарело; на checkout accent-кнопка «Отправить заявку» vs «Получить расчёт» в MAPPING — тексты в (f).
+- 22.10.2026 — a5 после «да» владельца: `docs/design-system.md` переписан под estivo-tilda, `DESIGN.md`/`UX.md` удалены, `CLAUDE.md` (источник дизайна, allow-list, Gilroy — П8), `README.md`, `.taste-skill/direction.json`, `.claude/skills/design-system/SKILL.md` и 4 комментария со ссылкой на `UX.md` поправлены. Исторические `docs/specs/furniture-store-redesign/*` не трогались. 211/211 зелёные. Эпик (a) закрыт.

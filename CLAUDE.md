@@ -41,13 +41,15 @@ python manage.py runserver
   `python manage.py collectstatic --noinput` before they show up under `CompressedManifestStaticFilesStorage` —
   templates reference the manifest, not raw files.
 - `CompressedManifestStaticFilesStorage` **fails collectstatic hard** if a CSS `url()` points at a
-  missing file (e.g. a font). `shop/static/fonts/gilroy/` ships empty placeholder `.woff2` files for
-  exactly this reason — don't delete them until real font files replace them.
+  missing file (e.g. a font). `shop/static/fonts/gilroy/` holds the real `Gilroy-Light.woff2` and
+  `Gilroy-ExtraBold.woff2` referenced by `@font-face` — don't delete or rename them.
 - Design QA gates before merging UI work: `node ~/.claude/skills/design-taste-frontend/scripts/lint.mjs
   internetshop/shop/templates internetshop/frontend/src` must show no FAIL outside the allow-list
-  (palette-claude/terracotta/cream, card-rows, few-pictures, no-real-pictures, no-footage, still-page; see
-  `docs/specs/furniture-store-redesign/SPEC.md`), plus the ui-ux-pro-max pre-delivery checklist.
-  `DESIGN.md`, `UX.md` and `docs/design-system.md` are the design source of truth (DESIGN.md/UX.md are read-only).
+  (palette-claude/terracotta/cream, card-rows, few-pictures, no-real-pictures, no-footage, still-page; stored in
+  `.taste-skill/direction.json`, see `docs/design-system.md` §7), plus the ui-ux-pro-max pre-delivery checklist;
+  `shop/tests/test_design_tokens.py` guards the tokens and bans (shadows, gradients, <14px, Gilroy 400–700).
+  Design source of truth: `docs/design-system/estivo-tilda/` (owner decision 2026-10-22; read-only except
+  `MAPPING.md`, which maps its tokens/`es-*` components onto the project), applied in `docs/design-system.md`.
 
 ### Required environment (`.env` in `internetshop/`, never committed)
 
@@ -166,9 +168,8 @@ model-viewer, strip its trailing `//# sourceMappingURL=` comment or `collectstat
 Typography: headings use **Cormorant Garamond** (Google Fonts). Body/UI text uses **Gilroy**, which
 is a paid font — only the Light (300) and ExtraBold (800) weights are freely licensed, so every
 body-font `font-weight` uses the `--weight-body-regular`/`--weight-body-bold` variables instead of arbitrary
-values (no 400/500/600/700 body text exists on purpose). Real `.woff2` files go in
-`shop/static/fonts/gilroy/` (see the `README.txt` there); until supplied, `@font-face` silently falls back to
-the system sans-serif in `--font-body`.
+values (no 400/500/600/700 body text exists on purpose). The Light and ExtraBold `.woff2` files live in
+`shop/static/fonts/gilroy/`; if they fail to load, `--font-body` falls back to `"Helvetica Neue", Arial`.
 
 Product/collection images are placeholders (`shop/static/img/placeholders/*.svg`) until real photos
 are uploaded through the admin — `main_image`/`cover_image` are `blank=True`, and templates always
