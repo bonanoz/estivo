@@ -3,7 +3,7 @@
 Контракт (интерфейсы — существующие имена URL, новых нет):
 - Все страницы проверяются по видимому тексту (html -> unescape -> схлопнутые пробелы/NBSP).
 - Hero главной — элемент `[data-section="hero"]` (уже есть в home.html).
-- Срок: `is_available=True` -> «Отгрузка в течение 3 дней», `False` -> «Изготовление от 4 недель».
+- Срок: оба всегда — «Отгрузка в течение 3 дней» (в наличии) и «Изготовление от 4 недель» (под заказ); решение 23.10.2026.
 - Температура ротанга выводится как «−50…+50» (U+2212, U+2026); у не-ротанга не выводится вовсе.
 - Заголовок категории: «{Категория} из {материала в род. падеже} — купить в Тольятти и Самаре | ESTIVO»
   (допущение: поля падежа у Material нет — тесты проверяют «Ротанг» -> «ротанга», «Роуп» -> «роупа»).
@@ -203,10 +203,11 @@ class FProductPageTests(FWorld):
         self.assertTrue(links, 'нет ссылки на /garantiya/')
         self.assertEqual(reverse('warranty_page'), '/garantiya/')
 
-    def test_f3_unavailable_shows_manufacturing_term(self):
-        text = self.get_text(self.p_roup.get_absolute_url())
+    def test_f3_pdp_shows_both_terms(self):
+        # решение 23.10.2026: is_available = «показан на сайте», не наличие → оба срока всегда
+        text = self.get_text(self.p_rotang.get_absolute_url())
+        self.assertIn('Отгрузка в течение 3 дней', text)
         self.assertIn('Изготовление от 4 недель', text)
-        self.assertNotIn('Отгрузка в течение 3 дней', text)
 
     def test_f3_roup_does_not_show_temperature(self):
         resp = self.client.get(self.p_roup.get_absolute_url())
@@ -226,13 +227,9 @@ class FCartAndFormsTests(FWorld):
                        'менеджер перезвонит', 'уточнит цвет, сроки и стоимость доставки'):
             self.assertIn(needle, text)
 
-    def test_f4_cart_unavailable(self):
-        self.add(self.p_roup)
-        text = self.get_text(reverse('cart_detail'))
-        self.assertIn('Изготовление от 4 недель', text)
-        self.assertNotIn('Отгрузка в течение 3 дней', text)
-        self.assertIn('Гарантия 3 года', text)
-        self.assertIn('50%', text)
+    def test_f4_cart_shows_both_terms(self):
+        self.add(self.p_rotang)
+        self.assertIn('Изготовление от 4 недель', self.get_text(reverse('cart_detail')))
 
     def test_f4_cart_link_to_checkout(self):
         self.add(self.p_rotang)
