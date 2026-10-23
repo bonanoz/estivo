@@ -5,14 +5,14 @@
 (только логотип и телефон, без меню, поиска и счётчиков).
 {% endcomment %}
 {% if minimal %}
-<header class="sticky top-0 z-[var(--z-sticky)] bg-bg">
+<header class="site-header sticky top-0 z-[var(--z-sticky)] bg-bg">
     <div class="mx-auto flex w-full max-w-[var(--container)] items-center justify-between gap-4 px-4 py-2 md:px-6">
         <a href="{% url 'home' %}" class="flex min-h-11 items-center"><img src="{% static 'img/estivo-logo.svg' %}" alt="ESTIVO" width="140" height="56" class="h-auto w-[140px]"></a>
         <a data-goal="click_tel" href="tel:{{ site_info.phone_href }}" class="flex min-h-11 items-center font-extrabold text-[0.95rem] hover:opacity-85">{{ site_info.phone }}</a>
     </div>
 </header>
 {% else %}
-<header class="sticky top-0 z-[var(--z-sticky)] bg-bg"
+<header class="site-header sticky top-0 z-[var(--z-sticky)] bg-bg"
         x-data="{
             menu: false,
             search: false,

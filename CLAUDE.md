@@ -149,7 +149,8 @@ get `breadcrumbs` (list of `(label, url|None)`) from their views and render `par
 tokens, `@layer base/components`; page CSS in `styles/{catalog,product,cart,pages}.css`), registers htmx and
 Alpine, and auto-imports every `src/<feature>/index.ts` (`cart` drawer, `catalog` filter panel/focus-trap,
 `product` gallery/variants/sticky bar, `forms` phone mask + `form[data-once]` double-submit guard, `lib`
-`$scrollLock` helper shared by overlays). Output goes to `shop/static/dist/` (gitignored build artefact, read via
+`$scrollLock` helper shared by overlays, `motion` scroll reveal + counter/heart bump; page view transitions and
+accordion easing are CSS-only at the end of `main.css`, all off under `prefers-reduced-motion`). Output goes to `shop/static/dist/` (gitignored build artefact, read via
 the Vite manifest). The legacy hand-written CSS/JS were removed; only `shop/static/js/vendor/model-viewer.min.js`
 remains, loaded as an ES module on PDPs that have a `model_3d`.
 

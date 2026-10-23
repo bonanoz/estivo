@@ -43,8 +43,8 @@
 
 | ID | Эпик | Волна | Зависит от | Зона файлов | Модель | Статус | Ветка |
 |---|---|---|---|---|---|---|---|
-| E1 | Движение: CSS + motion-модуль + шапка | 1 | — | `frontend/src/styles/main.css`, `frontend/src/motion/index.ts`, `frontend/src/main.ts`, `shop/templates/partials/_header.html` | — (lite) | todo | feat/site-motion |
-| E2 | Документация | 1 | — | `docs/design-system.md` §2.5, `CLAUDE.md` | — (lite) | todo | feat/site-motion |
+| E1 | Движение: CSS + motion-модуль + шапка | 1 | — | `frontend/src/styles/main.css`, `frontend/src/motion/index.ts`, `frontend/src/main.ts`, `shop/templates/partials/_header.html` | — (lite) | done | feat/site-motion |
+| E2 | Документация | 1 | — | `docs/design-system.md` §2.5, `CLAUDE.md` | — (lite) | done | feat/site-motion |
 
 ### E1. Движение
 
@@ -71,10 +71,11 @@
 
 ## Критерии готовности всей задачи
 
-- [ ] Полный набор тестов проекта зелёный
-- [ ] Линт design-taste без новых FAIL вне allow-list
-- [ ] Ручная проверка E1 пройдена в браузере
+- [x] Полный набор тестов проекта зелёный
+- [x] Линт design-taste без новых FAIL вне allow-list
+- [x] Ручная проверка E1 пройдена в браузере
 
 ## Журнал
 
 - 2026-10-23 spec создан (опрос проведён в plan mode)
+- 2026-10-23 E1, E2 done (lite). Отклонение: htmx-проявление ограничено .product-card, иначе #cart-lines мигал при каждом изменении количества; live-фильтр каталога меняет только счётчик, карточки не подгружает.
