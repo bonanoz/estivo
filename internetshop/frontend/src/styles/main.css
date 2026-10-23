@@ -751,3 +751,61 @@
     }
   }
 }
+
+/* ---- Motion: scroll reveal, page transitions, micro-animations (docs/design-system.md §2.5) ---- */
+:root {
+  /* outside @theme: the tokens test keeps @theme to --dur-fast only */
+  --motion-reveal: 500ms;
+  --motion-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  interpolate-size: allow-keywords;
+}
+
+@layer components {
+  /* set by src/motion only on elements below the first screen, so nothing above the fold flickers */
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity var(--motion-reveal) var(--motion-ease),
+      transform var(--motion-reveal) var(--motion-ease);
+  }
+  [data-reveal].is-in {
+    opacity: 1;
+    transform: none;
+  }
+
+  .is-bumped {
+    animation: count-bump 300ms var(--ease);
+  }
+  @keyframes count-bump {
+    50% {
+      transform: scale(1.25);
+    }
+  }
+
+  /* smooth accordions where ::details-content is supported; elsewhere they open instantly as before */
+  :is(.faq-item, .pdp-acc, .filter-group, .review-write)::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition:
+      block-size var(--dur-fast) var(--ease),
+      content-visibility var(--dur-fast) allow-discrete;
+  }
+  :is(.faq-item, .pdp-acc, .filter-group, .review-write)[open]::details-content {
+    block-size: auto;
+  }
+
+  .site-header {
+    view-transition-name: site-header;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: var(--dur-fast);
+  }
+}

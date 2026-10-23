@@ -104,8 +104,16 @@ estivo63.ru и исправлено по `MARKETING_AUDIT.md`. Решение в
 
 ### 2.5 Движение и состояния
 
-- Hover кнопок, ссылок, карточек: `opacity: 0.85` за `var(--dur-fast) var(--ease)` (200ms ease-in-out). Другой системы
-  движения нет.
+- Hover кнопок, ссылок, карточек: `opacity: 0.85` за `var(--dur-fast) var(--ease)` (200ms ease-in-out).
+- Сдержанное движение по сайту (решение владельца 23.10.2026, `docs/specs/site-motion/SPEC.md`); других видов нет:
+  - появление при скролле — `frontend/src/motion` ставит `data-reveal` на блоки `main section` и `.product-card` ниже
+    первого экрана, `.is-in` их проявляет (opacity + сдвиг 14px за `--motion-reveal` 500ms, `--motion-ease`);
+    карточки идут каскадом по 60ms; htmx-контент проявляется так же;
+  - переходы между страницами — `@view-transition { navigation: auto }` (только при `no-preference`), шапка закреплена
+    через `view-transition-name: site-header`;
+  - бамп `count-bump` (scale 1.25, 300ms) у счётчиков корзины/избранного при изменении и у сердечка при добавлении;
+  - плавные аккордеоны `details` через `::details-content` + `interpolate-size` (без поддержки — мгновенно).
+- `--motion-*` живут в `:root`, не в `@theme`: в `@theme` из длительностей только `--dur-fast`.
 - ОБЯЗАТЕЛЬНО: без `transform` на `:hover`/`:active` (подъём карточки, `scale` кнопки, zoom фото). Исключение —
   спиннер загрузки.
 - ОБЯЗАТЕЛЬНО: фокус — `outline: 2px solid var(--color-brand); outline-offset: 2px` (глобальный `:focus-visible`).
