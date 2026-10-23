@@ -30,6 +30,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&display=swap" rel="stylesheet">
 
+    <script>window.dataLayer=window.dataLayer||[]</script>
+    {% if analytics_consent %}{% include 'partials/_metrika.html' %}{% endif %}
+
     {% vite_hmr_client %}
     {% vite_asset 'src/main.ts' %}
     {% block extra_head %}{% endblock %}
@@ -60,6 +63,11 @@
 
     {# Contact button is on every page, including the reduced checkout shell. #}
     {% include 'partials/_chat_button.html' %}
+
+    {% if show_cookie_banner %}{% include 'partials/_cookie_banner.html' %}{% endif %}
+    {# Данные для analytics/index.ts: dataLayer-событие страницы и цели после редиректа. #}
+    {% if datalayer %}{{ datalayer|json_script:"datalayer-push" }}{% endif %}
+    {% if pending_goals %}{{ pending_goals|json_script:"pending-goals" }}{% endif %}
 
     {% block extra_js %}{% endblock %}
 </body>

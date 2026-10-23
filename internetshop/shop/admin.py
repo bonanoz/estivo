@@ -7,6 +7,11 @@ from .models import (
     Product, ProductImage, Review, SiteSettings,
 )
 
+ATTRIBUTION_FIELDS = (
+    'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term',
+    'yclid', 'ym_client_id', 'landing_page',
+)
+
 
 @admin.register(SiteSettings)
 class SiteSettingsAdmin(admin.ModelAdmin):
@@ -97,7 +102,7 @@ class OrderAdmin(admin.ModelAdmin):
     )
     list_filter = ('status', 'payment_status', 'telegram_notified', 'created_at')
     search_fields = ('customer_name', 'customer_phone', 'customer_email')
-    readonly_fields = ('created_at', 'total_price', 'telegram_notified')
+    readonly_fields = ('created_at', 'total_price', 'telegram_notified', *ATTRIBUTION_FIELDS)
     inlines = [OrderItemInline]
 
 
@@ -106,7 +111,7 @@ class LeadAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'phone', 'lead_type', 'status', 'source_page', 'created_at')
     list_filter = ('lead_type', 'status', 'telegram_notified')
     search_fields = ('name', 'phone', 'email')
-    readonly_fields = ('created_at', 'telegram_notified')
+    readonly_fields = ('created_at', 'telegram_notified', *ATTRIBUTION_FIELDS)
 
 
 @admin.register(Review)

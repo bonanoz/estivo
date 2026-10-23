@@ -10,10 +10,10 @@
             <p class="m-0 text-[0.95rem] opacity-80">Поможем выбрать модель и оформить заявку.</p>
         </div>
         <ul class="m-0 flex list-none flex-wrap gap-2 p-0">
-            <li><a href="tel:{{ site_info.phone_href }}" class="btn btn-dark">{{ site_info.phone }}</a></li>
-            <li><a href="{{ site_info.social_links.telegram }}" target="_blank" rel="noopener" class="btn btn-dark">Telegram</a></li>
-            <li><a href="{{ site_info.social_links.whatsapp }}" target="_blank" rel="noopener" class="btn btn-dark">WhatsApp</a></li>
-            <li><a href="{{ site_info.social_links.max }}" target="_blank" rel="noopener" class="btn btn-dark">Max</a></li>
+            <li><a data-goal="click_tel" href="tel:{{ site_info.phone_href }}" class="btn btn-dark">{{ site_info.phone }}</a></li>
+            <li><a data-goal="click_telegram" href="{{ site_info.social_links.telegram }}" target="_blank" rel="noopener" class="btn btn-dark">Telegram</a></li>
+            <li><a data-goal="click_whatsapp" href="{{ site_info.social_links.whatsapp }}" target="_blank" rel="noopener" class="btn btn-dark">WhatsApp</a></li>
+            <li><a data-goal="click_max" href="{{ site_info.social_links.max }}" target="_blank" rel="noopener" class="btn btn-dark">Max</a></li>
         </ul>
     </div>
 </footer>
@@ -33,9 +33,9 @@
                 {% endif %}
                 <ul class="mt-4 flex list-none flex-wrap gap-x-4 p-0">
                     <li><a href="{{ site_info.social_links.instagram }}" target="_blank" rel="noopener" class="inline-flex min-h-11 items-center hover:opacity-85">Instagram</a></li>
-                    <li><a href="{{ site_info.social_links.telegram }}" target="_blank" rel="noopener" class="inline-flex min-h-11 items-center hover:opacity-85">Telegram</a></li>
-                    <li><a href="{{ site_info.social_links.whatsapp }}" target="_blank" rel="noopener" class="inline-flex min-h-11 items-center hover:opacity-85">WhatsApp</a></li>
-                    <li><a href="{{ site_info.social_links.max }}" target="_blank" rel="noopener" class="inline-flex min-h-11 items-center hover:opacity-85">Max</a></li>
+                    <li><a data-goal="click_telegram" href="{{ site_info.social_links.telegram }}" target="_blank" rel="noopener" class="inline-flex min-h-11 items-center hover:opacity-85">Telegram</a></li>
+                    <li><a data-goal="click_whatsapp" href="{{ site_info.social_links.whatsapp }}" target="_blank" rel="noopener" class="inline-flex min-h-11 items-center hover:opacity-85">WhatsApp</a></li>
+                    <li><a data-goal="click_max" href="{{ site_info.social_links.max }}" target="_blank" rel="noopener" class="inline-flex min-h-11 items-center hover:opacity-85">Max</a></li>
                     <li><a href="{{ site_info.social_links.vk }}" target="_blank" rel="noopener" class="inline-flex min-h-11 items-center hover:opacity-85">VK</a></li>
                     <li><a href="{{ site_info.social_links.pinterest }}" target="_blank" rel="noopener" class="inline-flex min-h-11 items-center hover:opacity-85">Pinterest</a></li>
                 </ul>
@@ -61,12 +61,13 @@
                     <li><a href="{% url 'b2b_page' %}" class="inline-flex min-h-11 items-center hover:opacity-85">Для бизнеса</a></li>
                     <li><a href="{% url 'designers_page' %}" class="inline-flex min-h-11 items-center hover:opacity-85">Для дизайнеров</a></li>
                     <li><a href="{% url 'contacts_page' %}" class="inline-flex min-h-11 items-center hover:opacity-85">Контакты</a></li>
+                    <li><a href="?cookie_settings=1" class="inline-flex min-h-11 items-center hover:opacity-85">Настройки cookie</a></li>
                 </ul>
             </nav>
 
             <div>
                 <h2 class="mb-2 font-display text-2xl">Контакты</h2>
-                <p class="m-0"><a href="tel:{{ site_info.phone_href }}" class="inline-flex min-h-11 items-center hover:opacity-85">{{ site_info.phone }}</a></p>
+                <p class="m-0"><a data-goal="click_tel" href="tel:{{ site_info.phone_href }}" class="inline-flex min-h-11 items-center hover:opacity-85">{{ site_info.phone }}</a></p>
                 <p class="m-0"><a href="mailto:{{ site_info.email }}" class="inline-flex min-h-11 items-center hover:opacity-85">{{ site_info.email }}</a></p>
                 <p class="mt-2">{{ site_info.address }}</p>
                 {% for label, hours in site_info.work_hours %}

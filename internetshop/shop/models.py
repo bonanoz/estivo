@@ -317,7 +317,23 @@ class ProductImage(models.Model):
         return f'{self.product.name} — фото {self.order}'
 
 
-class Order(models.Model):
+class Attribution(models.Model):
+    """Источник захода (first-touch): метки ссылки и client id Метрики. Пишутся при отправке формы."""
+
+    utm_source = models.CharField('utm_source', max_length=255, blank=True)
+    utm_medium = models.CharField('utm_medium', max_length=255, blank=True)
+    utm_campaign = models.CharField('utm_campaign', max_length=255, blank=True)
+    utm_content = models.CharField('utm_content', max_length=255, blank=True)
+    utm_term = models.CharField('utm_term', max_length=255, blank=True)
+    yclid = models.CharField('yclid', max_length=64, blank=True)
+    ym_client_id = models.CharField('Client ID Метрики', max_length=64, blank=True)
+    landing_page = models.CharField('Страница входа', max_length=500, blank=True)
+
+    class Meta:
+        abstract = True
+
+
+class Order(Attribution):
     """Заявка на товар. Бизнес работает по схеме заявка → консультация →
     изготовление → доставка → оплата, поэтому это не "заказ с оплатой картой",
     а точка контакта с клиентом, которую менеджер обрабатывает вручную.
@@ -413,7 +429,7 @@ class OrderItem(models.Model):
         return self.unit_price * self.quantity
 
 
-class Lead(models.Model):
+class Lead(Attribution):
     """Единая модель для всех лид-форм сайта (общая консультация,
     дизайн-проект, B2B-заявка) — различаются полем lead_type."""
 

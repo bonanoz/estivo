@@ -6,7 +6,7 @@
             <p class="mx-auto mb-6 max-w-[60ch] opacity-90">{{ cta_text|default:"Оставьте заявку — рассчитаем стоимость, подберём модели и материалы под вашу задачу. Гарантия 3 года, изготовление от 4 недель, доставка ТК до двери." }}</p>
             <div class="flex flex-wrap justify-center gap-3">
                 <a href="{% url 'contacts_page' %}" class="btn btn-dark btn-lg">Оставить заявку</a>
-                <a href="tel:{{ site_info.phone_href }}" class="btn btn-outline btn-lg">{{ site_info.phone }}</a>
+                <a data-goal="click_tel" href="tel:{{ site_info.phone_href }}" class="btn btn-outline btn-lg">{{ site_info.phone }}</a>
             </div>
         </div>
     </div>

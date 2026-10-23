@@ -56,3 +56,17 @@ def site_settings(request):
     доступны в любом шаблоне без передачи из каждого view."""
     from .models import SiteSettings
     return {'site_settings': SiteSettings.get_cached()}
+
+
+def analytics(request):
+    """Согласие на cookie (полоса, счётчик Метрики) и цели, ждущие показа на этой странице."""
+    consent = request.COOKIES.get('cookie_consent')
+    context = {
+        'analytics_consent': consent == 'analytics',
+        'show_cookie_banner': consent not in ('analytics', 'necessary') or bool(request.GET.get('cookie_settings')),
+    }
+    if not request.headers.get('HX-Request'):  # htmx-фрагмент не должен «съесть» цели
+        goals = request.session.pop('pending_goals', None)
+        if goals:
+            context['pending_goals'] = goals
+    return context

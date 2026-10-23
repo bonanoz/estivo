@@ -1,8 +1,10 @@
+import json
+
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import F, Q
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -12,7 +14,7 @@ from django.views.decorators.http import require_GET, require_POST
 from .cart import Cart
 from .catalog_filters import SORT_CHOICES, apply_filters, apply_sort
 from .forms import LeadForm, OrderForm, ReviewForm
-from .models import Category, Collection, ColorOption, Material, OrderItem, Product, Review
+from .models import Category, Collection, ColorOption, Material, Order, OrderItem, Product, Review
 from .templatetags.shop_tags import material_genitive
 from .utils import notify_telegram
 from .wishlist import Wishlist
@@ -31,6 +33,32 @@ def _bestsellers(limit=8):
     if not products:
         products = list(available.filter(is_featured=True)[:limit])
     return products
+
+
+def _attribution(request):
+    """Поля источника заявки: first-touch из сессии + client id Метрики (только цифры, до 64 знаков)."""
+    data = dict(request.session.get('attribution', {}))
+    uid = request.COOKIES.get('_ym_uid', '')
+    data['ym_client_id'] = uid if uid.isdigit() and len(uid) <= 64 else ''
+    return data
+
+
+def _source_line(obj):
+    """Строка «Источник: …» для Telegram: непустые utm_*, yclid и вход."""
+    tags = [f'{k}={getattr(obj, k)}' for k in ('utm_source', 'utm_medium', 'utm_campaign', 'utm_content',
+                                                 'utm_term', 'yclid') if getattr(obj, k)]
+    entry = [f'вход {obj.landing_page}'] if obj.landing_page else []
+    return 'Источник: ' + ', '.join(tags + entry if tags else ['прямой заход'] + entry)
+
+
+def _add_goal(request, goal):
+    """Цель Метрики после редиректа: показывается на следующей странице (pending-goals)."""
+    request.session['pending_goals'] = [*request.session.get('pending_goals', []), goal]
+
+
+def _dl_product(product, **extra):
+    return {'id': product.id, 'name': product.name, 'price': product.price,
+            'category': product.category.name if product.category_id else '', **extra}
 
 
 def _crumbs(*trail):
@@ -284,6 +312,7 @@ def _product_context(request, product, review_form=None):
         'breadcrumbs': crumbs,
         'selected_colors': _selected_colors(request, product),
         'review_form': review_form or ReviewForm(),
+        'datalayer': {'ecommerce': {'currencyCode': 'RUB', 'detail': {'products': [_dl_product(product)]}}},
     }
 
 
@@ -325,14 +354,19 @@ def _lead_page(request, template_name, lead_type, extra_context=None):
         if form.is_valid():
             lead = form.save(commit=False)
             lead.source_page = template_name
+            for key, value in _attribution(request).items():
+                setattr(lead, key, value)
             if price_product:
                 lead.source_page = f'price-request:{price_product.slug}'
                 lead.message = f'Узнать цену: {price_product.name}\n{lead.message}'.strip()
             lead.save()
+            _add_goal(request, f'lead_submit_{lead.lead_type}')
+            if price_product:
+                _add_goal(request, 'price_request')
             sent = notify_telegram(
                 f'📩 Новая заявка ({lead.get_lead_type_display()})\n'
                 f'Имя: {lead.name}\nТелефон: {lead.phone}\nEmail: {lead.email}\n'
-                f'Сообщение: {lead.message}'
+                f'Сообщение: {lead.message}\n{_source_line(lead)}'
             )
             if sent:
                 lead.telegram_notified = True
@@ -433,10 +467,13 @@ def cart_add(request, product_id):
             .exclude(pk=product.pk)[:4]
             if product.category_id else []
         )
-        return render(request, 'partials/htmx/_cart_drawer.html', {
+        response = render(request, 'partials/htmx/_cart_drawer.html', {
             'added_product': product,
             'recommendations': recommendations,
         })
+        response['HX-Trigger'] = json.dumps(
+            {'ecommerce:add': {'products': [_dl_product(product, quantity=quantity)]}})
+        return response
     if 'checkout' in request.POST:
         if request.htmx:
             response = HttpResponse(status=204)
@@ -549,7 +586,10 @@ def checkout(request):
                 return redirect('order_success')
             items = list(cart)
             with transaction.atomic():
-                order = form.save()
+                order = form.save(commit=False)
+                for key, value in _attribution(request).items():
+                    setattr(order, key, value)
+                order.save()
                 for item in items:
                     OrderItem.objects.create(
                         order=order,
@@ -561,6 +601,8 @@ def checkout(request):
                 order.recalc_total()
             # Чистим до Telegram: если отправка зависнет и воркер убьют, повторная отправка не создаст дубль.
             cart.clear()
+            request.session['last_order_id'] = order.id
+            _add_goal(request, 'checkout_submit')
 
             lines = []
             for item in items:
@@ -575,7 +617,7 @@ def checkout(request):
                 + f'\n\nИтого: {order.total_price} ₽\n'
                 + f'ФИО: {order.customer_name}\nТелефон: {order.customer_phone}\n'
                 + f'Email: {order.customer_email}\nАдрес доставки: {order.delivery_address}\n'
-                + f'Комментарий: {order.comment}'
+                + f'Комментарий: {order.comment}\n{_source_line(order)}'
             )
             if sent:
                 order.telegram_notified = True
@@ -588,7 +630,26 @@ def checkout(request):
 
 
 def order_success(request):
-    return render(request, 'order_success.html')
+    context = {}
+    order = Order.objects.filter(id=request.session.pop('last_order_id', None)).prefetch_related(
+        'items__product__category').first()
+    if order:
+        products = [_dl_product(i.product, price=i.unit_price, quantity=i.quantity) for i in order.items.all()]
+        context['datalayer'] = {'ecommerce': {'currencyCode': 'RUB', 'purchase': {
+            'actionField': {'id': order.id, 'revenue': order.total_price}, 'products': products}}}
+    return render(request, 'order_success.html', context)
+
+
+@require_POST
+def cookie_consent(request):
+    """Согласие на cookie без JS: ставит cookie и возвращает на страницу, откуда пришли."""
+    choice = request.POST.get('choice')
+    if choice not in ('analytics', 'necessary'):
+        return HttpResponseBadRequest('Unknown choice')
+    target = _safe_redirect_target(request, request.POST.get('next') or request.headers.get('Referer'), '/')
+    response = HttpResponseRedirect(target)
+    response.set_cookie('cookie_consent', choice, max_age=365 * 86400, samesite='Lax')
+    return response
 
 
 def handler404(request, exception=None):

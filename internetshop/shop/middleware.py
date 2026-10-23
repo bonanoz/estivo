@@ -28,6 +28,29 @@ def _section_url(path):
     return new_path if action == '301' and new_path.startswith('/catalog/') else '/catalog/'
 
 
+ATTRIBUTION_KEYS = {'utm_source': 255, 'utm_medium': 255, 'utm_campaign': 255, 'utm_content': 255,
+                    'utm_term': 255, 'yclid': 64}
+SKIP_PREFIXES = ('/static/', '/media/', '/admin/', '/robots.txt', '/sitemap.xml')
+
+
+class AttributionMiddleware:
+    """First-touch: первый HTML-заход сессии запоминает utm_*, yclid и страницу входа, дальше не перезаписывает."""
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        if (request.method == 'GET' and 'attribution' not in request.session
+                and not request.headers.get('HX-Request')
+                and not request.path.startswith(SKIP_PREFIXES)):
+            data = {k: request.GET.get(k, '')[:n] for k, n in ATTRIBUTION_KEYS.items()}
+            # Анонимный заход без меток сессию не создаёт (иначе падает test_anonymous_visit_does_not_create_session).
+            if request.session.session_key or any(data.values()):
+                data['landing_page'] = request.get_full_path()[:500]
+                request.session['attribution'] = data
+        return self.get_response(request)
+
+
 class TildaRedirectMiddleware:
     """Старые адреса Tilda: на 404 отдаёт 301/410 по карте (стоит после CommonMiddleware, чтобы
     видеть исходный 404 раньше APPEND_SLASH и не плодить цепочки)."""
