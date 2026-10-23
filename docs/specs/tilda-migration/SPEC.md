@@ -5,7 +5,7 @@
 - **создано:** 22.10.2026
 - **команда тестов:** из `internetshop/`: `python manage.py test`; из `internetshop/frontend/`: `npm run build` (включает `tsc --noEmit`); для UI-эпиков — дизайн-проверки из `CLAUDE.md` (lint `design-taste-frontend` + чек-лист ui-ux-pro-max)
 - **статус:** утверждено владельцем 22.10.2026 (SPEC и план схемы БД). Пайплайн: тесты до кода, воркер в отдельном worktree, ревью, merge по одному эпику. Тесты-контракт пишутся перед каждым эпиком (а не сразу для всех), чтобы после каждого merge полный прогон был зелёным.
-- **статусы эпиков:** a, b, c, d, e, f — done; g — todo. Следующий — **g**, новый чат
+- **статусы эпиков:** a, b, c, d, e, f — done; g — in_progress
 
 ## Задача
 
@@ -241,10 +241,26 @@
 - g4. Middleware: при первом входе в сессию сохранить `utm_*`, `yclid`, `landing_page` (first-touch, не перезаписывать); `ym_client_id` берётся из cookie `_ym_uid` в момент отправки формы.
 - g5. Миграция полей `Order`/`Lead` (см. «Изменения схемы»); `checkout`, `_lead_page`, `lead_create` записывают их; поля видны в админке (read-only) и в уведомлении Telegram (одной строкой «Источник: …»).
 
+**Решения (опрос 23.10.2026):** текст полосы — короткий черновик до юриста: «Мы используем cookie: необходимые — для корзины, аналитические — для Яндекс Метрики. Подробнее» (ссылка на `/privacy/#cookie`); Вебвизор **включён** (`webvisor:true`) — раздел 13 политики дополняется упоминанием записи действий (черновик); в подвале ссылка «Настройки cookie» снова показывает полосу; UTM/yclid/landing_page пишутся **всегда**, без согласия (метки ссылки, не ПДн; `_ym_uid` без согласия всё равно нет).
+
+**Допущения и контракт интерфейсов (оркестратор, 23.10.2026):**
+- `lead_create` в проекте нет (см. `test_request_panel.py`) — лиды пишут только `_lead_page` (B2B, дизайнерам, контакты, «Узнать цену» = POST на `contacts_page` с `price_request_for`). Пункт «`lead_create`» читается как «Узнать цену».
+- Согласие: cookie `cookie_consent` со значением `analytics` или `necessary`, 365 дней, `SameSite=Lax`. Ставит view `cookie_consent` (POST `/cookie-consent/`, поле `choice`, неизвестное значение → 400) с редиректом на безопасный `next`/`Referer` (как `_safe_redirect_target`), иначе `/`. Работает без JS.
+- Полоса — элемент с атрибутом `data-cookie-banner`; выводится, если cookie `cookie_consent` нет **или** в запросе `?cookie_settings=1` (ссылка «Настройки cookie» в подвале). Кнопки — `.btn-pill` (`--radius-pill` 30px, MAPPING П6).
+- Счётчик (`mc.yandex.ru/metrika/tag.js`, `ym(93915751,'init',{…, webvisor:true, ecommerce:'dataLayer'})` и `<noscript>`-пиксель) — в HTML **только** при `cookie_consent=analytics`.
+- `window.dataLayer` объявляется на каждой странице. PDP: push `{ecommerce:{currencyCode:'RUB', detail:{products:[{id, name, price, category}]}}}`. `order_success`: `purchase` с `actionField:{id:<order.id>, revenue:<total_price>}` и позициями; id заказа кладёт `checkout` в сессию (`last_order_id`), `order_success` его забирает (`pop`) — обновление страницы не дублирует покупку. Данные в JS — через `json_script`, не сырой вставкой.
+- htmx-ответ `cart_add` (drawer) несёт заголовок `HX-Trigger` с JSON-ключом `ecommerce:add` (`{products:[{id, name, price, quantity}]}`); фронт пушит его в `dataLayer` и шлёт цель `cart_add`. Пути без htmx и «Оформить заявку» сразу — без `add` (`shortcut`).
+- Цели после редиректа (`checkout_submit`, `lead_submit_<lead_type>`, `price_request` — при `price_request_for`) складываются в сессию (`pending_goals`) и выводятся на следующей странице в `<script id="pending-goals" type="application/json">`, затем удаляются из сессии. Фронт шлёт их через `ym(93915751,'reachGoal',…)`, если `ym` есть.
+- Ссылки `tel:` → `data-goal="click_tel"`, Telegram → `click_telegram`, WhatsApp → `click_whatsapp`, MAX → `click_max` во всех шаблонах. `cart_open` — при открытии drawer (фронт).
+- Middleware `shop.middleware.AttributionMiddleware` (после `SessionMiddleware`): на GET-запросе, если в сессии нет ключа `attribution`, сохраняет `{utm_source, utm_medium, utm_campaign, utm_content, utm_term, yclid, landing_page}` (обрезка до длины полей; `landing_page` = `request.get_full_path()`). Пропускает `/static/`, `/media/`, `/admin/`, htmx-запросы и не-HTML служебные (`robots.txt`, `sitemap.xml`).
+- `ym_client_id` = cookie `_ym_uid`, только если это цифры (иначе пусто), не длиннее 64.
+- Telegram: строка `Источник: …` в заявке из корзины и в лиде — непустые utm_*, yclid, вход (landing_page); при отсутствии UTM/yclid — «Источник: прямой заход, вход <landing_page>».
+- Админка: 8 полей в `readonly_fields` у `OrderAdmin` и `LeadAdmin`.
+
 **Готово, когда:**
 - [ ] Тест: без cookie согласия HTML не содержит `mc.yandex.ru/metrika`; с согласием — содержит счётчик 93915751.
 - [ ] Тест: вход с `?utm_source=a&utm_campaign=b&yclid=123`, переход на другую страницу, отправка checkout → `Order` с `utm_source='a'`, `utm_campaign='b'`, `yclid='123'`, `landing_page` = первый URL. Повторный вход с другими UTM их не перезаписывает.
-- [ ] Тест: то же для `Lead` (B2B-форма и `lead_create`).
+- [ ] Тест: то же для `Lead` (B2B-форма и «Узнать цену»).
 - [ ] Тест: cookie `_ym_uid=42` → `ym_client_id='42'`.
 - [ ] Тест: на PDP есть `dataLayer` с `detail`; на `order_success` — `purchase` с суммой заявки; ответ `cart_add` (htmx) инициирует `add`.
 - [ ] Тест: ссылки `tel:`, Telegram, WhatsApp имеют атрибут цели (`data-goal`).
