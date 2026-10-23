@@ -8,9 +8,9 @@ docs/design-system/estivo-tilda/MAPPING.md (таблицы 1 и 2, пробел�
 Допущения парсера:
 - CSS разбирается регулярками по «листовым» блокам `селектор { объявления }` (без вложенных
   скобок); @layer/@media-обёртки игнорируются, комментарии вырезаются.
-- font-weight: в CSS разрешены var(--weight-body-regular|bold), 300 и 800. Значения
-  400/500/600/700/bold допустимы только в правиле, где задан font-family: var(--font-display)
-  (Cormorant Garamond), иначе это Gilroy с неоплаченным начертанием.
+- font-weight: в CSS разрешены var(--weight-body-regular|bold) и 300-800 (лицензия Gilroy 300-800,
+  владелец 23.10.2026). 100/200/900 допустимы только в правиле с font-family: var(--font-display)
+  (Cormorant Garamond), иначе это Gilroy без файла начертания.
 - font-size: px < 14 и rem/em < 0.875 запрещены (em считается как rem - допущение);
   в clamp(...) проверяется первый (минимальный) аргумент.
 """
@@ -230,7 +230,8 @@ class E_A_ForbiddenPatternsTests(SimpleTestCase):
         self.assertEqual(bad, [])
 
     def test_font_weight_only_licensed_for_body_font(self):
-        ok_values = {'var(--weight-body-regular)', 'var(--weight-body-bold)', '300', '800', 'inherit'}
+        ok_values = {'var(--weight-body-regular)', 'var(--weight-body-bold)', 'inherit', 'normal', 'bold',
+                     '300', '400', '500', '600', '700', '800'}
         bad = []
         for name, sel, body in all_rules():
             d = decls(body)
@@ -246,7 +247,7 @@ class E_A_ForbiddenPatternsTests(SimpleTestCase):
         bad = []
         for f in template_files() + ts_files():
             bad += [f'{f.name}: {m.group(0)}' for m in
-                    re.finditer(r'(?<![\w-])font-(?:thin|extralight|normal|medium|semibold|bold|black)(?![\w-])', read(f))]
+                    re.finditer(r'(?<![\w-])font-(?:thin|extralight|black)(?![\w-])', read(f))]
         self.assertEqual(bad, [])
 
     def test_no_font_size_below_14px(self):

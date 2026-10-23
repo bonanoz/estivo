@@ -28,7 +28,7 @@
 | — | `--color-accent-dark`, `--color-accent-soft` | удалить: hover в системе — только opacity 0,85 |
 | `font-display` Cormorant Garamond | `--font-display` то же | без изменений |
 | `font-body` Gilroy, Helvetica Neue, Arial | `--font-body` Gilroy, -apple-system… | fallback привести к `"Helvetica Neue", Arial, sans-serif` |
-| Gilroy 300 / 800 | `--weight-body-regular: 300`, `--weight-body-bold: 800` | без изменений (решение владельца) |
+| Gilroy 300 / 800 | `--weight-body-regular: 300`, `--weight-body-bold: 800` | без изменений; 400–700 доступны — лицензия 300–800 (владелец, 23.10.2026) |
 | `body` 16/24 | `body` 17px / 1.65 | 16px / 24px |
 | `hero` 51/61, 400; `section-title` 50/60, 400, uppercase | `h1` clamp(2.6–5rem), `h2` clamp(2–3.2rem), weight 500 | `h1`/`h2` разделов — `clamp(32px, 6vw, 50px)/1.2`, weight 400, `text-transform: uppercase` (как `es-title`); hero — 51/61 на десктопе |
 | `material-title` 22/26, `promo-title` 30/47 (600), `modal-title` 35/42 (500), `promo-note` 18/27,9 | `h3` clamp(1.4–1.9rem), `h4` 1.2rem | `h3` = `material-title`; `promo-title`/`modal-title` — только в промо-карточке и модалке «Узнать цену» |
@@ -112,4 +112,4 @@
 - **П5. Нет тонкой промо-полосы.** `partials/_promo_bar.html` (`SiteSettings.promo_*`) в системе не описан. `accent` нельзя (только кнопка заявки и полоса распродажи) — полоса делается `surface-alt` + `ink` 14px.
 - **П6. Нет компонентов:** горизонтальное меню ≥ 1024px и мобильное меню, хлебные крошки, пагинация, фильтры (`.pill`), образцы цвета (`.swatch`), бейджи, аккордеон FAQ, галерея карточки, оверлей поиска, cookie-полоса, модалка «Узнать цену», 404/500. Их **не проектируем заново**: эпик (a) переводит существующие классы на токены выше (квадратные углы → `radius-md` у контролов, без теней, 14px+, 44px+). Cookie-полоса — эпик (g) на `es-btn--pill`.
 - **П7. Иконки.** В системе нет набора иконок — используем текущие inline SVG, приводим линию к 1,5px.
-- **П8. Шрифт Gilroy.** В `shop/static/fonts/gilroy/` уже лежат `Gilroy-Light.woff2` и `Gilroy-ExtraBold.woff2` (по ~25 КБ, не пустые заглушки, хотя `CLAUDE.md` говорит обратное — поправить в эпике (a)). Читаемость Light 300 при 14px проверить на телефоне (чек-лист, раздел 0).
+- **П8. Шрифт Gilroy.** В `shop/static/fonts/gilroy/` уже лежат `Gilroy-Light.woff2` и `Gilroy-ExtraBold.woff2` (по ~25 КБ, не пустые заглушки, хотя `CLAUDE.md` говорит обратное — поправить в эпике (a)). 23.10.2026 добавлены Regular/Medium/SemiBold/Bold (лицензия владельца). Читаемость Light 300 при 14px проверить на телефоне (чек-лист, раздел 0).

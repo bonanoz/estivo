@@ -22,7 +22,7 @@
 
 /*
  * Tokens: values come from docs/design-system/estivo-tilda/tokens.css (see MAPPING.md there). Usage rules: README.md of
- * that folder. Body font is Gilroy 300/800 only; headings are Cormorant Garamond.
+ * that folder. Body font is Gilroy 300-800 (licensed, owner 23.10.2026); headings are Cormorant Garamond.
  */
 @theme {
   --color-*: initial;
@@ -45,7 +45,7 @@
   --font-display: 'Cormorant Garamond', Georgia, serif;
   --font-body: 'Gilroy', 'Helvetica Neue', Arial, sans-serif;
 
-  /* Gilroy is only licensed in Light (300) and ExtraBold (800). */
+  /* Gilroy is licensed 300-800; the two base weights below stay the design default. */
   --weight-body-regular: 300;
   --weight-body-bold: 800;
 
@@ -84,6 +84,34 @@
   font-family: 'Gilroy';
   src: url('/static/fonts/gilroy/Gilroy-Light.woff2') format('woff2');
   font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Gilroy';
+  src: url('/static/fonts/gilroy/Gilroy-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Gilroy';
+  src: url('/static/fonts/gilroy/Gilroy-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Gilroy';
+  src: url('/static/fonts/gilroy/Gilroy-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Gilroy';
+  src: url('/static/fonts/gilroy/Gilroy-Bold.woff2') format('woff2');
+  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }

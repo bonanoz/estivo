@@ -76,13 +76,13 @@ estivo63.ru и исправлено по `MARKETING_AUDIT.md`. Решение в
 | кнопка заявки, кнопка звонка, `step-title` | `--font-body` | `--weight-body-bold` (800) | 16 |
 | строка полосы распродажи | `--font-body` | 300, uppercase | `clamp(40px, …, 100px)` |
 
-- ОБЯЗАТЕЛЬНО: у Gilroy только 300 и 800 (`--weight-body-regular`/`--weight-body-bold`) — лицензия. 400/500/600/700
-  для `--font-body` и классы `font-normal/medium/semibold/bold` запрещены. 400–600 допустимы только у
-  `--font-display`.
+- ОБЯЗАТЕЛЬНО: у Gilroy есть лицензия на 300–800 (владелец, 23.10.2026). По умолчанию —
+  `--weight-body-regular` (300) / `--weight-body-bold` (800); 400–700 — где их задаёт estivo-tilda (на живом
+  сайте меню 400, кнопки 500). 100/200/900 и классы `font-thin/extralight/black` запрещены.
 - ОБЯЗАТЕЛЬНО: ничего мельче **14px** (`0.875rem`), включая бейджи, счётчик, подписи; `text-xs` запрещён (R22).
 - ОБЯЗАТЕЛЬНО: заголовки хранятся в шаблонах в обычном регистре, верхний регистр — CSS.
 - СЛЕДУЕТ: Light 300 на 14px тонкий — ставить на `bg`/`surface` цветом `ink`, не `muted` на `surface-alt`.
-- Файлы `Gilroy-Light.woff2` и `Gilroy-ExtraBold.woff2` лежат в `shop/static/fonts/gilroy/`; без них — fallback
+- Файлы `Gilroy-{Light,Regular,Medium,SemiBold,Bold,ExtraBold}.woff2` лежат в `shop/static/fonts/gilroy/`; без них — fallback
   `"Helvetica Neue", Arial, sans-serif`.
 
 ### 2.3 Сетка и отступы
@@ -183,7 +183,7 @@ estivo63.ru и исправлено по `MARKETING_AUDIT.md`. Решение в
 ## 6. Антипаттерны
 
 - Сырые hex/rgb и одноразовые отступы вне токенов.
-- Gilroy 400/500/600/700; текст мельче 14px.
+- Gilroy вне 300–800; текст мельче 14px.
 - `accent` где-либо, кроме кнопки заявки и полосы распродажи; `brand` как фон блока.
 - Тени, градиенты, скругления у фото и карточек, `transform` на hover/active.
 - Тёмные секции и тёмный футер.
