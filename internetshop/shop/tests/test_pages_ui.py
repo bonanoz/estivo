@@ -9,7 +9,7 @@ from shop.models import Category, Collection, Lead, Material, Review
 
 from .helpers import make_product, parse, product_card_for
 
-HOME_SECTIONS = ['hero', 'categories', 'collections', 'services', 'reviews', 'story', 'seo']
+HOME_SECTIONS = ['hero', 'proof', 'products', 'story', 'materials', 'why-estivo', 'process', 'services', 'reviews']
 CONTENT_PAGES = ['about_page', 'b2b_page', 'designers_page', 'delivery_payment_page',
                  'warranty_page', 'faq_page', 'contacts_page']
 
@@ -42,6 +42,28 @@ class E6HomeTests(TestCase):
 
     def test_single_h1(self):
         self.assertEqual(len(self.root.find_all('h1')), 1)
+
+    def test_no_catalog_blocks_or_banned_claims(self):
+        for gone in ('categories', 'collections', 'seo'):
+            self.assertIsNone(self.root.find(attrs={'data-section': gone}), gone)
+        text = self.root.text.lower()
+        for banned in ('скидки до', 'rolls-royce', 'эверест', 'провар', 'слоя лака', 'avito', 'по миру'):
+            self.assertNotIn(banned, text)
+
+    def test_products_link_to_full_catalog(self):
+        block = self.root.find(attrs={'data-section': 'products'})
+        self.assertIn(reverse('catalog_list'), [a.get('href') for a in block.find_all('a')])
+
+
+class E6HomeProductsTests(TestCase):
+    def test_six_to_eight_priced_cards_without_price_on_request(self):
+        for i in range(9):
+            make_product(is_featured=True)
+        on_request = make_product(is_featured=True, price=0)
+        block = parse(self.client.get(reverse('home'))).find(attrs={'data-section': 'products'})
+        cards = block.find_all(cls='product-card')
+        self.assertEqual(len(cards), 8)
+        self.assertNotIn(on_request.get_absolute_url(), str(block))
 
 
 class E6ContentPagesTests(TestCase):

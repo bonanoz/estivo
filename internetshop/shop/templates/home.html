@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static shop_tags %}
+
+{% block meta_title %}Плетёная мебель из ротанга и роупа — производство в Тольятти | ESTIVO{% endblock %}
+{% block meta_description %}ESTIVO — плетёная мебель ручной работы из эко-ротанга и роупа. Своё производство в Тольятти, по каталогу и в ваш размер, гарантия {{ site_info.warranty }}, доставка ТК до двери по всей России.{% endblock %}
+{% block og_image %}{% if site_settings.hero_image %}{{ site_settings.hero_image.url|absolute }}{% else %}{{ block.super }}{% endif %}{% endblock %}
 
 {% block content %}
 <section data-section="hero" class="page-section pt-6 md:pt-10">
@@ -8,13 +12,12 @@
             <h1 class="page-h1">Плетёная мебель из ротанга и роупа — своё производство в Тольятти</h1>
             <p class="page-lead">Плетём вручную на металлическом каркасе. Делаем по каталогу и в ваш размер, доставляем по всей России.</p>
             <div class="flex flex-wrap gap-3">
-                <a href="{% url 'catalog_list' %}" class="btn btn-primary btn-lg">Подобрать комплект</a>
+                <a href="{% url 'contacts_page' %}" data-goal="click_pick_set" class="btn btn-primary btn-lg">Подобрать комплект</a>
                 <a href="{% url 'catalog_by_material' 'rotang' %}" class="btn btn-outline btn-lg">Каталог ротанга</a>
                 <a href="{% url 'catalog_by_material' 'roup' %}" class="btn btn-outline btn-lg">Каталог роупа</a>
             </div>
-            <p class="page-note">Гарантия 3 года · Изготовление от 4 недель · 3 цеха и склад 650 м² · Доставка ТК до двери</p>
         </div>
-        <div class="page-media aspect-[4/5] md:aspect-[4/5]">
+        <div class="page-media aspect-[3/2] md:aspect-[4/5]">
             {% if site_settings.hero_image %}
             <img src="{{ site_settings.hero_image.url }}" alt="Плетёное кресло и диван ESTIVO на террасе">
             {% else %}
@@ -24,12 +27,23 @@
     </div>
 </section>
 
+<section data-section="proof" aria-label="Коротко о гарантиях" class="pb-8">
+    <div class="page-container">
+    <ul class="page-grid grid-cols-2 md:grid-cols-4">
+        <li class="grid content-start gap-1"><span class="page-h3">Гарантия {{ site_info.warranty }}</span><span class="page-note">на каркас и плетение</span></li>
+        <li class="grid content-start gap-1"><span class="page-h3">Изготовление {{ site_info.production_term }}</span><span class="page-note">в наличии — отгрузка за 3 дня</span></li>
+        <li class="grid content-start gap-1"><span class="page-h3">3 цеха и склад 650 м²</span><span class="page-note">своё производство в Тольятти</span></li>
+        <li class="grid content-start gap-1"><span class="page-h3">Доставка ТК до двери</span><span class="page-note">по всей России</span></li>
+    </ul>
+    </div>
+</section>
+
 {% if featured_products %}
 <section data-section="products" class="page-section pt-0">
     <div class="page-container">
         <div class="page-head page-head--row">
             <h2 class="page-h2">Популярные модели</h2>
-            <a href="{% url 'catalog_list' %}" class="btn btn-outline">Смотреть все</a>
+            <a href="{% url 'catalog_list' %}" class="btn btn-outline">Весь каталог</a>
         </div>
         <ul class="grid grid-cols-2 gap-4 md:grid-cols-4 list-none m-0 p-0">
             {% for product in featured_products %}
@@ -40,46 +54,67 @@
 </section>
 {% endif %}
 
-<section data-section="categories" aria-label="Быстрый выбор" class="pb-6">
-    <div class="page-container grid gap-3">
-        <div class="flex flex-wrap gap-2">
-            <a href="{% url 'catalog_list' %}" class="pill">Весь каталог</a>
-            {% for group in catalog_links %}
-            <a href="{% url 'catalog_by_material' group.material.slug %}" class="pill">{{ group.material.name }}</a>
-            {% endfor %}
+<section data-section="story" class="page-section">
+    <div class="page-container page-split">
+        <div class="page-media">
+            {% if site_settings.about_image %}
+            <img src="{{ site_settings.about_image.url }}" alt="Мастерская ESTIVO: плетение и сборка мебели" loading="lazy">
+            {% else %}
+            <img src="{% static 'img/placeholders/collection.svg' %}" alt="Мастерская ESTIVO: плетение и сборка мебели" loading="lazy">
+            {% endif %}
+        </div>
+        <div class="grid content-center gap-5">
+            <h2 class="page-h2">Кто мы</h2>
+            <p class="page-lead">ESTIVO — производитель плетёной мебели полного цикла. Плетём вручную из искусственного ротанга (ПЭ) и роупа, сами свариваем и красим металлические каркасы.</p>
+            <p class="page-lead">Всё производство — в Тольятти: 3 цеха и склад 650 м². Поэтому каждое изделие проходит контроль от первого плетения до упаковки.</p>
+            <div>
+                <a href="{% url 'about_page' %}" class="btn btn-outline">Подробнее о производстве</a>
+            </div>
         </div>
     </div>
 </section>
 
-{% if collections %}
-<section data-section="collections" class="page-section">
+{% if materials %}
+<section data-section="materials" class="page-section page-section--alt">
     <div class="page-container">
-        <div class="page-head page-head--row">
-            <h2 class="page-h2">Коллекции с ценами</h2>
-            <a href="{% url 'catalog_list' %}" class="btn btn-outline">Смотреть все</a>
+        <div class="page-head">
+            <h2 class="page-h2">Из чего мы делаем мебель</h2>
         </div>
-
-        {% if collections %}
-        <ul class="page-grid page-grid--3 mb-10">
-            {% for c in collections %}
-            <li>
-                <a href="{% url 'catalog_list' %}" class="page-tile h-full">
-                    <span class="page-h3">{{ c.name }}</span>
-                    {% if c.description %}<span class="page-note">{{ c.description|truncatewords:18 }}</span>{% endif %}
-                </a>
+        <ul class="page-grid page-grid--4">
+            {% for m in materials %}
+            <li class="grid content-start gap-2">
+                <h3 class="page-h3">{{ m.name }}</h3>
+                {% if m.description %}<p class="page-note">{{ m.description }}</p>{% endif %}
+                <a href="{% url 'catalog_by_material' m.slug %}" class="underline">Смотреть модели</a>
             </li>
             {% endfor %}
         </ul>
-        {% endif %}
-
     </div>
 </section>
 {% endif %}
 
+{% include 'partials/_why_estivo.html' %}
+
+<section data-section="process" class="page-section page-section--dark">
+    <div class="page-container">
+        <div class="page-head">
+            <h2 class="page-h2">Как мы работаем</h2>
+        </div>
+        <ol class="page-grid page-grid--4 page-steps">
+            {% for title, text in production_steps %}
+            <li>
+                <h3 class="page-h3">{{ forloop.counter }}. {{ title }}</h3>
+                <p class="page-lead">{{ text }}</p>
+            </li>
+            {% endfor %}
+        </ol>
+    </div>
+</section>
+
 <section data-section="services" class="page-section">
     <div class="page-container">
         <div class="page-head">
-            <h2 class="page-h2">Выберите свой сценарий</h2>
+            <h2 class="page-h2">Для кого мы работаем</h2>
         </div>
         <ul class="page-grid page-grid--3">
             {% for seg in segments %}
@@ -116,45 +151,5 @@
 </section>
 {% endif %}
 
-<section data-section="story" class="page-section">
-    <div class="page-container page-split">
-        <div class="page-media">
-            {% if site_settings.about_image %}
-            <img src="{{ site_settings.about_image.url }}" alt="Мастерская ESTIVO: плетение и сборка мебели" loading="lazy">
-            {% else %}
-            <img src="{% static 'img/placeholders/collection.svg' %}" alt="Мастерская ESTIVO: плетение и сборка мебели" loading="lazy">
-            {% endif %}
-        </div>
-        <div class="grid content-center gap-5">
-            <h2 class="page-h2">Всё производство — в Тольятти</h2>
-            <p class="page-lead">Плетём вручную, сами свариваем и красим металл: от идеи до доставки всё производство у нас, поэтому каждое изделие проходит контроль от первого плетения до упаковки.</p>
-            <div>
-                <a href="{% url 'about_page' %}" class="btn btn-outline">О нас</a>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section data-section="seo" class="page-section page-section--alt">
-    <div class="page-container page-container--narrow">
-        <div class="page-prose">
-            <h2 class="page-h2">Плетёная мебель из ротанга, роупа и шпона</h2>
-            <p>ESTIVO производит плетёную мебель ручной работы: кресла, диваны, столы и комплекты для террас, гостиных и общественных пространств. Мы работаем с ротангом, роупом, шпоном и HPL, а каркасы делаем из металла с порошковой окраской.</p>
-        </div>
-
-        <h2 class="page-h3 mt-10 mb-4">Частые вопросы</h2>
-        <div class="grid gap-3">
-            {% for question, answer in faq_items %}
-            <details class="faq-item group">
-                <summary class="faq-item__summary">{{ question }}<span aria-hidden="true" class="faq-item__icon">+</span></summary>
-                <p class="faq-item__answer">{{ answer }}</p>
-            </details>
-            {% endfor %}
-        </div>
-    </div>
-</section>
-
-{% include 'partials/_why_estivo.html' %}
-
-{% include 'partials/_cta_section.html' %}
+{% include 'partials/_cta_section.html' with cta_button="Получить консультацию" %}
 {% endblock %}

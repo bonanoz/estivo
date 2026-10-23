@@ -14,7 +14,7 @@ from django.views.decorators.http import require_GET, require_POST
 from .cart import Cart
 from .catalog_filters import SORT_CHOICES, apply_filters, apply_sort
 from .forms import LeadForm, OrderForm, ReviewForm
-from .models import Category, Collection, ColorOption, Material, Order, OrderItem, Product, Review
+from .models import Category, ColorOption, Material, Order, OrderItem, Product, Review
 from .templatetags.shop_tags import material_genitive
 from .utils import notify_telegram, throttle_post
 from .wishlist import Wishlist
@@ -123,36 +123,16 @@ HOME_SEGMENTS = [
 ]
 
 
-def _home_catalog_links():
-    """Материалы и их категории — только реально существующие сочетания с доступными товарами."""
-    pairs = (
-        Product.objects.filter(is_available=True, material__isnull=False, category__isnull=False)
-        .values_list('material', 'category').distinct()
-    )
-    by_material = {}
-    for material_id, category_id in pairs:
-        by_material.setdefault(material_id, set()).add(category_id)
-    category_ids = {c for ids in by_material.values() for c in ids}
-    categories = {c.id: c for c in Category.objects.filter(id__in=category_ids)}
-    return [
-        {
-            'material': material,
-            'categories': sorted((categories[c] for c in by_material[material.id]), key=lambda c: c.name),
-        }
-        for material in Material.objects.filter(id__in=by_material)
-    ]
-
-
 def home(request):
-    collections = Collection.objects.filter(is_featured=True)[:6]
-    featured_products = Product.objects.filter(is_featured=True, is_available=True).select_related('material').prefetch_related(*CARD_PREFETCH)[:8]
+    # «Цена по запросу» (price=0) на главную не берём: витрина обещает цены.
+    featured_products = (Product.objects.filter(is_featured=True, is_available=True, price__gt=0)
+                         .select_related('material').prefetch_related(*CARD_PREFETCH)[:8])
     reviews = Review.objects.filter(is_published=True).select_related('product')[:6]
     return render(request, 'home.html', {
-        'segments': HOME_SEGMENTS,
-        'collections': collections,
         'featured_products': featured_products,
-        'catalog_links': _home_catalog_links(),
-        'faq_items': FAQ_ITEMS,
+        'materials': Material.objects.all(),
+        'production_steps': PRODUCTION_STEPS,
+        'segments': HOME_SEGMENTS,
         'reviews': reviews,
     })
 

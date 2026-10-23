@@ -12,10 +12,10 @@
             <li class="grid content-start gap-2">
                 <h3 class="page-h3">Изготовим в вашем размере и цвете</h3>
                 <p class="page-note">В наличии: Отгрузка в течение 3 дней.</p>
-                <p class="page-note">Под заказ: Изготовление от 4 недель.</p>
+                <p class="page-note">Под заказ: Изготовление {{ site_info.production_term }}.</p>
             </li>
             <li class="grid content-start gap-2">
-                <h3 class="page-h3">Гарантия 3 года</h3>
+                <h3 class="page-h3">Гарантия {{ site_info.warranty }}</h3>
                 <p class="page-note">На каркас и плетение. <a href="{% url 'warranty_page' %}" class="underline">Условия гарантии</a></p>
             </li>
             <li class="grid content-start gap-2">
