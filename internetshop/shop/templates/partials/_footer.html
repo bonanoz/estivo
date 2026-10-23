@@ -13,6 +13,7 @@
             <li><a href="tel:{{ site_info.phone_href }}" class="btn btn-dark">{{ site_info.phone }}</a></li>
             <li><a href="{{ site_info.social_links.telegram }}" target="_blank" rel="noopener" class="btn btn-dark">Telegram</a></li>
             <li><a href="{{ site_info.social_links.whatsapp }}" target="_blank" rel="noopener" class="btn btn-dark">WhatsApp</a></li>
+            <li><a href="{{ site_info.social_links.max }}" target="_blank" rel="noopener" class="btn btn-dark">Max</a></li>
         </ul>
     </div>
 </footer>
@@ -34,6 +35,7 @@
                     <li><a href="{{ site_info.social_links.instagram }}" target="_blank" rel="noopener" class="inline-flex min-h-11 items-center hover:opacity-85">Instagram</a></li>
                     <li><a href="{{ site_info.social_links.telegram }}" target="_blank" rel="noopener" class="inline-flex min-h-11 items-center hover:opacity-85">Telegram</a></li>
                     <li><a href="{{ site_info.social_links.whatsapp }}" target="_blank" rel="noopener" class="inline-flex min-h-11 items-center hover:opacity-85">WhatsApp</a></li>
+                    <li><a href="{{ site_info.social_links.max }}" target="_blank" rel="noopener" class="inline-flex min-h-11 items-center hover:opacity-85">Max</a></li>
                     <li><a href="{{ site_info.social_links.vk }}" target="_blank" rel="noopener" class="inline-flex min-h-11 items-center hover:opacity-85">VK</a></li>
                     <li><a href="{{ site_info.social_links.pinterest }}" target="_blank" rel="noopener" class="inline-flex min-h-11 items-center hover:opacity-85">Pinterest</a></li>
                 </ul>
@@ -70,6 +72,7 @@
                 {% for label, hours in site_info.work_hours %}
                 <p class="m-0 opacity-80">{{ label }}: {{ hours }}</p>
                 {% endfor %}
+                <p class="mt-2 text-[0.9rem] opacity-80">{{ site_info.callback_note }}</p>
                 <p class="mt-2 text-[0.9rem] opacity-80">{{ site_info.work_hours_note }}</p>
             </div>
         </div>

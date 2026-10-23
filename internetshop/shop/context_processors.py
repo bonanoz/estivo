@@ -2,6 +2,7 @@ SITE_INFO = {
     'brand_name': 'ESTIVO',
     'phone': '+7 927 268-94-04',
     'phone_href': '+79272689404',
+    'callback_note': 'Перезваниваем или пишем в течение 5 минут',
     'email': 'esti-vo@mail.ru',
     'address': 'г. Тольятти, б-р Туполева, 12А, офис 2-4',
     # долгота,широта дома для метки Яндекс Карт: поиск по тексту с «офис 2-4» ставит метку не туда
@@ -16,6 +17,7 @@ SITE_INFO = {
         'instagram': 'https://www.instagram.com/estivo.tlt',
         'whatsapp': 'https://wa.me/79272689404',
         'telegram': 'https://t.me/estivo63',
+        'max': 'https://max.ru/+79272004303',
         'vk': 'https://vk.com/estivo_tlt',
         'pinterest': 'https://pin.it/4AWL8Yise',
     },

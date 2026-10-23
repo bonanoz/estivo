@@ -16,7 +16,8 @@ from django.urls import reverse
 from .helpers import make_product, parse
 
 NEW_PHONE = '79272689404'
-FORBIDDEN_PHONES = ['79272004303', '79178246722', '78482789404']
+FORBIDDEN_PHONES = ['79178246722', '78482789404']
+MAX_PHONE = '79272004303'  # допустим только внутри ссылки max.ru
 FORBIDDEN_TEXT = ['ИП Мелихова', 'ОГРИП', '632147606449']
 
 PHONE_RE = re.compile(r'(?<![\d])(?:\+7|8|7)[\s\-().  ]*\d{3}[\s\-().  ]*\d{3}'
@@ -73,7 +74,7 @@ class E1SingleSellerTests(TestCase):
             with self.subTest(page=name):
                 resp = self.client.get(url)
                 self.assertEqual(resp.status_code, 200)
-                html = resp.content.decode()
+                html = resp.content.decode().replace(f'https://max.ru/+{MAX_PHONE}', '')
                 phones = phones_in(html)
                 self.assertIn(NEW_PHONE, phones, 'нового телефона нет на странице')
                 self.assertEqual(phones, {NEW_PHONE}, f'лишние телефоны: {phones - {NEW_PHONE}}')
