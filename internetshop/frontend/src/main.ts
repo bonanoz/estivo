@@ -9,6 +9,8 @@ declare global {
   }
 }
 
+// Шаблоны используют только JSON в hx-vals/hx-headers, без "js:" и hx-on — eval не нужен.
+htmx.config.allowEval = false;
 window.htmx = htmx;
 window.Alpine = Alpine;
 
