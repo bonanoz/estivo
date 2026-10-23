@@ -391,6 +391,9 @@
   .cookie-banner__actions .btn {
     flex: 1 1 0;
     min-height: 44px;
+    /* подписи в одну строку: на 390px перенос делал полосу выше 15% экрана */
+    padding: 8px 12px;
+    white-space: nowrap;
   }
   .btn-outline {
     background: transparent;
