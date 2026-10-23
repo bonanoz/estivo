@@ -5,40 +5,44 @@
 {% block meta_description %}Разработаем плетёную мебель по вашему эскизу. Индивидуальные размеры, цвета и материалы. Сотрудничество с дизайнерами и архитекторами — ESTIVO.{% endblock %}
 
 {% block content %}
-<section class="section-sm">
-    <div class="container">
-        <div class="section-head">
-            <span class="eyebrow">Дизайнерам и архитекторам</span>
-            <h1>Превращаем эскизы в атмосферу</h1>
-            <p class="lead">От идеи до пространства, в которое влюбляются снова и снова. Изготовим мебель по вашему проекту — с нужными размерами, цветом каркаса и материалами.</p>
+<section class="page-section pt-6 md:pt-8">
+    <div class="page-container">
+        {% include 'partials/_breadcrumbs.html' with crumbs=breadcrumbs %}
+        <div class="page-head mt-6 max-w-[64ch]">
+            <h1 class="page-h1">Превращаем эскизы в атмосферу</h1>
+            <p class="page-lead">От идеи до пространства, в которое влюбляются снова и снова. Изготовим мебель по вашему проекту — с нужными размерами, цветом каркаса и материалами.</p>
         </div>
     </div>
 </section>
 
-<section class="section">
-    <div class="container">
-        <div class="split reverse">
-            <div class="split__media"><img src="{% static 'img/placeholders/collection.svg' %}" alt="Индивидуальный проект ESTIVO"></div>
+<section class="page-section pt-0">
+    <div class="page-container page-split page-split--reverse">
+        <div class="page-media">
+            {% if site_settings.designers_image %}
+            <img src="{{ site_settings.designers_image.url }}" alt="Индивидуальный проект ESTIVO" loading="lazy">
+            {% else %}
+            <img src="{% static 'img/placeholders/collection.svg' %}" alt="Индивидуальный проект ESTIVO" loading="lazy">
+            {% endif %}
+        </div>
+        <div class="grid content-center gap-5">
+            <h2 class="page-h2">Гибкость производства полного цикла</h2>
+            <ul class="page-prose">
+                <li>Изменение размеров и конструкции под проект.</li>
+                <li>Выбор материала: роуп, эко-ротанг, шпон, HPL.</li>
+                <li>Каркасы из стали или алюминия, порошковая окраска в любой цвет.</li>
+                <li>Согласование по фото и видео перед отправкой.</li>
+            </ul>
             <div>
-                <span class="eyebrow">Что мы даём дизайнеру</span>
-                <h2>Гибкость производства полного цикла</h2>
-                <ul>
-                    <li>Изменение размеров и конструкции под проект.</li>
-                    <li>Выбор материала: роуп, эко-ротанг, шпон, HPL.</li>
-                    <li>Каркасы из стали или алюминия, порошковая окраска в любой цвет.</li>
-                    <li>Согласование по фото и видео перед отправкой.</li>
-                </ul>
-                <a href="#zayavka" class="btn btn-primary btn-lg" style="margin-top:var(--space-3);">Обсудить дизайн-проект</a>
+                <a href="#zayavka" class="btn btn-dark btn-lg">Обсудить дизайн-проект</a>
             </div>
         </div>
     </div>
 </section>
 
-<section class="section section-alt" id="zayavka">
-    <div class="container container-narrow">
-        <div class="section-head center">
-            <span class="eyebrow">Заявка на проект</span>
-            <h2>Расскажите о вашей идее</h2>
+<section class="page-section page-section--alt" id="zayavka">
+    <div class="page-container page-container--narrow">
+        <div class="page-head page-head--center text-center">
+            <h2 class="page-h2">Расскажите о вашей идее</h2>
         </div>
         {% include 'partials/_lead_form.html' %}
     </div>

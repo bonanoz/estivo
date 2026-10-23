@@ -1,27 +1,46 @@
-{% load static %}<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ошибка сервера | ESTIVO</title>
-    <link rel="stylesheet" href="{% static 'css/variables.css' %}">
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
-    <link rel="stylesheet" href="{% static 'css/layout.css' %}">
-    <link rel="stylesheet" href="{% static 'css/components.css' %}">
-    <link rel="stylesheet" href="{% static 'css/pages.css' %}">
+    <meta name="robots" content="noindex">
+    <style>
+        :root { color-scheme: light; }
+        body {
+            margin: 0;
+            min-height: 100dvh;
+            display: grid;
+            place-items: center;
+            padding: 16px;
+            background: #faf8f5;
+            color: #1c1a17;
+            font-family: Georgia, 'Times New Roman', serif;
+        }
+        main { width: 100%; max-width: 560px; }
+        h1 { margin: 0 0 16px; font-weight: 500; font-size: clamp(2rem, 5vw, 2.75rem); line-height: 1.1; }
+        p { margin: 0 0 24px; color: #55504a; font-size: 1.05rem; line-height: 1.6; }
+        a {
+            display: inline-flex;
+            align-items: center;
+            min-height: 52px;
+            padding: 16px 36px;
+            border-radius: 50px;
+            background: #a1592e;
+            color: #ffffff;
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+            font-weight: 800;
+            text-decoration: none;
+        }
+        a:hover { background: #1c1a17; }
+        a:focus-visible { outline: 2px solid #a1592e; outline-offset: 2px; }
+    </style>
 </head>
 <body>
-    <section class="section">
-        <div class="container">
-            <div class="confirm">
-                <div class="confirm__icon">500</div>
-                <h1>Что-то пошло не так</h1>
-                <p class="lead">На сервере произошла ошибка. Мы уже разбираемся — попробуйте обновить страницу чуть позже.</p>
-                <div style="margin-top:var(--space-4);">
-                    <a href="/" class="btn btn-primary btn-lg">На главную</a>
-                </div>
-            </div>
-        </div>
-    </section>
+    <main>
+        <h1>Что-то пошло не так</h1>
+        <p>На сервере произошла ошибка. Мы уже разбираемся — попробуйте обновить страницу чуть позже.</p>
+        <a href="/">На главную</a>
+    </main>
 </body>
 </html>

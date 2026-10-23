@@ -1,0 +1,24 @@
+# Blueprint для Render (free). БД — внешняя (Neon/Supabase): бесплатный Postgres Render удаляется через 30 дней.
+services:
+  - type: web
+    name: estivo
+    runtime: python
+    plan: free
+    buildCommand: bash build.sh
+    startCommand: cd internetshop && gunicorn internetshop.wsgi --workers 2
+    envVars:
+      - {key: PYTHON_VERSION, value: 3.12.7}
+      - {key: NODE_VERSION, value: 20}
+      - {key: DEBUG, value: "False"}
+      - {key: SECRET_KEY, generateValue: true}
+      - {key: ALLOWED_HOSTS, sync: false}
+      - {key: CSRF_TRUSTED_ORIGINS, sync: false}
+      - {key: SITE_URL, sync: false}
+      - {key: DATABASE_URL, sync: false}
+      - {key: BOT_TOKEN, sync: false}
+      - {key: CHAT_ID, sync: false}
+      - {key: AWS_STORAGE_BUCKET_NAME, sync: false}
+      - {key: AWS_ACCESS_KEY_ID, sync: false}
+      - {key: AWS_SECRET_ACCESS_KEY, sync: false}
+      - {key: AWS_S3_ENDPOINT_URL, sync: false}
+      - {key: AWS_S3_CUSTOM_DOMAIN, sync: false}

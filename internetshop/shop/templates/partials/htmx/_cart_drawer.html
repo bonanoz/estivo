@@ -1,0 +1,55 @@
+{% load static humanize %}{% comment %}
+Выезжающая корзина после «В корзину» (ответ HTMX на POST /cart/add/<id>/).
+Состояние (открыть/закрыть, фокус, Esc) - Alpine-компонент cartDrawer из frontend/src/cart/index.ts.
+Строки и итог - общий фрагмент _cart_lines.html (степпер и «Удалить» меняют его через HTMX).
+{% endcomment %}
+<div data-cart-drawer class="cart-drawer-wrap" x-data="cartDrawer" @keydown.escape.window="close()">
+    <div class="cart-drawer__backdrop" :data-open="open" @click="close()" aria-hidden="true"></div>
+    <div class="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-drawer-title"
+         x-ref="panel" tabindex="-1" :data-open="open" @keydown.tab="trap($event)">
+        <div class="cart-drawer__head">
+            <div class="cart-drawer__status">
+                <svg class="cart-drawer__check" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>
+                <h2 id="cart-drawer-title" class="cart-drawer__title">Ваша заявка</h2>
+            </div>
+            <button type="button" class="icon-btn" aria-label="Закрыть корзину" @click="close()">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+            </button>
+        </div>
+
+        <div class="cart-drawer__body">
+            <div class="cart-drawer__toast" role="status">
+                <span>Добавлено в заявку: {{ added_product.name }}</span>
+                <a href="{% url 'cart_detail' %}">Открыть</a>
+            </div>
+
+            {% include 'partials/htmx/_cart_lines.html' with mode='drawer' %}
+
+            {% if recommendations %}
+            <section class="cart-recs" aria-labelledby="cart-drawer-recs">
+                <h3 id="cart-drawer-recs" class="cart-recs__title">Вам может понравиться</h3>
+                <ul class="cart-recs__list">
+                    {% for product in recommendations %}
+                    <li>
+                        <a href="{{ product.get_absolute_url }}" class="cart-recs__item">
+                            <span class="cart-recs__media">
+                                {% if product.main_image %}
+                                <img src="{{ product.main_image.url }}" alt="" loading="lazy" width="96" height="72">
+                                {% else %}
+                                <img src="{% static 'img/placeholders/product.svg' %}" alt="" loading="lazy" width="96" height="72">
+                                {% endif %}
+                            </span>
+                            <span class="cart-recs__text">
+                                <span class="cart-recs__name">{{ product.name }}</span>
+                                {% if product.price %}<span class="cart-recs__price">от {{ product.price|intcomma }}&nbsp;₽</span>{% endif %}
+                            </span>
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </section>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<span hx-swap-oob="innerHTML:[data-cart-count]" data-cart-count>{{ cart.count }}</span>

@@ -4,47 +4,48 @@
 {% block meta_description %}Контакты ESTIVO: телефон {{ site_info.phone }}, {{ site_info.email }}, {{ site_info.address }}. Оставьте заявку — свяжемся в ближайшее время.{% endblock %}
 
 {% block content %}
-<section class="section-sm">
-    <div class="container">
-        <div class="section-head">
-            <span class="eyebrow">Контакты</span>
-            <h1>Свяжитесь с нами</h1>
+<section class="page-section pt-6 md:pt-8">
+    <div class="page-container">
+        {% include 'partials/_breadcrumbs.html' with crumbs=breadcrumbs %}
+        <div class="page-head mt-6">
+            <h1 class="page-h1">Свяжитесь с нами</h1>
         </div>
     </div>
 </section>
 
-<section class="section-sm">
-    <div class="container">
-        <div class="split">
-            <div>
-                <ul class="spec-list">
-                    <li><span>Телефон</span><span><a href="tel:{{ site_info.phone_href }}">{{ site_info.phone }}</a></span></li>
-                    <li><span>Email</span><span><a href="mailto:{{ site_info.email }}">{{ site_info.email }}</a></span></li>
-                    <li><span>Адрес</span><span>{{ site_info.address }}</span></li>
-                    {% for label, hours in site_info.work_hours %}
-                    <li><span>{{ label }}</span><span>{{ hours }}</span></li>
-                    {% endfor %}
-                </ul>
-                <p class="muted">{{ site_info.work_hours_note }}</p>
-                <div class="footer-socials" style="margin-top:var(--space-3);">
-                    <a href="{{ site_info.social_links.instagram }}" target="_blank" rel="noopener" style="color:var(--color-accent);">Instagram</a>
-                    <a href="{{ site_info.social_links.telegram }}" target="_blank" rel="noopener" style="color:var(--color-accent);">Telegram</a>
-                    <a href="{{ site_info.social_links.whatsapp }}" target="_blank" rel="noopener" style="color:var(--color-accent);">WhatsApp</a>
-                    <a href="{{ site_info.social_links.vk }}" target="_blank" rel="noopener" style="color:var(--color-accent);">VK</a>
-                </div>
+<section class="page-section pt-0">
+    <div class="page-container page-split">
+        <div class="grid content-start gap-6">
+            <ul class="page-spec">
+                <li><span class="page-spec__label">Телефон</span><a data-goal="click_tel" href="tel:{{ site_info.phone_href }}">{{ site_info.phone }}</a></li>
+                <li><span class="page-spec__label">Email</span><a href="mailto:{{ site_info.email }}">{{ site_info.email }}</a></li>
+                <li><span class="page-spec__label">Адрес</span><span>{{ site_info.address }}</span></li>
+                {% for label, hours in site_info.work_hours %}
+                <li><span class="page-spec__label">{{ label }}</span><span>{{ hours }}</span></li>
+                {% endfor %}
+            </ul>
+            <p class="page-note">{{ site_info.work_hours_note }}</p>
+            <div class="flex flex-wrap gap-2">
+                <a href="{{ site_info.social_links.instagram }}" target="_blank" rel="noopener" class="btn btn-outline">Instagram</a>
+                <a data-goal="click_telegram" href="{{ site_info.social_links.telegram }}" target="_blank" rel="noopener" class="btn btn-outline">Telegram</a>
+                <a data-goal="click_whatsapp" href="{{ site_info.social_links.whatsapp }}" target="_blank" rel="noopener" class="btn btn-outline">WhatsApp</a>
+                <a data-goal="click_max" href="{{ site_info.social_links.max }}" target="_blank" rel="noopener" class="btn btn-outline">Max</a>
+                <a href="{{ site_info.social_links.vk }}" target="_blank" rel="noopener" class="btn btn-outline">VK</a>
             </div>
-            <div>
-                <div class="section-head"><h2 style="font-size:1.9rem;">Оставить заявку</h2></div>
-                {% include 'partials/_lead_form.html' %}
+        </div>
+        <div>
+            <div class="page-head">
+                <h2 class="page-h2">Оставить заявку</h2>
             </div>
+            {% include 'partials/_lead_form.html' %}
         </div>
     </div>
 </section>
 
-<section class="section-sm">
-    <div class="container">
-        <iframe src="https://yandex.ru/map-widget/v1/?text={{ site_info.address|urlencode }}&z=16"
-                width="100%" height="380" frameborder="0" style="border-radius:var(--radius-lg);"
+<section class="page-section pt-0">
+    <div class="page-container">
+        <iframe src="https://yandex.ru/map-widget/v1/?ll={{ site_info.map_ll }}&pt={{ site_info.map_ll }},pm2rdm&z=17"
+                class="block h-[380px] w-full bg-surface-alt" loading="lazy"
                 title="Карта — {{ site_info.address }}"></iframe>
     </div>
 </section>

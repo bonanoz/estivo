@@ -1,0 +1,26 @@
+<!-- @dsCard group="Commerce" height=360 subtitle="Dated sale offer: composition, real old price, saving, end date" -->
+<style>
+  .es-offer { box-sizing: border-box; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 692px; padding: 20px; background: var(--surface-white); }
+  .es-offer__photo { aspect-ratio: 1 / 1; background: var(--surface-muted); border-radius: var(--radius-none); }
+  .es-offer__body { display: flex; flex-direction: column; gap: 10px; }
+  .es-offer__price { font: 800 20px/27px var(--font-body); color: var(--ink); }
+  .es-offer__old { margin-left: 8px; font: 300 16px/24px var(--font-body); color: var(--muted); text-decoration: line-through; }
+  .es-offer__saving, .es-offer__ends { font: 300 14px/17px var(--font-body); color: var(--ink); }
+  .es-offer__ends { color: var(--brand); }
+  .es-offer .es-btn { margin-top: auto; }
+  @media (max-width: 767px) { .es-offer { grid-template-columns: 1fr; } }
+</style>
+<div class="es" style="padding:20px;background:var(--surface)">
+  <article class="es-offer">
+    <div class="es-offer__photo" role="img" aria-label="[фото комплекта]"></div>
+    <div class="es-offer__body">
+      <h3 class="es-title--promo" style="margin:0">Кокон Комо</h3>
+      <p class="es-text">Кресло-кокон, подушка, металлическая стойка</p>
+      <span class="es-offer__price">64 900 ₽<span class="es-offer__old">72 000 ₽</span></span>
+      <span class="es-offer__saving">Выгода 7 100 ₽</span>
+      <span class="es-offer__ends">Акция до 30 ноября 2026</span>
+      <!-- hidden form field: source_page="offer:<slug>" (R16) -->
+      <a class="es-btn es-btn--accent" href="#">Узнать цену Кокон Комо</a>
+    </div>
+  </article>
+</div>

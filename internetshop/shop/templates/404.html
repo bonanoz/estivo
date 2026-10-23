@@ -3,17 +3,31 @@
 {% block meta_title %}Страница не найдена | ESTIVO{% endblock %}
 
 {% block content %}
-<section class="section">
-    <div class="container">
-        <div class="confirm">
-            <div class="confirm__icon">404</div>
-            <h1>Страница не найдена</h1>
-            <p class="lead">Похоже, такой страницы не существует или она была перемещена.</p>
-            <div style="margin-top:var(--space-4);">
-                <a href="{% url 'home' %}" class="btn btn-primary btn-lg">На главную</a>
-                <a href="{% url 'catalog_list' %}" class="btn btn-outline btn-lg">В каталог</a>
-            </div>
+<section class="page-section pt-6 md:pt-10">
+    <div class="page-container">
+        <div class="page-head max-w-[60ch]">
+            <h1 class="page-h1">Страница не найдена</h1>
+            <p class="page-lead">Ошибка 404: такой страницы не существует или она была перемещена. Загляните в каталог, там всё, что мы делаем.</p>
+        </div>
+        <div class="flex flex-wrap gap-3">
+            <a href="{% url 'catalog_list' %}" class="btn btn-dark btn-lg">Перейти в каталог</a>
+            <a href="{% url 'home' %}" class="btn btn-outline btn-lg">На главную</a>
         </div>
     </div>
 </section>
+
+{% if bestsellers %}
+<section class="page-section page-section--alt" aria-labelledby="not-found-picks">
+    <div class="page-container">
+        <div class="page-head">
+            <h2 id="not-found-picks" class="page-h2">Хиты продаж</h2>
+        </div>
+        <ul class="grid grid-cols-2 gap-4 md:grid-cols-4 list-none m-0 p-0">
+            {% for product in bestsellers %}
+            <li>{% include 'partials/_product_card.html' %}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</section>
+{% endif %}
 {% endblock %}

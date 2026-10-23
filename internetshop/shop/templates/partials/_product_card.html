@@ -1,23 +1,54 @@
-{% load static %}
-<article class="product-card" data-reveal>
-    <a href="{{ product.get_absolute_url }}" class="product-card__media">
-        {% if product.old_price %}<span class="badge">Акция</span>{% endif %}
+{% load static humanize %}{% comment %}
+Карточка товара. Ожидает `product`. Бейджи: Новинка (is_new), Хит (is_bestseller), Скидка (old_price > price).
+Для списков во view стоит делать prefetch_related('available_colors'), иначе по запросу на карточку.
+Сердце: hx-post на /wishlist/toggle/<id>/ (ответ заменяет саму кнопку; счётчик в шапке приходит OOB).
+Состояние берётся из контекстного процессора `wishlist` (`product.id in wishlist`), если он есть.
+{% endcomment %}
+{% with colors=product.available_colors.all %}
+<article class="product-card">
+    <div class="product-card__media">
+        <div class="product-card__badges">
+            {% if product.is_new %}<span class="badge badge-new">Новинка</span>{% endif %}
+            {% if product.is_bestseller %}<span class="badge badge-hit">Хит</span>{% endif %}
+            {% if product.old_price and product.old_price > product.price %}<span class="badge badge-sale">Скидка</span>{% endif %}
+        </div>
         {% if product.main_image %}
-        <img src="{{ product.main_image.url }}" alt="{{ product.name }}" loading="lazy">
+        <img src="{{ product.main_image.url }}" alt="{{ product.name }}" loading="lazy" width="800" height="600">
         {% else %}
-        <img src="{% static 'img/placeholders/product.svg' %}" alt="{{ product.name }}" loading="lazy">
+        <img src="{% static 'img/placeholders/product.svg' %}" alt="{{ product.name }}" loading="lazy" width="800" height="600">
         {% endif %}
-    </a>
+        {% if product.gallery.all %}<span class="product-card__gallery-hint" aria-hidden="true"><span class="is-current"></span><span></span></span>{% endif %}
+    </div>
+
+    <button type="button" class="icon-btn product-card__heart"
+            hx-post="/wishlist/toggle/{{ product.id }}/" hx-swap="outerHTML"
+            aria-pressed="{% if product.id in wishlist %}true{% else %}false{% endif %}"
+            aria-label="Избранное: {{ product.name }}">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg>
+    </button>
+
     <div class="product-card__body">
         {% if product.material %}<div class="product-card__meta">{{ product.material.name }}{% if product.category %} · {{ product.category.name }}{% endif %}</div>{% endif %}
         <h3 class="product-card__title"><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h3>
         {% if product.short_description %}<p class="product-card__desc">{{ product.short_description }}</p>{% endif %}
-        <div class="product-card__foot">
-            <div class="product-card__price">
-                {% if product.old_price %}<span class="product-card__old">{{ product.old_price }} ₽</span>{% endif %}
-                <small>от</small> {{ product.price }} ₽
-            </div>
-            <a href="{{ product.get_absolute_url }}" class="btn btn-outline" style="padding:10px 20px;">Подробнее</a>
+        {% if colors %}
+        <div class="product-card__swatches">
+            <span class="sr-only">Доступные цвета:{% for c in colors %} {{ c.name }}{% if not forloop.last %},{% endif %}{% endfor %}</span>
+            {% for c in colors|slice:":4" %}
+            <span class="swatch-dot" aria-hidden="true" style="background-color: {{ c.hex }};{% if c.swatch_image %} background-image: url('{{ c.swatch_image.url }}'); background-size: cover;{% endif %}"></span>
+            {% endfor %}
+            {% if colors|length > 4 %}<span aria-hidden="true">+{{ colors|length|add:"-4" }}</span>{% endif %}
         </div>
+        {% endif %}
+        <div class="product-card__price">
+            {% if product.price %}
+            <span><small>от</small> {{ product.price|intcomma }}&nbsp;₽</span>
+            {% if product.old_price and product.old_price > product.price %}<s class="product-card__old">{{ product.old_price|intcomma }}&nbsp;₽</s>{% endif %}
+            {% else %}
+            <span>Цена по запросу</span>
+            {% endif %}
+        </div>
+        {% if not product.price %}<a href="{% url 'contacts_page' %}?product={{ product.slug }}" class="product-card__ask">Узнать цену</a>{% endif %}
     </div>
 </article>
+{% endwith %}

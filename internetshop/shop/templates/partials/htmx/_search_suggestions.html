@@ -1,0 +1,16 @@
+{% comment %}Подсказки поиска из шапки (HTMX). Контекст: query, products, recommendations (если ничего не найдено).{% endcomment %}
+{% if products %}
+<ul class="search-list">
+    {% for product in products %}{% include 'partials/htmx/_search_row.html' %}{% endfor %}
+</ul>
+<a class="btn btn-outline btn-block search-all" href="{% url 'catalog_list' %}?search={{ query|urlencode }}">Все результаты</a>
+{% else %}
+<p class="search-empty">Ничего не найдено</p>
+{% if recommendations %}
+<p class="search-hint">Возможно, вам понравится</p>
+<ul class="search-list">
+    {% for product in recommendations %}{% include 'partials/htmx/_search_row.html' %}{% endfor %}
+</ul>
+{% endif %}
+<a class="btn btn-outline btn-block search-all" href="{% url 'catalog_list' %}">Открыть каталог</a>
+{% endif %}

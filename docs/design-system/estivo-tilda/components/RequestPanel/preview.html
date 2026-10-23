@@ -1,0 +1,71 @@
+<!-- @dsCard group="Commerce" height=720 width=960 subtitle="Cart drawer as a request: lines, estimate, facts, accent button, added toast" -->
+<style>
+  .es-request-stage { position: relative; height: 680px; background: var(--surface); overflow: hidden; }
+  .es-request-scrim { position: absolute; inset: 0; background: var(--scrim); }
+  .es-request { position: absolute; top: 0; right: 0; bottom: 0; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px;
+    width: min(420px, 100%); padding: 20px; background: var(--surface-white); }
+  .es-request__head { display: flex; align-items: center; justify-content: space-between; }
+  .es-request__title { margin: 0; font: 500 35px/42px var(--font-display); color: var(--ink); }
+  .es-request__lines { display: flex; flex-direction: column; gap: 16px; margin: 0; padding: 0; list-style: none; }
+  .es-request__line { display: grid; grid-template-columns: 72px 1fr auto; gap: 12px; align-items: start; }
+  .es-request__photo { aspect-ratio: 1 / 1; background: var(--surface-muted); }
+  .es-request__name { margin: 0; font: 300 16px/24px var(--font-body); color: var(--ink); }
+  .es-request__meta { display: block; font: 300 14px/17px var(--font-body); color: var(--muted); }
+  /* Compact stepper: 32px to the eye, 44px to the finger via ::after (R22). */
+  .es-request__qty { display: inline-flex; align-items: center; margin-top: 8px; height: 32px; border: 1px solid var(--border-input); border-radius: var(--radius-md);
+    font: 300 14px/17px var(--font-body); color: var(--ink); }
+  .es-request__qty span { min-width: 24px; text-align: center; }
+  .es-request__step { position: relative; width: 32px; height: 100%; padding: 0; border: 0; background: transparent; color: var(--ink);
+    font: 300 16px/1 var(--font-body); cursor: pointer; transition: opacity .2s ease-in-out; }
+  .es-request__step::after { content: ""; position: absolute; inset: -6px; }
+  .es-request__step:hover { opacity: .85; }
+  .es-request__step:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+  .es-request__sum { display: flex; justify-content: space-between; font: 800 16px/24px var(--font-body); color: var(--ink); }
+  .es-request__note { margin: 0; font: 300 14px/20px var(--font-body); color: var(--ink-soft); }
+  .es-request .es-btn--accent { width: 100%; }
+  /* Narrow panel: one fact per line; underline clears descenders («д») instead of breaking at them. */
+  .es-request .es-facts { flex-direction: column; gap: 12px; }
+  .es-request .es-facts a { text-decoration-skip-ink: none; text-underline-offset: 4px; }
+  .es-toast { position: absolute; left: 20px; bottom: 20px; display: flex; align-items: center; gap: 16px; padding: 0 0 0 20px;
+    background: var(--graphite); color: var(--on-dark); font: 300 14px/17px var(--font-body); }
+  .es-toast a { display: inline-flex; align-items: center; min-height: var(--tap-min); padding: 0 20px; color: var(--on-dark); }
+</style>
+<div class="es es-request-stage">
+  <div class="es-request-scrim" aria-hidden="true"></div>
+  <aside class="es-request" role="dialog" aria-modal="true" aria-labelledby="req-title">
+    <div class="es-request__head">
+      <h2 class="es-request__title" id="req-title">Ваша заявка</h2>
+      <button class="es-icon-btn" type="button" aria-label="Закрыть"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg></button>
+    </div>
+    <ul class="es-request__lines">
+      <li class="es-request__line">
+        <div class="es-request__photo" role="img" aria-label="[фото]"></div>
+        <div>
+          <p class="es-request__name">Кресло-кокон, роуп</p>
+          <span class="es-request__meta">Плетение: Графит · Подушки: Песок</span>
+          <div class="es-request__qty"><button class="es-request__step" type="button" aria-label="Меньше">−</button><span>1</span><button class="es-request__step" type="button" aria-label="Больше">+</button></div>
+        </div>
+        <span class="es-request__name">64 900 ₽</span>
+      </li>
+      <li class="es-request__line">
+        <div class="es-request__photo" role="img" aria-label="[фото]"></div>
+        <div>
+          <p class="es-request__name">Комплект: диван, 2 кресла, стол</p>
+          <span class="es-request__meta">Арт. К-60 · Плетение: Песок</span>
+          <div class="es-request__qty"><button class="es-request__step" type="button" aria-label="Меньше">−</button><span>1</span><button class="es-request__step" type="button" aria-label="Больше">+</button></div>
+        </div>
+        <span class="es-request__name">189 000 ₽</span>
+      </li>
+    </ul>
+    <div class="es-request__sum"><span>Итого</span><span>от 253 900 ₽</span></div>
+    <p class="es-request__note">Это предварительный расчёт. Оплаты на сайте нет: менеджер перезвонит в течение [уточнить: время], уточнит цвет, сроки и стоимость доставки.</p>
+    <ul class="es-facts">
+      <li><b>Срок</b>Отгрузка в течение 3 дней / изготовление от 4 недель</li>
+      <li><b>Доставка</b>ТК до двери</li>
+      <li><b>Гарантия</b><a href="#" style="color:inherit">3 года</a></li>
+      <li><b>Оплата</b>Договор, 50/50 после фото- и видеоотчёта</li>
+    </ul>
+    <a class="es-btn es-btn--accent" href="#">Перейти к заявке</a>
+  </aside>
+  <div class="es-toast" role="status">Добавлено в заявку<a href="#">Открыть</a></div>
+</div>

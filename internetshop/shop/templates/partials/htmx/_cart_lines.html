@@ -1,0 +1,72 @@
+{% load humanize %}{% comment %}
+Строки корзины, итог и действия - общий блок для страницы /cart/ и выезжающей корзины.
+Режим: параметр `mode` ('drawer' | 'page') при include; в ответах HTMX на cart_update/cart_remove/cart_undo
+приходит скрытым полем `ctx` формы. `full` - блок вставлен в полную страницу (а не пришёл фрагментом);
+`bestsellers` - подборка для пустого состояния полной страницы.
+Заменяется целиком (hx-target="#cart-lines", outerHTML). Счётчик в шапке - OOB в конце.
+{% endcomment %}
+{% firstof mode request.POST.ctx "page" as ctx %}
+<div id="cart-lines" class="cart-lines cart-lines--{% if ctx == 'drawer' %}drawer{% else %}page{% endif %}">
+    {% if removed %}
+    <div class="cart-toast" role="status" x-data="{ show: true }" x-init="setTimeout(() => show = false, 10000)" x-show="show" x-transition.opacity>
+        <span class="cart-toast__text">{{ removed.name }} удалён из корзины</span>
+        <form method="post" action="{% url 'cart_undo' %}" hx-post="{% url 'cart_undo' %}" hx-target="#cart-lines" hx-swap="outerHTML">
+            {% csrf_token %}
+            <input type="hidden" name="ctx" value="{% if ctx == 'drawer' %}drawer{% else %}page{% endif %}">
+            <button type="submit" class="cart-toast__undo">Вернуть</button>
+        </form>
+    </div>
+    {% endif %}
+
+    {% if cart.is_empty %}
+    <div class="cart-empty">
+        <h2 class="cart-empty__title">В корзине пока пусто</h2>
+        <p class="cart-empty__text">Выберите мебель в каталоге: добавьте понравившееся, и менеджер поможет с деталями и стоимостью.</p>
+        <a href="{% url 'catalog_list' %}" class="btn btn-dark btn-lg">Продолжить покупки</a>
+        {% if ctx != 'drawer' %}
+        <ul class="cart-trust">
+            <li><strong>Ручная работа</strong><span>Каждое изделие плетут мастера мастерской ESTIVO.</span></li>
+            <li><strong>Гарантия 3 года</strong><span>На каркас и плетение при правильной эксплуатации.</span></li>
+            <li><strong>Доставка по России</strong><span>ТК до двери, аккуратная упаковка для транспортировки.</span></li>
+        </ul>
+        {% if bestsellers %}
+        <section id="cart-recs" class="cart-empty__recs" aria-labelledby="cart-recs-title">
+            <h2 id="cart-recs-title">Вам может понравиться</h2>
+            <div class="cart-empty__grid">
+                {% for product in bestsellers %}{% include 'partials/_product_card.html' %}{% endfor %}
+            </div>
+        </section>
+        {% elif not full %}
+        <div id="cart-recs" hx-get="{% url 'cart_detail' %}" hx-trigger="load" hx-select="#cart-recs" hx-swap="outerHTML"></div>
+        {% endif %}
+        {% endif %}
+    </div>
+    {% else %}
+    <div class="cart-lines__grid">
+        <ul class="cart-lines__list">
+            {% for item in cart %}{% if ctx == 'drawer' %}{% include 'partials/htmx/_cart_line.html' with item=item idx=forloop.counter mode='drawer' %}{% else %}{% include 'partials/htmx/_cart_line.html' with item=item idx=forloop.counter mode='page' %}{% endif %}{% endfor %}
+        </ul>
+        <div class="cart-summary">
+            {% if ctx != 'drawer' %}<h2 class="cart-summary__title">Ваша заявка</h2>{% endif %}
+            <div class="cart-summary__row"><span>Товаров</span><span>{{ cart.count }}</span></div>
+            <div class="cart-summary__row cart-summary__total"><span>Итого</span><span>{{ cart.total_price|intcomma }}&nbsp;₽</span></div>
+            <p class="cart-summary__note">Это предварительный расчёт. Оплаты на сайте нет: менеджер перезвонит, уточнит цвет, сроки и стоимость доставки.</p>
+            <ul class="es-facts">
+                <li><b>Срок: в наличии</b>Отгрузка в течение 3 дней</li>
+                <li><b>Срок: под заказ</b>Изготовление от 4 недель</li>
+                <li><b>Доставка</b>ТК до двери</li>
+                <li><b>Гарантия 3 года</b><a href="{% url 'warranty_page' %}">Условия гарантии</a></li>
+                <li><b>Оплата</b>Договор: 50% предоплата, 50% после фото- и видеоотчёта</li>
+            </ul>
+            <a href="{% url 'checkout' %}" class="btn btn-primary btn-block btn-lg">Перейти к заявке</a>
+            {% if ctx == 'drawer' %}
+            <a href="{% url 'catalog_list' %}" class="btn btn-outline btn-block" @click.prevent="close()">Продолжить покупки</a>
+            <a href="{% url 'cart_detail' %}" class="cart-summary__link">Открыть корзину</a>
+            {% else %}
+            <a href="{% url 'catalog_list' %}" class="btn btn-outline btn-block">Продолжить покупки</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% if not full %}<span hx-swap-oob="innerHTML:[data-cart-count]" data-cart-count>{{ cart.count }}</span>{% endif %}

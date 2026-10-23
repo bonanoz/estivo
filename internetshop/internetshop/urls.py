@@ -21,10 +21,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import TemplateView
 
-from shop.sitemaps import ProductSitemap, StaticViewSitemap
+from shop.sitemaps import CatalogSitemap, ProductSitemap, StaticViewSitemap
 
 sitemaps = {
     'products': ProductSitemap,
+    'catalog': CatalogSitemap,
     'static': StaticViewSitemap,
 }
 

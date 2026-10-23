@@ -1,6 +1,6 @@
-User-agent: *
+{% load shop_tags %}User-agent: *
 Allow: /
 Disallow: /admin/
 Disallow: /order/
 
-Sitemap: {{ request.scheme }}://{{ request.get_host }}/sitemap.xml
+Sitemap: {{ '/sitemap.xml'|absolute }}

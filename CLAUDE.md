@@ -15,35 +15,51 @@ first; Telegram delivery is never allowed to block or lose data.
 ## Setup and commands
 
 Project root for Django commands is `internetshop/` (the inner directory containing `manage.py`), not the repo root.
+Stack: Django **5.2.18** (LTS, pinned in `requirements.txt`; django-htmx needs >=5.2), Tailwind CSS v4 + htmx +
+Alpine.js + TypeScript built with Vite (`internetshop/frontend/`), django-vite in templates.
 
 ```bash
 cd internetshop
 python -m venv venv && venv\Scripts\activate   # Windows
 pip install -r ../requirements.txt
+cd frontend && npm ci && npm run build && cd ..   # Vite build -> shop/static/dist/ (before collectstatic!)
 python manage.py migrate
 python manage.py seed_demo        # demo Material/Category/Collection/Product/Review data
 python manage.py createsuperuser
-python manage.py collectstatic    # required once — ManifestStaticFilesStorage fails template
+python manage.py collectstatic --noinput   # required once — ManifestStaticFilesStorage fails template
                                    # rendering (missing manifest entry) if static isn't collected
 python manage.py runserver
 ```
 
-- Run all tests: `python manage.py test` (from `internetshop/`)
-- Run a single test: `python manage.py test shop.tests.SmokeTests.<test_method>`
-- No linter/formatter is configured in this repo.
-- Static changes (CSS/JS/fonts) need `python manage.py collectstatic --noinput` before they show up
-  correctly under `CompressedManifestStaticFilesStorage` — templates reference the manifest, not raw files.
+- Run all tests: `python manage.py test` (from `internetshop/`; 179 tests in `shop/tests/`, one file per area,
+  needs the Postgres from `.env`; `django_vite` runs in dev mode under `test`, so no built `dist/` is needed).
+- Run a single test: `python manage.py test shop.tests.test_smoke.<Class>.<test_method>`
+- No Python linter/formatter is configured. Frontend: `npm run build` runs `tsc --noEmit` + `vite build`.
+- Frontend dev: `VITE_DEV_MODE=1` makes django-vite load the Vite dev server (`npm run dev`, port 5173) with HMR
+  instead of reading the manifest. Without it (production-like) templates need `npm run build` first.
+- Static changes (CSS/JS/TS/fonts) need `npm run build` (for `frontend/src`) and
+  `python manage.py collectstatic --noinput` before they show up under `CompressedManifestStaticFilesStorage` —
+  templates reference the manifest, not raw files.
 - `CompressedManifestStaticFilesStorage` **fails collectstatic hard** if a CSS `url()` points at a
-  missing file (e.g. a font). `shop/static/fonts/gilroy/` ships empty placeholder `.woff2` files for
-  exactly this reason — don't delete them until real font files replace them.
+  missing file (e.g. a font). `shop/static/fonts/gilroy/` holds the real `Gilroy-{Light,Regular,Medium,SemiBold,Bold,ExtraBold}.woff2`
+  referenced by `@font-face` — don't delete or rename them.
+- Design QA gates before merging UI work: `node ~/.claude/skills/design-taste-frontend/scripts/lint.mjs
+  internetshop/shop/templates internetshop/frontend/src` must show no FAIL outside the allow-list
+  (palette-claude/terracotta/cream, card-rows, few-pictures, no-real-pictures, no-footage, still-page; stored in
+  `.taste-skill/direction.json`, see `docs/design-system.md` §7), plus the ui-ux-pro-max pre-delivery checklist;
+  `shop/tests/test_design_tokens.py` guards the tokens and bans (shadows, gradients, <14px, Gilroy weights outside 300–800).
+  Design source of truth: `docs/design-system/estivo-tilda/` (owner decision 2026-10-22; read-only except
+  `MAPPING.md`, which maps its tokens/`es-*` components onto the project), applied in `docs/design-system.md`.
 
 ### Required environment (`.env` in `internetshop/`, never committed)
 
 - `BOT_TOKEN` — Telegram bot token from @BotFather
 - `CHAT_ID` — Telegram chat/user id that receives order/lead notifications (the recipient must have
   sent `/start` to the bot first, or the Telegram API returns "chat not found")
-- `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT` — PostgreSQL connection
+- `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT` — PostgreSQL connection (PostgreSQL >=12 is required
+  by Django 5.2; set `DB_PORT` to your server's port, e.g. 5433 if a second PostgreSQL already uses 5432)
 - `SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS` — standard Django settings, read via `os.environ` with dev-friendly defaults
+- `VITE_DEV_MODE=1` — optional, use the Vite dev server instead of the built manifest
 - `SITE_URL` — public domain, used for sitemap/canonical/OG absolute URLs (defaults to `https://estivo63.ru`)
 
 The project uses PostgreSQL (`psycopg2-binary`), not SQLite, despite a stray `db.sqlite3` in the tree.
@@ -101,9 +117,10 @@ scraped from the original Tilda site). `product_detail` is slug-based.
 Cart flow (`shop/cart.py` + cart views): the `Cart` class wraps `request.session['cart']`. A line is
 keyed by product **plus chosen colors**, so the same product in different colors are separate lines
 (`shop/cart.py:_line_id`). Views: `cart_add` (validates colors against `available_colors` via
-`_parse_colors`, then AJAX-JSON or redirect), `cart_update`, `cart_remove`, `cart_detail`, and
+`_valid_colors`, then HTMX drawer fragment, legacy AJAX-JSON, or redirect to a safe `next`), `cart_update`, `cart_remove`, `cart_detail`, and
 `checkout` (creates `Order` + `OrderItem`s, `recalc_total`, Telegram, clears cart → `order_success`).
-The product page's "В корзину" button posts AJAX; "Оформить заявку" posts with `name=checkout` and
+The product page's "В корзину" button posts via htmx and opens the cart drawer; removing a line without JS stores a
+session notice so `cart_detail` still offers «Вернуть» (`cart_undo`); "Оформить заявку" posts with `name=checkout` and
 `data-no-ajax` so the server redirects straight to checkout. There is no more `order_create`.
 
 Lead-capturing pages (`b2b_page`, `designers_page`, `contacts_page`) all funnel through
@@ -118,31 +135,41 @@ reference `site_info.*` without any view passing them explicitly.
 ### Templates and static
 
 `base.html` + `partials/_header.html` / `_footer.html` / `_product_card.html` / `_lead_form.html` /
-`_cta_section.html` / `_breadcrumbs.html` are the shared building blocks; page templates extend
-`base.html` and override `meta_title`/`meta_description`/`og_*` blocks (defaults match the real
-ESTIVO SEO copy carried over from Tilda).
+`_cta_section.html` / `_breadcrumbs.html` / `_promo_bar.html` / `_chat_button.html` / `_pagination.html` are the
+shared building blocks; HTMX fragments live in `partials/htmx/`. Page templates extend `base.html` and override
+`meta_title`/`meta_description`/`og_*` blocks (defaults carry the real ESTIVO SEO copy from Tilda). Content pages
+get `breadcrumbs` (list of `(label, url|None)`) from their views and render `partials/_breadcrumbs.html`.
+`base.html` sets the `html.js` flag and the promo-dismissed class in `<head>` before first paint.
 
-CSS is hand-written vanilla, split by concern under `shop/static/css/`: `variables.css` (design
-tokens — colors, spacing, the two-weight Gilroy setup), `base.css`, `layout.css` (header/footer/grid),
-`components.css` (buttons/cards/forms/accordion), `pages.css` (page-specific sections incl. cart,
-checkout, color swatches, 3D wrapper). No Bootstrap/Tailwind. `shop/static/js/` is small vanilla JS
-(mobile nav, scroll-reveal, phone mask, product gallery, `cart.js` AJAX cart, `product-3d.js`) — no
-bundler, no framework.
+`shop/templatetags/shop_tags.py` provides `footer_data` and `review_stats`; context processors inject
+`site_info`, `site_settings` (singleton `SiteSettings`: hero/about images, promo bar with validated `promo_url`),
+`cart` and `wishlist` into every template.
 
-The 3D configurator uses Google's `<model-viewer>`, vendored at `shop/static/js/vendor/model-viewer.min.js`
-(loaded as an ES module only on product pages that have a `model_3d`). `product-3d.js` maps each color
-swatch to a `.glb` material **by name** — the model's materials must be named `weave` / `cushion` /
-`frame` (same strings as `finish_type`) for recolor to work; it calls `setBaseColorFactor` (a tint, not
-a variant swap). When re-vendoring model-viewer, strip its trailing `//# sourceMappingURL=` comment or
-`collectstatic` fails on the missing `.map`. Swatch selection also updates the on-page color label even
-with no 3D model, so 2D-only products still get the picker.
+**Frontend (`internetshop/frontend/`)**: Vite entry `src/main.ts` imports `styles/main.css` (Tailwind v4: `@theme`
+tokens, `@layer base/components`; page CSS in `styles/{catalog,product,cart,pages}.css`), registers htmx and
+Alpine, and auto-imports every `src/<feature>/index.ts` (`cart` drawer, `catalog` filter panel/focus-trap,
+`product` gallery/variants/sticky bar, `forms` phone mask + `form[data-once]` double-submit guard, `lib`
+`$scrollLock` helper shared by overlays). Output goes to `shop/static/dist/` (gitignored build artefact, read via
+the Vite manifest). The legacy hand-written CSS/JS were removed; only `shop/static/js/vendor/model-viewer.min.js`
+remains, loaded as an ES module on PDPs that have a `model_3d`.
+
+Interactions are progressive enhancement: filters/sort/cart/wishlist/undo work as plain GET/POST+redirect
+without JS; htmx and Alpine upgrade them (cart drawer, live filter count, search suggestions, wishlist heart).
+
+Catalog filters/sorting live in `shop/catalog_filters.py` (`apply_filters`, `apply_sort`, `SORT_CHOICES`; query
+params `category`, `material`, `color`, `price_min/max`, `length_min/max`, `flag`, `sort`); the wishlist is a
+session-backed `shop/wishlist.py::Wishlist` with `wishlist_toggle` (HTMX fragment or safe redirect).
+
+The 3D configurator uses Google's `<model-viewer>`, vendored at `shop/static/js/vendor/model-viewer.min.js`.
+The color swatch handling in `frontend/src/product/variants.ts` maps swatches to `.glb` materials **by name** —
+materials must be named `weave` / `cushion` / `frame` (same strings as `finish_type`). When re-vendoring
+model-viewer, strip its trailing `//# sourceMappingURL=` comment or `collectstatic` fails on the missing `.map`.
 
 Typography: headings use **Cormorant Garamond** (Google Fonts). Body/UI text uses **Gilroy**, which
-is a paid font — only the Light (300) and ExtraBold (800) weights are freely licensed, so every
-body-font `font-weight` in the CSS uses the `--weight-body-regular`/`--weight-body-bold` variables
-instead of arbitrary values (no 400/500/600/700 body text exists on purpose). Real `.woff2` files go
-in `shop/static/fonts/gilroy/` (see the `README.txt` there); until supplied, `@font-face` silently
-falls back to the system sans-serif in `--font-body`.
+is a paid font; the owner has a license for weights 300–800 (confirmed 23.10.2026, files from their Tilda
+account). Defaults stay `--weight-body-regular` (300) / `--weight-body-bold` (800); 400–700 are available
+when the estivo-tilda design calls for them (the live Tilda site uses 400/500). The `.woff2` files live in
+`shop/static/fonts/gilroy/`; if they fail to load, `--font-body` falls back to `"Helvetica Neue", Arial`.
 
 Product/collection images are placeholders (`shop/static/img/placeholders/*.svg`) until real photos
 are uploaded through the admin — `main_image`/`cover_image` are `blank=True`, and templates always

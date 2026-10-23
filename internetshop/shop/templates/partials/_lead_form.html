@@ -2,28 +2,37 @@
 Переиспользуемая лид-форма. Ожидает в контексте `form` (LeadForm).
 Постит на текущий URL (страницы b2b/designers/contacts обрабатывают POST сами).
 {% endcomment %}
-<form method="post" class="lead-form" data-once>
+<form method="post" class="lead-form bg-surface p-6 md:p-10" data-once>
     {% csrf_token %}
-    {% if form.non_field_errors %}<div class="form-errors">{{ form.non_field_errors }}</div>{% endif %}
+    {% if form.non_field_errors %}<div class="form-errors mb-4" role="alert">{{ form.non_field_errors }}</div>{% endif %}
 
     <div class="form-field">
+        <label for="{{ form.name.id_for_label }}">Ваше имя</label>
         {{ form.name }}
-        {% if form.name.errors %}<div class="form-errors">{{ form.name.errors|join:", " }}</div>{% endif %}
+        {% if form.name.errors %}<div class="form-errors" id="{{ form.name.id_for_label }}-error" role="alert">{{ form.name.errors|join:", " }}</div>{% endif %}
     </div>
     <div class="form-field">
+        <label for="{{ form.phone.id_for_label }}">Телефон</label>
         {{ form.phone }}
-        {% if form.phone.errors %}<div class="form-errors">{{ form.phone.errors|join:", " }}</div>{% endif %}
+        {% if form.phone.errors %}<div class="form-errors" id="{{ form.phone.id_for_label }}-error" role="alert">{{ form.phone.errors|join:", " }}</div>{% endif %}
     </div>
     <div class="form-field">
+        <label for="{{ form.email.id_for_label }}">Email <span class="text-ink-soft">(необязательно)</span></label>
         {{ form.email }}
-        {% if form.email.errors %}<div class="form-errors">{{ form.email.errors|join:", " }}</div>{% endif %}
+        {% if form.email.errors %}<div class="form-errors" id="{{ form.email.id_for_label }}-error" role="alert">{{ form.email.errors|join:", " }}</div>{% endif %}
     </div>
     <div class="form-field">
+        <label for="{{ form.message.id_for_label }}">Сообщение</label>
         {{ form.message }}
-        {% if form.message.errors %}<div class="form-errors">{{ form.message.errors|join:", " }}</div>{% endif %}
+        {% if form.message.errors %}<div class="form-errors" id="{{ form.message.id_for_label }}-error" role="alert">{{ form.message.errors|join:", " }}</div>{% endif %}
     </div>
     {{ form.lead_type }}
+    {% if price_product %}<input type="hidden" name="price_request_for" value="{{ price_product.slug }}">{% endif %}
+    <div class="form-trap" aria-hidden="true">
+        <label for="{{ form.website.id_for_label }}">Сайт</label>
+        {{ form.website }}
+    </div>
 
-    <button type="submit" class="btn btn-primary btn-block btn-lg">Оставить заявку</button>
-    <p class="form-note">Нажимая кнопку, вы соглашаетесь с обработкой персональных данных.</p>
+    <button type="submit" class="btn btn-dark btn-block btn-lg">Получить консультацию</button>
+    <p class="form-note mt-3">Нажимая кнопку, вы соглашаетесь с <a href="{% url 'privacy_page' %}" class="underline">обработкой персональных данных</a>.</p>
 </form>

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block meta_title %}Избранное | ESTIVO{% endblock %}
+{% block meta_description %}Ваше избранное в ESTIVO: сохранённая плетёная мебель ручной работы, к которой удобно вернуться.{% endblock %}
+
+{% block content %}
+<section class="wishlist-page">
+    <div class="mx-auto w-full max-w-[var(--container)] px-4 py-8 md:px-6 md:py-12">
+        {% include 'partials/_breadcrumbs.html' with crumbs=breadcrumbs %}
+        <h1 class="wishlist-page__title">Избранное</h1>
+        {% if products %}
+        <ul class="wishlist-page__grid">
+            {% for product in products %}
+            <li>{% include 'partials/_product_card.html' %}</li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <div class="cart-empty">
+            <h2 class="cart-empty__title">Здесь пока пусто</h2>
+            <p class="cart-empty__text">Нажмите на сердечко у понравившегося товара, чтобы сохранить его и вернуться позже.</p>
+            <a href="{% url 'catalog_list' %}" class="btn btn-dark btn-lg">Перейти в каталог</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,47 @@
+<!-- @dsCard height=300 -->
+<style>
+  html, body { margin: 0; }
+  .cv { position: relative; width: 960px; height: 300px; background: var(--surface); overflow: hidden; }
+  .cv svg { position: absolute; inset: 0; }
+  .accent { fill: var(--accent); }
+  .brand { fill: var(--brand); }
+  .ink { fill: var(--ink); }
+  .graphite { fill: var(--graphite); }
+  .ground { fill: var(--surface); }
+  .cv__text { position: absolute; left: 40px; bottom: 36px; max-width: 440px; }
+  .cv__name { margin: 0; font: 400 120px/.92 var(--font-display); color: var(--ink); }
+  .cv__tag { margin: 12px 0 0; font: 300 14px/17px var(--font-body); color: var(--muted); }
+</style>
+<div class="cv">
+  <svg width="960" height="300" viewBox="0 0 960 300" aria-hidden="true">
+    <!--
+      blocks: accent 340x196 slab (identity: the sale banner), ink 120x196, graphite 180x84, brand 140x84 — gaps = 2x gutter (20px), corners radius-none.
+      arrangement: one tall accent slab bleeding off the top-right with satellites below and left, all right of x=480.
+      pattern: a literal motif — a basket weave of ground strips under/over brand strips on the accent slab, because ESTIVO is woven furniture.
+      scales: strip width 2x gutter (20px), pitch 6x gutter (60px) across, 5x gutter (50px) down; radius-none everywhere.
+    -->
+    <rect class="ink" x="480" y="0" width="120" height="196"/>
+    <rect class="accent" x="620" y="0" width="340" height="196"/>
+    <rect class="graphite" x="620" y="216" width="180" height="84"/>
+    <rect class="brand" x="820" y="216" width="140" height="84"/>
+    <rect class="ground" x="620" y="48" width="340" height="20"/>
+    <rect class="ground" x="620" y="98" width="340" height="20"/>
+    <rect class="ground" x="620" y="148" width="340" height="20"/>
+    <rect class="brand" x="660" y="0" width="20" height="196"/>
+    <rect class="brand" x="720" y="0" width="20" height="196"/>
+    <rect class="brand" x="780" y="0" width="20" height="196"/>
+    <rect class="brand" x="840" y="0" width="20" height="196"/>
+    <rect class="brand" x="900" y="0" width="20" height="196"/>
+    <rect class="ground" x="660" y="98" width="20" height="20"/>
+    <rect class="ground" x="720" y="48" width="20" height="20"/>
+    <rect class="ground" x="720" y="148" width="20" height="20"/>
+    <rect class="ground" x="780" y="98" width="20" height="20"/>
+    <rect class="ground" x="840" y="48" width="20" height="20"/>
+    <rect class="ground" x="840" y="148" width="20" height="20"/>
+    <rect class="ground" x="900" y="98" width="20" height="20"/>
+  </svg>
+  <div class="cv__text">
+    <h1 class="cv__name">ESTIVO</h1>
+    <p class="cv__tag">Плетёная мебель ручной работы — для дома, дачи и бизнеса</p>
+  </div>
+</div>

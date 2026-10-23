@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
+import sys
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -38,10 +39,15 @@ ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',') if os.environ.get
 # --- Демо через Cloudflare-туннель (trycloudflare.com) ---
 # Туннель выдаёт случайный поддомен *.trycloudflare.com. Разрешаем его,
 # а также локальные адреса, чтобы сайт открывался и локально, и по ссылке туннеля.
-ALLOWED_HOSTS += ['localhost', '127.0.0.1', '.trycloudflare.com']
-# POST-формы (заявки/лиды) шлют CSRF-токен — домен туннеля должен быть доверенным,
-# иначе Django вернёт 403 при отправке формы.
-CSRF_TRUSTED_ORIGINS = ['https://*.trycloudflare.com']
+ALLOWED_HOSTS += ['localhost', '127.0.0.1']
+# Туннель — только при DEBUG: на проде любой может поднять свой туннель на этом домене.
+CSRF_TRUSTED_ORIGINS = []
+if DEBUG:
+    ALLOWED_HOSTS += ['.trycloudflare.com']
+    # POST-формы шлют CSRF-токен — домен туннеля должен быть доверенным, иначе 403.
+    CSRF_TRUSTED_ORIGINS = ['https://*.trycloudflare.com']
+# Домены хостинга (https://my-shop.onrender.com и т.п.), через запятую
+CSRF_TRUSTED_ORIGINS += [o for o in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',') if o]
 
 # Application definition
 
@@ -53,6 +59,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sitemaps',
+    'django.contrib.humanize',
+    'django_htmx',
+    'django_vite',
     'shop',
 ]
 
@@ -60,11 +69,14 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'shop.middleware.AttributionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'shop.middleware.TildaRedirectMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_htmx.middleware.HtmxMiddleware',
 ]
 
 ROOT_URLCONF = 'internetshop.urls'
@@ -82,6 +94,9 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'shop.context_processors.site_info',
                 'shop.context_processors.cart',
+                'shop.context_processors.site_settings',
+                'shop.context_processors.wishlist',
+                'shop.context_processors.analytics',
             ],
         },
     },
@@ -105,6 +120,13 @@ DATABASES = {
         },
     }
 }
+
+# Хостинг (Render/Koyeb/Neon/Supabase) отдаёт одну строку подключения — она приоритетнее DB_*.
+if os.environ.get('DATABASE_URL'):
+    import dj_database_url
+    DATABASES['default'] = dj_database_url.parse(
+        os.environ['DATABASE_URL'], conn_max_age=600, ssl_require=not DEBUG,
+    )
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -152,12 +174,55 @@ STORAGES = {
     },
 }
 
+# Медиа в S3-совместимом хранилище (Cloudflare R2 / Supabase Storage / AWS S3): диск на бесплатных
+# хостингах эфемерный, загруженные через админку фото и .glb пропадают при перезапуске.
+# Включается, если задан AWS_STORAGE_BUCKET_NAME (на проде обязателен, см. ниже); иначе — локальный диск (MEDIA_ROOT).
+if os.environ.get('AWS_STORAGE_BUCKET_NAME'):
+    STORAGES['default'] = {"BACKEND": "storages.backends.s3.S3Storage"}
+    AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
+    AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+    AWS_S3_ENDPOINT_URL = os.environ.get('AWS_S3_ENDPOINT_URL') or None  # R2/Supabase: свой endpoint
+    AWS_S3_REGION_NAME = os.environ.get('AWS_S3_REGION_NAME') or None
+    # Публичный адрес бакета (R2 public/custom domain, Supabase public URL) — без него ссылки подписанные
+    AWS_S3_CUSTOM_DOMAIN = os.environ.get('AWS_S3_CUSTOM_DOMAIN') or None
+    AWS_QUERYSTRING_AUTH = not AWS_S3_CUSTOM_DOMAIN
+    AWS_DEFAULT_ACL = None
+    AWS_S3_FILE_OVERWRITE = False
+
+# Vite (frontend/ -> shop/static/dist). В dev-режиме django-vite подключает dev-сервер Vite и не читает
+# manifest, поэтому тесты и `VITE_DEV_MODE=1` не требуют собранного dist/.
+# Для прод-режима: `cd frontend && npm ci && npm run build`, затем collectstatic.
+DJANGO_VITE = {
+    'default': {
+        'dev_mode': os.environ.get('VITE_DEV_MODE') == '1' or 'test' in sys.argv,
+        'manifest_path': BASE_DIR / 'shop' / 'static' / 'dist' / '.vite' / 'manifest.json',
+        'static_url_prefix': 'dist',
+        'dev_server_host': 'localhost',
+        'dev_server_port': 5173,
+    }
+}
+
 # Media files (загруженные фото товаров и коллекций)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # Публичный домен сайта — используется для sitemap.xml и абсолютных og:url/canonical
 SITE_URL = os.environ.get('SITE_URL', 'https://estivo63.ru')
+
+# Прод за прокси хостинга (TLS терминируется на нём)
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    # SECRET_KEY по умолчанию небезопасный — на проде обязательно задать свой
+    if SECRET_KEY == 'django-insecure-change-me' and 'test' not in sys.argv:
+        from django.core.exceptions import ImproperlyConfigured
+        raise ImproperlyConfigured('Задай SECRET_KEY в переменных окружения')
+    # При DEBUG=False Django не раздаёт media, а диск хостинга эфемерный: фото из админки молча пропадали бы.
+    if not os.environ.get('AWS_STORAGE_BUCKET_NAME') and 'test' not in sys.argv:
+        from django.core.exceptions import ImproperlyConfigured
+        raise ImproperlyConfigured('Задай AWS_STORAGE_BUCKET_NAME: без S3-хранилища загруженные фото не будут доступны')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

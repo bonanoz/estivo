@@ -1,8 +1,18 @@
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.cache import cache
+from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.db import models
 from django.urls import reverse
 
 from .utils import ru_slugify
+
+SITE_SETTINGS_CACHE_KEY = 'shop:site_settings'
+
+
+# Только относительные пути (/catalog/) или http(s)-ссылки: никаких javascript:, data: и //host.
+validate_promo_url = RegexValidator(
+    r'^(/(?![/\\])\S*|https?://\S+)$',
+    'Укажите путь вида /catalog/ или ссылку, начинающуюся с http:// или https://.',
+)
 
 
 class Material(models.Model):
@@ -26,6 +36,68 @@ class Material(models.Model):
         if not self.slug:
             self.slug = ru_slugify(self.name)
         super().save(*args, **kwargs)
+
+
+class SiteSettings(models.Model):
+    """Синглтон с редактируемыми через админку фото на статичных страницах.
+
+    Всегда ровно одна запись (pk=1) — редактируется через админку без
+    добавления новых строк. ``get_solo()`` создаёт её при первом обращении.
+    Каждое фото имеет заглушку в шаблоне, если поле не заполнено.
+    """
+
+    hero_image = models.ImageField(
+        'Фото главного баннера', upload_to='site/', blank=True, null=True,
+        help_text='Главная страница, баннер под заголовком «Мебель, которая делает пространство…».',
+    )
+    b2b_image = models.ImageField(
+        'Фото на странице «Для бизнеса»', upload_to='site/', blank=True, null=True,
+        help_text='Страница B2B, блок «Почему ESTIVO».',
+    )
+    designers_image = models.ImageField(
+        'Фото на странице «Дизайнерам»', upload_to='site/', blank=True, null=True,
+        help_text='Страница для дизайнеров, блок «Что мы даём дизайнеру».',
+    )
+    about_image = models.ImageField(
+        'Фото на странице «О нас»', upload_to='site/', blank=True, null=True,
+        help_text='Страница о компании, блок «Философия».',
+    )
+
+    promo_enabled = models.BooleanField('Показывать промо-полосу', default=False)
+    promo_text = models.CharField('Текст промо-полосы', max_length=200, blank=True)
+    promo_url = models.CharField(
+        'Ссылка промо-полосы', max_length=300, blank=True, validators=[validate_promo_url],
+        help_text='Необязательно. Например /catalog/ или https://…',
+    )
+
+    class Meta:
+        verbose_name = 'Настройки сайта'
+        verbose_name_plural = 'Настройки сайта'
+
+    def __str__(self):
+        return 'Настройки сайта'
+
+    def save(self, *args, **kwargs):
+        self.pk = 1
+        super().save(*args, **kwargs)
+        cache.delete(SITE_SETTINGS_CACHE_KEY)
+
+    def delete(self, *args, **kwargs):
+        pass
+
+    @classmethod
+    def get_solo(cls):
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj
+
+    @classmethod
+    def get_cached(cls):
+        """``get_solo`` без запроса на каждой странице (кэш чистится при сохранении в админке).
+
+        shortcut: кэш LocMem — свой в каждом воркере gunicorn, поэтому другой воркер
+        увидит правку до 60 с позже; для мгновенного обновления нужен общий кэш (Redis).
+        """
+        return cache.get_or_set(SITE_SETTINGS_CACHE_KEY, cls.get_solo, 60)
 
 
 class Category(models.Model):
@@ -136,11 +208,20 @@ class Product(models.Model):
 
     price = models.IntegerField(help_text='Цена в рублях (или цена "от" для комплектов)')
     old_price = models.IntegerField(null=True, blank=True, help_text='Прежняя цена — для акций')
+    sale_price = models.IntegerField(
+        'Цена со скидкой (выключена)', null=True, blank=True,
+        help_text='На сайте не выводится; админ-действие «Включить скидку» делает её основной ценой',
+    )
+    offer_ends_at = models.DateField(
+        'Акция до', null=True, blank=True,
+        help_text='Промо-карточка в каталоге (?flag=sale) показывается до этой даты включительно',
+    )
 
     max_load_kg = models.IntegerField('Нагрузка на посадочное место, кг', default=120)
     warranty_years = models.IntegerField('Гарантия, лет', default=3)
-    temp_min_c = models.IntegerField('Мин. температура эксплуатации, °C', default=-70)
-    temp_max_c = models.IntegerField('Макс. температура эксплуатации, °C', default=70)
+    temp_min_c = models.IntegerField('Мин. температура эксплуатации, °C', null=True, blank=True)
+    temp_max_c = models.IntegerField('Макс. температура эксплуатации, °C', null=True, blank=True)
+    tilda_id = models.BigIntegerField('ID товара в Tilda', null=True, blank=True, unique=True)
 
     # Габариты (см) и вес (кг) — показываются в характеристиках, если заданы.
     length_cm = models.IntegerField('Длина, см', null=True, blank=True)
@@ -165,6 +246,8 @@ class Product(models.Model):
 
     is_available = models.BooleanField('В наличии/под заказ', default=True)
     is_featured = models.BooleanField('Показывать на главной', default=False)
+    is_new = models.BooleanField('Новинка', default=False)
+    is_bestseller = models.BooleanField('Хит продаж', default=False)
 
     main_image = models.ImageField(upload_to='products/', blank=True, null=True)
 
@@ -186,6 +269,22 @@ class Product(models.Model):
 
     def get_absolute_url(self):
         return reverse('product_detail', args=[self.slug])
+
+    @property
+    def saving(self):
+        return (self.old_price or 0) - self.price
+
+    @property
+    def badges(self):
+        """Коды бейджей карточки: 'new', 'bestseller', 'sale' (скидка = old_price > price)."""
+        codes = []
+        if self.is_new:
+            codes.append('new')
+        if self.is_bestseller:
+            codes.append('bestseller')
+        if self.old_price and self.old_price > self.price:
+            codes.append('sale')
+        return codes
 
     def colors_by_type(self):
         """Доступные цвета, сгруппированные по типу отделки, в порядке
@@ -218,7 +317,23 @@ class ProductImage(models.Model):
         return f'{self.product.name} — фото {self.order}'
 
 
-class Order(models.Model):
+class Attribution(models.Model):
+    """Источник захода (first-touch): метки ссылки и client id Метрики. Пишутся при отправке формы."""
+
+    utm_source = models.CharField('utm_source', max_length=255, blank=True)
+    utm_medium = models.CharField('utm_medium', max_length=255, blank=True)
+    utm_campaign = models.CharField('utm_campaign', max_length=255, blank=True)
+    utm_content = models.CharField('utm_content', max_length=255, blank=True)
+    utm_term = models.CharField('utm_term', max_length=255, blank=True)
+    yclid = models.CharField('yclid', max_length=64, blank=True)
+    ym_client_id = models.CharField('Client ID Метрики', max_length=64, blank=True)
+    landing_page = models.CharField('Страница входа', max_length=500, blank=True)
+
+    class Meta:
+        abstract = True
+
+
+class Order(Attribution):
     """Заявка на товар. Бизнес работает по схеме заявка → консультация →
     изготовление → доставка → оплата, поэтому это не "заказ с оплатой картой",
     а точка контакта с клиентом, которую менеджер обрабатывает вручную.
@@ -250,7 +365,7 @@ class Order(models.Model):
     )
     customer_name = models.CharField('ФИО', max_length=256)
     customer_phone = models.CharField('Телефон', max_length=32)
-    customer_email = models.CharField('Email', max_length=256, blank=True)
+    customer_email = models.EmailField('Email', max_length=256, blank=True)
     delivery_address = models.TextField('Адрес доставки', blank=True)
     comment = models.TextField('Комментарий', blank=True)
 
@@ -314,7 +429,7 @@ class OrderItem(models.Model):
         return self.unit_price * self.quantity
 
 
-class Lead(models.Model):
+class Lead(Attribution):
     """Единая модель для всех лид-форм сайта (общая консультация,
     дизайн-проект, B2B-заявка) — различаются полем lead_type."""
 
@@ -332,7 +447,7 @@ class Lead(models.Model):
 
     name = models.CharField('Имя', max_length=256)
     phone = models.CharField('Телефон', max_length=32)
-    email = models.CharField('Email', max_length=256, blank=True)
+    email = models.EmailField('Email', max_length=256, blank=True)
     lead_type = models.CharField(max_length=20, choices=LEAD_TYPE_CHOICES, default='private')
     message = models.TextField('Сообщение', blank=True)
     source_page = models.CharField('Источник', max_length=128, blank=True)

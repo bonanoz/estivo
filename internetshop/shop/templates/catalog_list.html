@@ -1,65 +1,223 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static shop_tags %}
 
 {% block meta_title %}{{ meta_title|default:"Каталог плетёной мебели ручной работы | ESTIVO" }}{% endblock %}
 {% block meta_description %}{{ meta_description|default:"Каталог плетёной мебели ручной работы ESTIVO: кресла, диваны, столы, шезлонги и комплекты из роупа и ротанга. Гарантия 3 года." }}{% endblock %}
 
 {% block content %}
-<section class="section-sm">
-    <div class="container">
+<div class="catalog-page" x-data="catalogFilters"
+     x-effect="$scrollLock('filters', open)"
+     @keydown.escape.window="if (open) hide()">
+    <div class="mx-auto w-full max-w-[var(--container)] px-4 pt-4 md:px-6">
         {% include 'partials/_breadcrumbs.html' with crumbs=breadcrumbs %}
-        <div class="section-head">
-            <span class="eyebrow">Каталог</span>
-            <h1 style="font-size:clamp(2.2rem,4vw,3.4rem);">
-                {% if current_category %}{{ current_category.name }} из {{ current_material.name|lower }}
+
+        <div class="catalog-banner">
+            <h1 class="catalog-banner__title">
+                {% if current_category %}{{ current_category.name }} из {{ current_material.name|material_genitive }}
                 {% elif current_material %}{{ current_material.name }}
+                {% elif search %}Поиск: «{{ search }}»
                 {% else %}Вся мебель{% endif %}
             </h1>
+            <p class="catalog-banner__text">
+                {% if current_material and current_material.description %}{{ current_material.description|truncatewords:28 }}
+                {% else %}Плетёная мебель ручной работы для дома, террасы и бизнеса. Гарантия 3 года, изготовление от 4 недель, доставка ТК до двери.{% endif %}
+            </p>
+        </div>
+    </div>
+
+    <form method="get" class="catalog-form" id="catalog-form">
+        {% if search %}<input type="hidden" name="search" value="{{ search }}">{% endif %}
+
+        {# Липкая панель: фильтры, число товаров, сортировка #}
+        <div class="catalog-bar">
+            <div class="catalog-bar__inner mx-auto flex w-full max-w-[var(--container)] items-center justify-between gap-3 px-4 md:px-6">
+                <button type="button" class="pill js-only" aria-haspopup="dialog" aria-controls="filter-panel"
+                        :aria-expanded="open.toString()" aria-expanded="false" @click="show($el)">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>
+                    Фильтры{% if active_filters %} · {{ active_filters|length }}{% endif %}
+                </button>
+                <p class="catalog-bar__count m-0">Товаров: {{ total_count }}</p>
+                <div class="catalog-sort">
+                    <label for="catalog-sort" class="catalog-sort__label">Сортировка</label>
+                    <select id="catalog-sort" name="sort" class="form-input catalog-sort__select" @change="$el.form.requestSubmit()">
+                        {% for value, label in sort_choices %}
+                        <option value="{{ value }}"{% if value == current_sort %} selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <noscript><button type="submit" class="btn btn-outline">Показать</button></noscript>
+                </div>
+            </div>
         </div>
 
-        <!-- Фильтры по материалам -->
-        <div class="filter-pills">
-            <a href="{% url 'catalog_list' %}" class="pill {% if not current_material %}active{% endif %}">Все</a>
-            {% for m in materials %}
-            <a href="{% url 'catalog_by_material' m.slug %}" class="pill {% if current_material.slug == m.slug %}active{% endif %}">{{ m.name }}</a>
-            {% endfor %}
-        </div>
+        {# Панель фильтров: диалог с JS, обычный блок формы без JS #}
+        <div id="filter-panel" class="filter-panel" :role="'dialog'" :aria-modal="'true'" aria-labelledby="filter-title"
+             :data-open="open ? '' : null" x-focus-trap="open" @click.self="hide()">
+            <div class="filter-panel__sheet" x-ref="sheet">
+                <div class="filter-panel__head">
+                    <h2 id="filter-title" class="filter-panel__title">Фильтры</h2>
+                    <button type="button" class="icon-btn js-only" aria-label="Закрыть фильтры" @click="hide()">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+                    </button>
+                </div>
 
-        <!-- Фильтры по категориям (в контексте текущего материала) -->
-        {% if categories and current_material %}
-        <div class="filter-pills">
-            {% for c in categories %}
-            <a href="{% url 'catalog_by_category' current_material.slug c.slug %}" class="pill {% if current_category.slug == c.slug %}active{% endif %}">{{ c.name }}</a>
-            {% endfor %}
+                <div class="filter-panel__body">
+                    {% if categories and not current_category %}
+                    <details class="filter-group" open>
+                        <summary>Категория</summary>
+                        <div class="filter-group__content">
+                            {% for c in categories %}
+                            <label class="filter-chip">
+                                <input type="checkbox" name="category" value="{{ c.slug }}"{% if c.slug in active_filters.category %} checked{% endif %}>
+                                <span>{{ c.name }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </details>
+                    {% endif %}
+
+                    {% if materials and not current_material %}
+                    <details class="filter-group" open>
+                        <summary>Материал</summary>
+                        <div class="filter-group__content">
+                            {% for m in materials %}
+                            <label class="filter-chip">
+                                <input type="checkbox" name="material" value="{{ m.slug }}"{% if m.slug in active_filters.material %} checked{% endif %}>
+                                <span>{{ m.name }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </details>
+                    {% endif %}
+
+                    {% if color_options %}
+                    <details class="filter-group"{% if active_filters.color %} open{% endif %}>
+                        <summary>Цвет</summary>
+                        <div class="filter-group__content filter-group__content--swatches">
+                            {% for c in color_options %}
+                            <label class="swatch" title="{{ c.get_finish_type_display }}: {{ c.name }}">
+                                <input type="checkbox" name="color" value="{{ c.id }}"{% if c.id in active_filters.color %} checked{% endif %}>
+                                <span class="swatch__dot" aria-hidden="true" style="background-color: {{ c.hex }};{% if c.swatch_image %} background-image: url('{{ c.swatch_image.url }}'); background-size: cover;{% endif %}"></span>
+                                <span class="sr-only">{{ c.get_finish_type_display }}: {{ c.name }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </details>
+                    {% endif %}
+
+                    <details class="filter-group" open>
+                        <summary>Цена</summary>
+                        <div class="filter-group__content filter-range">
+                            <div class="filter-range__field">
+                                <label for="f-price-min">От, ₽</label>
+                                <input id="f-price-min" type="number" inputmode="numeric" min="0" step="1000" name="price_min" value="{{ active_filters.price_min }}" placeholder="0" class="form-input">
+                            </div>
+                            <div class="filter-range__field">
+                                <label for="f-price-max">До, ₽</label>
+                                <input id="f-price-max" type="number" inputmode="numeric" min="0" step="1000" name="price_max" value="{{ active_filters.price_max }}" placeholder="Любая" class="form-input">
+                            </div>
+                        </div>
+                    </details>
+
+                    <details class="filter-group"{% if active_filters.length_min or active_filters.length_max %} open{% endif %}>
+                        <summary>Длина</summary>
+                        <div class="filter-group__content filter-range">
+                            <div class="filter-range__field">
+                                <label for="f-length-min">От, см</label>
+                                <input id="f-length-min" type="number" inputmode="numeric" min="0" name="length_min" value="{{ active_filters.length_min }}" placeholder="0" class="form-input">
+                            </div>
+                            <div class="filter-range__field">
+                                <label for="f-length-max">До, см</label>
+                                <input id="f-length-max" type="number" inputmode="numeric" min="0" name="length_max" value="{{ active_filters.length_max }}" placeholder="Любая" class="form-input">
+                            </div>
+                        </div>
+                    </details>
+
+                    <details class="filter-group" open>
+                        <summary>Подборки</summary>
+                        <div class="filter-group__content">
+                            <label class="filter-chip"><input type="checkbox" name="flag" value="new"{% if 'new' in active_filters.flag %} checked{% endif %}><span>Новинки</span></label>
+                            <label class="filter-chip"><input type="checkbox" name="flag" value="bestseller"{% if 'bestseller' in active_filters.flag %} checked{% endif %}><span>Хиты продаж</span></label>
+                            <label class="filter-chip"><input type="checkbox" name="flag" value="sale"{% if 'sale' in active_filters.flag %} checked{% endif %}><span>Со скидкой</span></label>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="filter-panel__foot">
+                    <p id="filter-count" class="filter-panel__count m-0" aria-live="polite" aria-atomic="true"
+                       hx-get="/catalog/count/" hx-trigger="input from:closest form delay:300ms, change from:closest form delay:300ms"
+                       hx-include="closest form" hx-target="this" hx-swap="innerHTML"
+                       {% if current_material %}hx-vals='{"material": "{{ current_material.slug }}"{% if current_category %}, "category": "{{ current_category.slug }}"{% endif %}}'{% endif %}>Найдено: {{ total_count }}</p>
+                    <a href="{{ request.path }}" class="btn btn-outline">Сбросить</a>
+                    <button type="submit" class="btn btn-dark">Применить</button>
+                </div>
+            </div>
         </div>
+    </form>
+
+    <div class="mx-auto w-full max-w-[var(--container)] px-4 pb-6 pt-5 md:px-6" id="catalog-results">
+        {% if offers %}
+        <div class="offer-list">{% for product in offers %}{% include 'partials/_offer_card.html' %}{% endfor %}</div>
         {% endif %}
-
-        <!-- Поиск -->
-        <form method="get" class="filter-pills" style="margin-bottom:var(--space-5);">
-            <input type="search" name="search" value="{{ search }}" placeholder="Поиск по каталогу…" class="form-input" style="max-width:340px;">
-            <button type="submit" class="btn btn-outline">Найти</button>
-        </form>
-
-        {% if page_obj %}
-        <div class="grid grid-4">
+        {% if page_obj.object_list %}
+        <div class="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5 lg:grid-cols-4">
             {% for product in page_obj %}
-                {% include 'partials/_product_card.html' %}
+            {% include 'partials/_product_card.html' %}
             {% endfor %}
         </div>
-
-        {% if page_obj.paginator.num_pages > 1 %}
-        <div class="pagination">
-            {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}">← Назад</a>{% endif %}
-            <span class="current">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
-            {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}">Вперёд →</a>{% endif %}
-        </div>
-        {% endif %}
-
+        {% include 'partials/_pagination.html' %}
         {% else %}
-        <p class="lead muted" style="padding:var(--space-6) 0; text-align:center;">По вашему запросу пока ничего не найдено. Попробуйте другой раздел или оставьте заявку — подберём под задачу.</p>
+        <div class="catalog-empty">
+            <h2 class="catalog-empty__title">Ничего не найдено</h2>
+            <p class="catalog-empty__text">Попробуйте изменить или сбросить фильтры. Если не нашли нужное, оставьте заявку: подберём мебель под вашу задачу.</p>
+            <div class="catalog-empty__actions">
+                <a href="{{ request.path }}" class="btn btn-dark">Сбросить фильтры</a>
+                <a href="{% url 'contacts_page' %}" class="btn btn-outline">Оставить заявку</a>
+            </div>
+        </div>
+        {% if bestsellers %}
+        <section aria-labelledby="bestsellers-title" class="mt-10">
+            <h2 id="bestsellers-title" class="catalog-section-title">Хиты продаж</h2>
+            <div class="grid grid-cols-2 gap-3 md:gap-5 lg:grid-cols-4">
+                {% for product in bestsellers %}
+                {% include 'partials/_product_card.html' %}
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
         {% endif %}
     </div>
-</section>
+
+    <section class="catalog-seo" aria-labelledby="catalog-seo-title">
+        <div class="mx-auto w-full max-w-[var(--container)] px-4 md:px-6">
+            <div class="catalog-seo__grid">
+                <div class="catalog-seo__text">
+                    <h2 id="catalog-seo-title" class="catalog-section-title">
+                        {% if current_category %}{{ current_category.name }} из {{ current_material.name|material_genitive }} ручной работы
+                        {% elif current_material %}Мебель из материала «{{ current_material.name|lower }}»
+                        {% else %}Плетёная мебель ESTIVO{% endif %}
+                    </h2>
+                    {% if current_material and current_material.description %}
+                    {{ current_material.description|linebreaks }}
+                    {% else %}
+                    <p>Мы плетём мебель вручную из роупа, ротанга, шпона и HPL на прочном каркасе с порошковой окраской. Каждая модель выдерживает уличный климат и годы ежедневного использования.</p>
+                    <p>Выберите нужную категорию или материал в фильтрах, а если не нашли подходящее, оставьте заявку: сделаем мебель по вашему размеру и цвету.</p>
+                    {% endif %}
+                </div>
+                <div class="catalog-faq">
+                    <h2 class="catalog-section-title">Частые вопросы</h2>
+                    {% for question, answer in faq_items %}
+                    <details class="faq-item">
+                        <summary>{{ question }}</summary>
+                        <p>{{ answer }}</p>
+                    </details>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+{% include 'partials/_why_estivo.html' %}
 
 {% include 'partials/_cta_section.html' %}
 {% endblock %}

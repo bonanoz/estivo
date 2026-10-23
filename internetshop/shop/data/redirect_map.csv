@@ -1,0 +1,277 @@
+﻿old_path;тип;название на Tilda;цена на Tilda;действие;new_path (предложение);примечание
+/;раздел;Дизайнерская мебель ручной работы | Производитель мебели из ротанга;;301;/;
+/aksessuary;раздел;Аксессуары;;301;/catalog/rotang/aksessuary/;
+/b2b;раздел;B2B;;301;/b2b/;
+/ctvetaroupa;раздел;Цвета роупа;;301;/catalog/roup/;цвета теперь выбираются в карточке товара (ColorOption)
+/cvetrotanga;раздел;Цвета ротанга;;301;/catalog/rotang/;цвета теперь выбираются в карточке товара (ColorOption)
+/divan;раздел;Диваны;;301;/catalog/rotang/divany/;
+/divanroup;раздел;Диваны из роупа;;301;/catalog/roup/divany/;
+/dostavka;раздел;Доставка и оплата;;301;/dostavka-i-oplata/;
+/hranenie;раздел;Места для хранения из ротанга;;301;/catalog/;нет категории «Места для хранения» — решить
+/komplekty;раздел;Комплекты из ротанга;;301;/catalog/rotang/komplekty/;
+/komplektyroup;раздел;Комплекты роуп;;301;/catalog/roup/komplekty/;
+/kontakty;раздел;Контакты;;301;/kontakty/;
+/kreslo;раздел;Кресла из ротанга;;301;/catalog/rotang/kresla/;
+/kreslopodves;раздел;Подвесные кресла из ротанга;;301;/catalog/rotang/podvesnye-kresla/;
+/kresloroup;раздел;Стулья и кресла из роупа;;301;/catalog/roup/kresla/;
+/news;раздел;Блог;;301;/;блога в Django нет — решить: переносить 6 статей /news/tpost/* или 301 на главную
+/offer;раздел;Коммерческое предложение;;301;/b2b/;перенести таблицу скидок, 50/50 и клиентов на /b2b/ (аудит R24)
+/onas;раздел;О нас;;301;/o-nas/;
+/policy;раздел;политика конфиденциальности;;301;/privacy/;СТРАНИЦЫ НЕТ в Django — создать (152-ФЗ, ссылка из форм)
+/policy02;раздел;политика конфиденциальности02;;301;/privacy/;дубль политики
+/price;раздел;Прайс-лист;;301;/catalog/;прайс-лист заменяется каталогом с фильтрами и поиском
+/promo;раздел;Плетёная мебель ручной работы;;301;/catalog/?flag=sale;
+/rotang;раздел;Плетёная мебель из ротанга на заказ | Купить мебель из натурального ротанга;;301;/catalog/rotang/;
+/roup;раздел;Мебель из роупа ручной работы | Купить мебель из роупа для дома и сада;;301;/catalog/roup/;
+/salerotang;раздел;Акции мебели из ротанга;;301;/catalog/?flag=sale&material=rotang;одна страница акций с фильтром (аудит R20)
+/saleroup;раздел;Акции мебели из роупа;;301;/catalog/?flag=sale&material=roup;одна страница акций с фильтром (аудит R20)
+/shezlong;раздел;Шезлонги из ротанга;;301;/catalog/rotang/shezlongi/;
+/shezlongroup;раздел;Шезлонги из роупа;;301;/catalog/roup/shezlongi/;
+/stol;раздел;Столы из ротанга;;301;/catalog/rotang/stoly-obedennye/;на Tilda тут и обеденные, и кофейные столы
+/stolkofroup;раздел;Столы кофейные из роупа;;301;/catalog/roup/stoly-kofeynye/;
+/stolroup;раздел;Столы из роупа;;301;/catalog/roup/stoly-obedennye/;
+/uglovyedivany;раздел;Угловые диваны из ротанга;;301;/catalog/rotang/divany/;нет категории «Угловые диваны» — решить: отдельная категория или фильтр
+/vozvrat;раздел;Гарантия и возврат;;301;/garantiya/;
+/page125687636.html;мусорная страница;Copy of Плетеная мебель из ротанга и роупа ручной работы для дома и бизнеса;;301;/;«Copy of» главной
+/page155943176.html;мусорная страница;Главная страница;;301;/;заглушка «Главная страница»
+/page212667309.html;мусорная страница;Дизайнерская мебель ручной работы | Производитель мебели из ротанга;;301;/;точная копия главной
+/page60195393.html;мусорная страница;Отзывы Эстиво;;301;/;пустая страница «Отзывы Эстиво»
+/page64428687.html;мусорная страница;Каталог материалов;;301;/catalog/;«Каталог материалов»
+/page68304349.html;мусорная страница;Blank page;;301;/kontakty/;«Blank page»
+/page69400427.html;мусорная страница;Copy of Плетеная мебель из ротанга и роупа ручной работы для дома и бизнеса;;301;/;«Copy of» главной
+/page74937106.html;мусорная страница;Copy of Плетеная мебель из ротанга и роупа ручной работы для дома и бизнеса;;301;/;«Copy of» главной
+/page87158106.html;мусорная страница;Copy of политика конфиденциальности;;301;/privacy/;«Copy of» политики
+/aksessuary/tproduct/204696499882-razdelochnaya-doska-iz-hpl;товар;Разделочная доска из HPL;2500;301;/product/razdelochnaya-doska-iz-hpl/;
+/aksessuary/tproduct/528430764192-kashpo-ponte-rim;товар;Кашпо (Понте, Рим);18000;301;/product/kashpo-ponte-rim/;
+/aksessuary/tproduct/679784936672-yubka-dlya-yolki-vozdushnayatsilindr;товар;Юбка для ёлки воздушная/цилиндр;5200;301;/product/yubka-dlya-elki-vozdushnayatsilindr/;то же название: /price/tproduct/565571784112-yubka-dlya-yolki-vozdushnayatsilindr — сверить состав и цену
+/aksessuary/tproduct/854514176242-yubka-dlya-yolki-klassicheskayakonus;товар;Юбка для ёлки классическая/конус;7000;301;/product/yubka-dlya-elki-klassicheskayakonus/;то же название: /price/tproduct/470391920262-yubka-dlya-yolki-klassicheskayakonus — сверить состав и цену
+/aksessuary/tproduct/983472858982-ukrivnoi-chehol;товар;Укрывной Чехол;15000;301;/product/ukryvnoy-chehol/;
+/divan/tproduct/247499275772-divan-volterra-lyuks-iz-rotanga;товар;Диван «Вольтерра Люкс» из ротанга;59900;301;/product/divan-volterra-lyuks-iz-rotanga/;
+/divan/tproduct/283833356302-divan-garda-2h-iz-rotanga;товар;Диван «Гарда 2х» из ротанга;64000;301;/product/divan-garda-2h-iz-rotanga/;
+/divan/tproduct/490442938932-divan-palermo-iz-rotanga;товар;Диван «Палермо» из ротанга;36900;301;/product/divan-palermo-iz-rotanga/;
+/divan/tproduct/532274661612-divan-sitsiliya-iz-rotanga;товар;Диван «Сицилия» из ротанга;70400;301;/product/divan-sitsiliya-iz-rotanga/;
+/divan/tproduct/752329401472-divan-kastelsardo-iz-rotanga;товар;Диван «Кастельсардо» из ротанга;69900;301;/product/divan-kastelsardo-iz-rotanga/;
+/divan/tproduct/894264576732-divan-terlago-lyuks-iz-rotanga;товар;Диван «Терлаго Люкс» из ротанга;52400;301;/product/divan-terlago-lyuks-iz-rotanga/;
+/divanroup/tproduct/301415653982-divan-uglovoi-milan-160h320-sm-roup;товар;Диван угловой Милан 160х320 см (роуп);228000;301;/product/divan-uglovoy-milan-160h320-sm-roup/;
+/divanroup/tproduct/491338626712-divan-milan-3xl-roup;товар;Диван Милан 3XL (роуп);96200;301;/product/divan-milan-3xl-roup/;
+/hranenie/tproduct/395936177022-sunduk-pozitano-iz-rotanga;товар;Сундук «Позитано» из ротанга;28500;301;/product/sunduk-pozitano-iz-rotanga/;
+/hranenie/tproduct/540461604552-komod-modena-lyuks-iz-rotanga;товар;Комод «Модена Люкс» из ротанга;78600;301;/product/komod-modena-lyuks-iz-rotanga/;
+/hranenie/tproduct/843862011782-komod-modena-iz-rotanga;товар;Комод «Модена» из ротанга;68600;301;/product/komod-modena-iz-rotanga/;
+/komplekty/tproduct/126951985332-komplekt-mebeli-iz-rotanga-30;товар;Комплект мебели из ротанга «№30»;231300;301;/product/komplekt-mebeli-iz-rotanga-30/;
+/komplekty/tproduct/129506234102-komplekt-mebeli-iz-rotanga-7;товар;Комплект мебели из ротанга «№7»;98500;301;/product/komplekt-mebeli-iz-rotanga-7/;
+/komplekty/tproduct/164301586802-komplekt-mebeli-iz-rotanga-37;товар;Комплект мебели из ротанга «№37»;189100;301;/product/komplekt-mebeli-iz-rotanga-37/;
+/komplekty/tproduct/168299351832-komplekt-mebeli-iz-rotanga-61;товар;Комплект мебели из ротанга «№61»;247500;301;/product/komplekt-mebeli-iz-rotanga-61/;
+/komplekty/tproduct/230806039002-komplekt-mebeli-iz-rotanga-8;товар;"Комплект мебели из ротанга ""№8""";174100;301;/product/komplekt-mebeli-iz-rotanga-8/;
+/komplekty/tproduct/267106468782-komplekt-mebeli-iz-rotang-20;товар;"Комплект мебели из ротанг ""№20»";113100;301;/product/komplekt-mebeli-iz-rotang-20/;
+/komplekty/tproduct/272374613392-komplekt-mebeli-iz-rotanga-52;товар;Комплект мебели из ротанга «№52»;253700;301;/product/komplekt-mebeli-iz-rotanga-52/;
+/komplekty/tproduct/278125637582-komplekt-mebeli-iz-rotanga-6;товар;Комплект мебели из ротанга «№6»;219300;301;/product/komplekt-mebeli-iz-rotanga-6/;
+/komplekty/tproduct/290465536212-komplekt-mebeli-iz-rotanga-23;товар;Комплект мебели из ротанга «№23»;162700;301;/product/komplekt-mebeli-iz-rotanga-23/;
+/komplekty/tproduct/296416004452-komplekt-mebeli-iz-rotanga-60;товар;Комплект мебели из ротанга «№60»;279100;301;/product/komplekt-mebeli-iz-rotanga-60/;
+/komplekty/tproduct/327601072822-komplekt-mebeli-iz-rotanga-56;товар;Комплект мебели из ротанга «№56»;247400;301;/product/komplekt-mebeli-iz-rotanga-56/;
+/komplekty/tproduct/328810926372-komplekt-mebeli-iz-rotanga-64;товар;Комплект мебели из ротанга «№64»;271100;301;/product/komplekt-mebeli-iz-rotanga-64/;
+/komplekty/tproduct/336990917252-komplekt-mebeli-iz-rotanga-89;товар;Комплект мебели из ротанга «№89»;197900;301;/product/komplekt-mebeli-iz-rotanga-89/;
+/komplekty/tproduct/361471063972-komplekt-mebeli-iz-rotanga-55;товар;Комплект мебели из ротанга «№55»;261400;301;/product/komplekt-mebeli-iz-rotanga-55/;
+/komplekty/tproduct/373805333432-komplekt-mebeli-iz-rotanga-53;товар;Комплект мебели из ротанга «№53»;263800;301;/product/komplekt-mebeli-iz-rotanga-53/;
+/komplekty/tproduct/375756872672-komplekt-mebeli-iz-rotanga-66;товар;"Комплект мебели из ротанга ""№66""";256600;301;/product/komplekt-mebeli-iz-rotanga-66/;
+/komplekty/tproduct/404327406462-komplekt-mebeli-iz-rotanga-1;товар;Комплект мебели из ротанга «№1»;110100;301;/product/komplekt-mebeli-iz-rotanga-1/;
+/komplekty/tproduct/409940416072-komplekt-mebeli-iz-rotanga-71;товар;Комплект мебели из ротанга «№71»;374300;301;/product/komplekt-mebeli-iz-rotanga-71/;
+/komplekty/tproduct/413069080203-komplekt-mebeli-iz-rotanga-48;товар;Комплект мебели из ротанга «№48»;128600;301;/product/komplekt-mebeli-iz-rotanga-48/;
+/komplekty/tproduct/423018713712-komplekt-mebeli-iz-rotanga-32;товар;Комплект мебели из ротанга «№32»;238300;301;/product/komplekt-mebeli-iz-rotanga-32/;
+/komplekty/tproduct/466094234512-komplekt-mebeli-iz-rotang-93;товар;Комплект мебели из ротанг № 93;229500;301;/product/komplekt-mebeli-iz-rotang-93/;
+/komplekty/tproduct/466645917352-komplekt-mebeli-iz-rotanga-65;товар;"Комплект мебели из ротанга ""№65""";258600;301;/product/komplekt-mebeli-iz-rotanga-65/;
+/komplekty/tproduct/472611591842-komplekt-mebeli-iz-rotanga-24;товар;"Комплект мебели из ротанга ""№24""";172000;301;/product/komplekt-mebeli-iz-rotanga-24/;
+/komplekty/tproduct/500328850442-komplekt-mebeli-iz-rotanga-reta;товар;Комплект мебели из ротанга «Рета»;205800;301;/product/komplekt-mebeli-iz-rotanga-reta/;
+/komplekty/tproduct/514747144502-komplekt-mebeli-iz-rotang-22;товар;"Комплект мебели из ротанг ""№22""";184700;301;/product/komplekt-mebeli-iz-rotang-22/;
+/komplekty/tproduct/523548647502-komplekt-mebeli-iz-rotanga-4;товар;Комплект мебели из ротанга «№4»;112100;301;/product/komplekt-mebeli-iz-rotanga-4/;
+/komplekty/tproduct/529949188812-komplekt-mebeli-iz-rotanga-46;товар;Комплект мебели из ротанга «№46»;277800;301;/product/komplekt-mebeli-iz-rotanga-46/;
+/komplekty/tproduct/562035341583-komplekt-mebeli-iz-rotanga-36;товар;Комплект мебели из ротанга «№36»;313300;301;/product/komplekt-mebeli-iz-rotanga-36/;
+/komplekty/tproduct/572687809502-komplekt-mebeli-iz-rotanga-81;товар;Комплект мебели из ротанга «№81»;154500;301;/product/komplekt-mebeli-iz-rotanga-81/;
+/komplekty/tproduct/587113185232-komplekt-mebeli-iz-rotanga-34;товар;Комплект мебели из ротанга №«34»;163000;301;/product/komplekt-mebeli-iz-rotanga-34/;
+/komplekty/tproduct/588190600162-komplekt-mebeli-iz-rotanga-33;товар;Комплект мебели из ротанга «№33»;239500;301;/product/komplekt-mebeli-iz-rotanga-33/;
+/komplekty/tproduct/590653344302-komplekt-mebeli-iz-rotanga-84;товар;Комплект мебели из ротанга «№84»;329800;301;/product/komplekt-mebeli-iz-rotanga-84/;
+/komplekty/tproduct/598964596262-komplekt-mebeli-iz-rotanga-54;товар;Комплект мебели из ротанга «№54»;253800;301;/product/komplekt-mebeli-iz-rotanga-54/;
+/komplekty/tproduct/612635143462-komplekt-mebeli-iz-rotanga-19;товар;Комплект мебели из ротанга «№19»;59500;301;/product/komplekt-mebeli-iz-rotanga-19/;то же название: /salerotang/tproduct/398053959183-komplekt-mebeli-iz-rotanga-19 — сверить состав и цену
+/komplekty/tproduct/620647608602-komplekt-mebeli-iz-rotang-21;товар;"Комплект мебели из ротанг ""№21""";153900;301;/product/komplekt-mebeli-iz-rotang-21/;
+/komplekty/tproduct/624631367022-komplekt-mebeli-iz-rotanga-40;товар;Комплект мебели из ротанга «№40»;208900;301;/product/komplekt-mebeli-iz-rotanga-40/;
+/komplekty/tproduct/634535752352-komplekt-mebeli-iz-rotanga-43;товар;Комплект мебели из ротанга «№43»;239800;301;/product/komplekt-mebeli-iz-rotanga-43/;
+/komplekty/tproduct/664592274872-komplekt-mebeli-iz-rotanga-35;товар;Комплект мебели из ротанга «№35»;269300;301;/product/komplekt-mebeli-iz-rotanga-35/;
+/komplekty/tproduct/722547297212-komplekt-mebeli-iz-rotanga-47;товар;Комплект мебели из ротанга «№47»;133400;301;/product/komplekt-mebeli-iz-rotanga-47/;
+/komplekty/tproduct/751521724482-komplekt-mebeli-iz-rotanga-31;товар;Комплект мебели из ротанга «№31»;275500;301;/product/komplekt-mebeli-iz-rotanga-31/;
+/komplekty/tproduct/757425754652-komplekt-mebeli-iz-rotanga-27;товар;"Комплект мебели из ротанга ""№27""";203800;301;/product/komplekt-mebeli-iz-rotanga-27/;
+/komplekty/tproduct/760553933622-komplekt-mebeli-iz-rotanga-85;товар;Комплект мебели из ротанга «№85»;307800;301;/product/komplekt-mebeli-iz-rotanga-85/;
+/komplekty/tproduct/780883486162-komplekt-mebeli-iz-rotanga-29;товар;Комплект мебели из ротанга «№29»;205500;301;/product/komplekt-mebeli-iz-rotanga-29/;
+/komplekty/tproduct/796918090252-komplekt-mebeli-iz-rotanga-68;товар;Комплект мебели из ротанга «№68»;350700;301;/product/komplekt-mebeli-iz-rotanga-68/;
+/komplekty/tproduct/827181619422-komplekt-mebeli-iz-stropi;товар;Комплект мебели из стропы;;301;/product/komplekt-mebeli-iz-stropy/;то же название: /komplektyroup/tproduct/741307368892-komplekt-mebeli-iz-stropi — сверить состав и цену
+/komplekty/tproduct/867410929642-komplekt-mebeli-iz-rotanga-28;товар;Комплект мебели из ротанга «№28»;230500;301;/product/komplekt-mebeli-iz-rotanga-28/;
+/komplekty/tproduct/885055313732-komplekt-mebeli-iz-rotanga-90;товар;Комплект мебели из ротанга «№90»;172000;301;/product/komplekt-mebeli-iz-rotanga-90/;
+/komplekty/tproduct/898119167562-komplekt-mebeli-iz-rotanga;товар;Комплект мебели из ротанга;;301;/product/komplekt-mebeli-iz-rotanga/;
+/komplekty/tproduct/916435491952-komplekt-mebeli-iz-rotanga-2;товар;Комплект мебели из ротанга «№2»;130100;301;/product/komplekt-mebeli-iz-rotanga-2/;
+/komplekty/tproduct/945941026282-komplekt-mebeli-iz-rotanga-67;товар;Комплект мебели из ротанга «№67»;397000;301;/product/komplekt-mebeli-iz-rotanga-67/;
+/komplekty/tproduct/950688571902-komplekt-mebeli-iz-rotanga-51;товар;Комплект мебели из ротанга «№51»;227000;301;/product/komplekt-mebeli-iz-rotanga-51/;
+/komplekty/tproduct/961677274052-komplekt-mebeli-iz-rotanga-86;товар;Комплект мебели из ротанга «№86»;279000;301;/product/komplekt-mebeli-iz-rotanga-86/;
+/komplekty/tproduct/966262096542-komplekt-mebeli-iz-rotanga-44;товар;Комплект мебели из ротанга «№44»;245800;301;/product/komplekt-mebeli-iz-rotanga-44/;
+/komplektyroup/tproduct/149316579202-komplekt-mebeli-iz-roupa-4;товар;Комплект мебели из роупа 4;360200;301;/product/komplekt-mebeli-iz-roupa-4/;то же название: /saleroup/tproduct/732626155772-komplekt-mebeli-iz-roupa-4 — сверить состав и цену
+/komplektyroup/tproduct/220600533332-komplekt-mebeli-iz-roupa-11;товар;Комплект мебели из роупа 11;318500;301;/product/komplekt-mebeli-iz-roupa-11/;
+/komplektyroup/tproduct/248028431432-komplekt-mebeli-iz-roupa-1;товар;Комплект мебели из роупа 1;166500;301;/product/komplekt-mebeli-iz-roupa-1/;то же название: /saleroup/tproduct/292881561882-komplekt-mebeli-iz-roupa-1 — сверить состав и цену
+/komplektyroup/tproduct/255771956062-komplekt-mebeli-iz-roupa-5;товар;Комплект мебели из роупа 5;119700;301;/product/komplekt-mebeli-iz-roupa-5/;то же название: /saleroup/tproduct/419901260632-komplekt-mebeli-iz-roupa-5 — сверить состав и цену
+/komplektyroup/tproduct/256015115232-komplekt-mebeli-iz-roupa-2;товар;Комплект мебели из роупа 2;224600;301;/product/komplekt-mebeli-iz-roupa-2/;то же название: /saleroup/tproduct/261878074692-komplekt-mebeli-iz-roupa-2 — сверить состав и цену
+/komplektyroup/tproduct/266718408412-komplekt-mebeli-iz-roupa-22;товар;Комплект мебели из роупа 22;195500;301;/product/komplekt-mebeli-iz-roupa-22/;
+/komplektyroup/tproduct/271238734072-komplekt-mebeli-iz-roupa-17;товар;Комплект мебели из роупа 17;226600;301;/product/komplekt-mebeli-iz-roupa-17/;то же название: /saleroup/tproduct/873528733212-komplekt-mebeli-iz-roupa-17 — сверить состав и цену
+/komplektyroup/tproduct/301450712832-komplekt-mebeli-iz-roupa-9;товар;Комплект мебели из роупа 9;413700;301;/product/komplekt-mebeli-iz-roupa-9/;
+/komplektyroup/tproduct/335237512382-komplekt-mebeli-iz-roupa-6;товар;Комплект мебели из роупа 6;147600;301;/product/komplekt-mebeli-iz-roupa-6/;
+/komplektyroup/tproduct/375093800192-komplekt-mebeli-iz-roupa-18;товар;Комплект мебели из роупа 18;336800;301;/product/komplekt-mebeli-iz-roupa-18/;
+/komplektyroup/tproduct/445319251703-komplekt-mebeli-iz-roupa-20;товар;Комплект мебели из роупа 20;271000;301;/product/komplekt-mebeli-iz-roupa-20/;
+/komplektyroup/tproduct/475802023472-komplekt-mebeli-iz-roupa-7;товар;Комплект мебели из роупа 7;142600;301;/product/komplekt-mebeli-iz-roupa-7/;
+/komplektyroup/tproduct/498601335132-komplekt-mebeli-iz-roupa-15;товар;Комплект мебели из роупа 15;225400;301;/product/komplekt-mebeli-iz-roupa-15/;то же название: /saleroup/tproduct/419602709112-komplekt-mebeli-iz-roupa-15 — сверить состав и цену
+/komplektyroup/tproduct/499021650872-komplekt-mebeli-iz-polipropilena;товар;Комплект мебели из полипропилена;205800;301;/product/komplekt-mebeli-iz-polipropilena/;
+/komplektyroup/tproduct/505176019343-komplekt-mebeli-iz-roupa-13;товар;Комплект мебели из роупа 13;78600;301;/product/komplekt-mebeli-iz-roupa-13/;
+/komplektyroup/tproduct/551732016262-komplekt-mebeli-iz-roupa-19;товар;Комплект мебели из роупа 19;498400;301;/product/komplekt-mebeli-iz-roupa-19/;
+/komplektyroup/tproduct/557325965772-komplekt-mebeli-iz-roupa-16;товар;Комплект мебели из роупа 16;414900;301;/product/komplekt-mebeli-iz-roupa-16/;то же название: /saleroup/tproduct/525374467852-komplekt-mebeli-iz-roupa-16 — сверить состав и цену
+/komplektyroup/tproduct/621898602812-komplekt-mebeli-iz-roupa-8;товар;Комплект мебели из роупа 8;397200;301;/product/komplekt-mebeli-iz-roupa-8/;
+/komplektyroup/tproduct/676030913902-komplekt-mebeli-iz-roupa-14;товар;Комплект мебели из роупа 14;134800;301;/product/komplekt-mebeli-iz-roupa-14/;
+/komplektyroup/tproduct/693213155512-komplekt-mebeli-iz-roupa-3;товар;Комплект мебели из роупа 3;121500;301;/product/komplekt-mebeli-iz-roupa-3/;то же название: /saleroup/tproduct/146453663492-komplekt-mebeli-iz-roupa-3 — сверить состав и цену
+/komplektyroup/tproduct/741307368892-komplekt-mebeli-iz-stropi;товар;Комплект мебели из стропы;;301;/product/komplekt-mebeli-iz-stropy/;то же название: /komplekty/tproduct/827181619422-komplekt-mebeli-iz-stropi — сверить состав и цену
+/komplektyroup/tproduct/822284029863-komplekt-mebeli-iz-roupa-21;товар;Комплект мебели из роупа 21;358700;301;/product/komplekt-mebeli-iz-roupa-21/;
+/komplektyroup/tproduct/860793466042-komplekt-mebeli-iz-roupa-12;товар;Комплект мебели из роупа 12;104100;301;/product/komplekt-mebeli-iz-roupa-12/;
+/komplektyroup/tproduct/916736742972-komplekt-mebeli-iz-roupa-10;товар;Комплект мебели из роупа 10;332300;301;/product/komplekt-mebeli-iz-roupa-10/;
+/kreslo/tproduct/245466086322-kreslo-garda-iz-rotanga;товар;Кресло «Гарда» из ротанга;48000;301;/product/kreslo-garda-iz-rotanga/;
+/kreslo/tproduct/278562776182-kreslo-volterra-lyuks-iz-rotanga;товар;Кресло «Вольтерра Люкс» из ротанга;34900;301;/product/kreslo-volterra-lyuks-iz-rotanga/;
+/kreslo/tproduct/331982521342-puf-turin-iz-rotanga;товар;Пуф «Турин» из ротанга;9900;301;/product/puf-turin-iz-rotanga/;
+/kreslo/tproduct/393243104562-kreslo-terlago-lyuks-iz-rotanga;товар;Кресло «Терлаго Люкс» из ротанга;34900;301;/product/kreslo-terlago-lyuks-iz-rotanga/;
+/kreslo/tproduct/416992771222-kreslo-garda-loft;товар;Кресло «Гарда Лофт»;28000;301;/product/kreslo-garda-loft/;
+/kreslo/tproduct/488624003122-kreslo-kastelsardo-xl-iz-rotanga;товар;Кресло «Кастельсардо XL» из ротанга;34900;301;/product/kreslo-kastelsardo-xl-iz-rotanga/;
+/kreslo/tproduct/494972650362-stul-chirella-iz-rotanga;товар;Стул «Чирелла» из ротанга;14900;301;/product/stul-chirella-iz-rotanga/;
+/kreslo/tproduct/510241481922-kreslo-sitsiliya-iz-rotanga;товар;Кресло «Сицилия» из ротанга;42400;301;/product/kreslo-sitsiliya-iz-rotanga/;
+/kreslo/tproduct/525922845752-kreslo-kastelsardo-iz-rotanga;товар;Кресло «Кастельсардо» из ротанга;24900;301;/product/kreslo-kastelsardo-iz-rotanga/;
+/kreslo/tproduct/535044618772-stul-terlago-iz-rotanga;товар;Стул «Терлаго» из ротанга;15900;301;/product/stul-terlago-iz-rotanga/;
+/kreslo/tproduct/856783318622-stul-palermo-iz-rotanga;товар;Стул «Палермо» из ротанга;17500;301;/product/stul-palermo-iz-rotanga/;
+/kreslo/tproduct/884701107752-kreslo-terlago-iz-rotanga;товар;Кресло «Терлаго» из ротанга;18800;301;/product/kreslo-terlago-iz-rotanga/;
+/kreslo/tproduct/902180714432-kreslo-palermo-iz-rotanga;товар;Кресло «Палермо» из ротанга;20800;301;/product/kreslo-palermo-iz-rotanga/;
+/kreslopodves/tproduct/205862356892-kokon-loft-iz-metalla;товар;Кокон «Лофт» из металла;28000;301;/product/kokon-loft-iz-metalla/;
+/kreslopodves/tproduct/238444869042-kokon-garda-iz-rotanga;товар;Кокон «Гарда» из ротанга;29000;301;/product/kokon-garda-iz-rotanga/;
+/kreslopodves/tproduct/295471229592-kokon-komo-lyuks-2h-iz-rotanga;товар;Кокон «Комо Люкс 2х» из ротанга;79900;301;/product/kokon-komo-lyuks-2h-iz-rotanga/;то же название: /salerotang/tproduct/465973529283-kokon-komo-lyuks-2h-iz-rotanga — сверить состав и цену
+/kreslopodves/tproduct/378404481692-kokon-komo-iz-rotanga;товар;Кокон «Комо» из ротанга;38000;301;/product/kokon-komo-iz-rotanga/;то же название: /salerotang/tproduct/517437746363-kokon-komo-iz-rotanga — сверить состав и цену
+/kreslopodves/tproduct/642556179112-kokon-komo-lyuks-iz-rotanga;товар;Кокон «Комо Люкс» из ротанга;48000;301;/product/kokon-komo-lyuks-iz-rotanga/;
+/kresloroup/tproduct/267964949443-stul-barnii-reta-roup;товар;Стул Барный Рета (роуп);24900;301;/product/stul-barnyy-reta-roup/;
+/kresloroup/tproduct/667288092852-kreslo-milan-xl-roup;товар;Кресло Милан XL (роуп);34900;301;/product/kreslo-milan-xl-roup/;
+/kresloroup/tproduct/986491581633-kreslo-barnoe-milan-roup;товар;Кресло Барное Милан (роуп);27900;301;/product/kreslo-barnoe-milan-roup/;
+/onas/tproduct/644560710182-komplekt-iz-rotanga;товар;комплект из ротанга;;301;/product/komplekt-iz-rotanga/;то же название: /onas/tproduct/789140113002-komplekt-iz-rotanga, /onas/tproduct/908689409242-komplekt-iz-rotanga, /onas/tproduct/852180204562-komplekt-iz-rotanga, /onas/tproduct/860996549192-komplekt-iz-rotanga — сверить состав и цену
+/onas/tproduct/789140113002-komplekt-iz-rotanga;товар;комплект из ротанга;;301;/product/komplekt-iz-rotanga/;то же название: /onas/tproduct/644560710182-komplekt-iz-rotanga, /onas/tproduct/908689409242-komplekt-iz-rotanga, /onas/tproduct/852180204562-komplekt-iz-rotanga, /onas/tproduct/860996549192-komplekt-iz-rotanga — сверить состав и цену
+/onas/tproduct/852180204562-komplekt-iz-rotanga;товар;комплект из ротанга;;301;/product/komplekt-iz-rotanga/;то же название: /onas/tproduct/644560710182-komplekt-iz-rotanga, /onas/tproduct/789140113002-komplekt-iz-rotanga, /onas/tproduct/908689409242-komplekt-iz-rotanga, /onas/tproduct/860996549192-komplekt-iz-rotanga — сверить состав и цену
+/onas/tproduct/860996549192-komplekt-iz-rotanga;товар;комплект из ротанга;;301;/product/komplekt-iz-rotanga/;то же название: /onas/tproduct/644560710182-komplekt-iz-rotanga, /onas/tproduct/789140113002-komplekt-iz-rotanga, /onas/tproduct/908689409242-komplekt-iz-rotanga, /onas/tproduct/852180204562-komplekt-iz-rotanga — сверить состав и цену
+/onas/tproduct/908689409242-komplekt-iz-rotanga;товар;комплект из ротанга;;301;/product/komplekt-iz-rotanga/;то же название: /onas/tproduct/644560710182-komplekt-iz-rotanga, /onas/tproduct/789140113002-komplekt-iz-rotanga, /onas/tproduct/852180204562-komplekt-iz-rotanga, /onas/tproduct/860996549192-komplekt-iz-rotanga — сверить состав и цену
+/price/tproduct/119742328002-kreslo-milan-launzh-roup;товар;Кресло Милан Лаунж (роуп);34900;301;/product/kreslo-milan-launzh-roup/;
+/price/tproduct/170056927543-etazherka-loft-s-hpl;товар;Этажерка Лофт с HPL;39000;301;/product/etazherka-loft-s-hpl/;то же название: /price/tproduct/216862049673-etazherka-loft-s-hpl — сверить состав и цену
+/price/tproduct/216862049673-etazherka-loft-s-hpl;товар;Этажерка Лофт с HPL;26000;301;/product/etazherka-loft-s-hpl/;то же название: /price/tproduct/170056927543-etazherka-loft-s-hpl — сверить состав и цену
+/price/tproduct/221467009712-stol-alvera-launzh-55-sm-roup;товар;Стол Альвера Лаунж 55 см (роуп);19900;301;/product/stol-alvera-launzh-55-sm-roup/;
+/price/tproduct/238356908492-stol-alvera-launzh-120h60-sm-roup;товар;Стол Альвера Лаунж 120х60 см (роуп);42900;301;/product/stol-alvera-launzh-120h60-sm-roup/;
+/price/tproduct/244300533432-stol-bari-so-shponom-210h100-sm-roup;товар;Стол Бари со шпоном 210х100 см (роуп);64900;301;/product/stol-bari-so-shponom-210h100-sm-roup/;
+/price/tproduct/271454179652-stol-novara-s-hpl-80h80-sm-roup;товар;Стол Новара с HPL 80х80 см (роуп);29900;301;/product/stol-novara-s-hpl-80h80-sm-roup/;
+/price/tproduct/272774840902-stol-asti-so-shponom-160h90-sm-roup;товар;Стол Асти со шпоном 160х90 см (роуп);44900;301;/product/stol-asti-so-shponom-160h90-sm-roup/;
+/price/tproduct/380843141362-stol-siena-launzh-hpl;товар;Стол Сиена Лаунж (HPL);19900;301;/product/stol-siena-launzh-hpl/;
+/price/tproduct/423039457392-shezlong-bari-roup;товар;Шезлонг Бари (роуп);69000;301;/product/shezlong-bari-roup/;
+/price/tproduct/436763374452-kreslo-milan-roup;товар;Кресло Милан (роуп);26400;301;/product/kreslo-milan-roup/;
+/price/tproduct/453964097262-stol-siena-s-dpk-160h90-sm-roup;товар;Стол Сиена с ДПК 160х90 см (роуп);26900;301;/product/stol-siena-s-dpk-160h90-sm-roup/;
+/price/tproduct/470391920262-yubka-dlya-yolki-klassicheskayakonus;товар;Юбка для Ёлки Классическая/Конус;7000;301;/product/yubka-dlya-elki-klassicheskayakonus/;то же название: /aksessuary/tproduct/854514176242-yubka-dlya-yolki-klassicheskayakonus — сверить состав и цену
+/price/tproduct/491251750582-stol-novara-s-hpl-160h90-sm-roup;товар;Стол Новара с HPL 160х90 см (роуп);29900;301;/product/stol-novara-s-hpl-160h90-sm-roup/;
+/price/tproduct/501161551833-copy-kreslo-bari-l-roup;товар;Кресло Бари L (роуп);32900;301;/product/kreslo-bari-l-roup/;«Copy:» в названии
+/price/tproduct/538426003552-kreslo-bari-roup;товар;Кресло Бари (роуп);29900;301;/product/kreslo-bari-roup/;
+/price/tproduct/565571784112-yubka-dlya-yolki-vozdushnayatsilindr;товар;Юбка для Ёлки Воздушная/Цилиндр;6200;301;/product/yubka-dlya-elki-vozdushnayatsilindr/;то же название: /aksessuary/tproduct/679784936672-yubka-dlya-yolki-vozdushnayatsilindr — сверить состав и цену
+/price/tproduct/600256992382-kreslo-milan-lyuks-roup;товар;Кресло Милан Люкс (роуп);30900;301;/product/kreslo-milan-lyuks-roup/;
+/price/tproduct/600954333392-kreslo-milan-retta-rotang;товар;Кресло Милан Ретта (ротанг);18900;301;/product/kreslo-milan-retta-rotang/;
+/price/tproduct/626883417742-stol-milan-s-hpl-180h110-sm-roup;товар;Стол Милан с HPL 180х110 см (роуп);38100;301;/product/stol-milan-s-hpl-180h110-sm-roup/;
+/price/tproduct/693610465152-kreslo-novara-roup;товар;Кресло Новара (роуп);45600;301;/product/kreslo-novara-roup/;
+/price/tproduct/710777286153-etazherka-iz-roupa-s-hpl;товар;Этажерка из РОУПА с HPL;55000;301;/product/etazherka-iz-roupa-s-hpl/;
+/price/tproduct/792540797992-divan-milan-2xl-roup;товар;Диван Милан 2XL (роуп);64900;301;/product/divan-milan-2xl-roup/;
+/price/tproduct/833652803012-stul-verona-roup;товар;Стул Верона (роуп);17900;301;/product/stul-verona-roup/;
+/price/tproduct/838144607822-yubka-dlya-yolki-lyukstsilindr;товар;Юбка для Ёлки Люкс/Цилиндр;12000;301;/product/yubka-dlya-elki-lyukstsilindr/;
+/price/tproduct/838322616472-stol-bari-launzh-hpl;товар;Стол Бари Лаунж (HPL);16900;301;/product/stol-bari-launzh-hpl/;
+/price/tproduct/841578035063-kreslo-bari-lyuks-roup;товар;Кресло Бари Люкс (роуп);34900;301;/product/kreslo-bari-lyuks-roup/;
+/price/tproduct/886396870072-kreslo-asti-roup;товар;Кресло Асти (роуп);22900;301;/product/kreslo-asti-roup/;
+/price/tproduct/983679655872-yubka-dlya-yolki-vozdushnayakonus;товар;Юбка для Ёлки Воздушная/Конус;6700;301;/product/yubka-dlya-elki-vozdushnayakonus/;
+/price/tproduct/984688854132-stol-asti-launzh-roup;товар;Стол Асти Лаунж (роуп);19900;301;/product/stol-asti-launzh-roup/;
+/salerotang/tproduct/147412245812-komplekt-mebeli-iz-rotanga-35;товар;Комплект мебели из ротанга 35;95000;301;/product/komplekt-mebeli-iz-rotanga-35/;
+/salerotang/tproduct/189770381212-komplekt-mebeli-iz-rotanga-33;товар;Комплект мебели из ротанга 33;219000;301;/product/komplekt-mebeli-iz-rotanga-33/;
+/salerotang/tproduct/231415394422-komplekt-mebeli-iz-rotanga-89;товар;Комплект мебели из ротанга 89;128300;301;/product/komplekt-mebeli-iz-rotanga-89/;
+/salerotang/tproduct/250300052952-komplekt-mebeli-iz-rotanga-4;товар;Комплект мебели из ротанга 4;69000;301;/product/komplekt-mebeli-iz-rotanga-4/;
+/salerotang/tproduct/282665175003-kreslo-iz-roupa-milan-launzh;товар;Кресло из Роупа «Милан Лаунж»;9900;301;/product/kreslo-iz-roupa-milan-launzh/;
+/salerotang/tproduct/285970250722-komplekt-mebeli-iz-rotanga-56;товар;Комплект мебели из ротанга 56;119000;301;/product/komplekt-mebeli-iz-rotanga-56/;
+/salerotang/tproduct/308394978293-kreslo-iz-roupa-bari;товар;Кресло из Роупа «Бари»;6900;301;/product/kreslo-iz-roupa-bari/;
+/salerotang/tproduct/308740298292-komplekt-mebeli-iz-rotanga-6;товар;Комплект мебели из ротанга 6;88600;301;/product/komplekt-mebeli-iz-rotanga-6/;то же название: /salerotang/tproduct/583157934932-komplekt-mebeli-iz-rotanga-6 — сверить состав и цену
+/salerotang/tproduct/322533587382-komplekt-mebeli-iz-rotanga-12;товар;Комплект мебели из ротанга 12;129000;301;/product/komplekt-mebeli-iz-rotanga-12/;
+/salerotang/tproduct/336948585862-komplekt-mebeli-iz-rotanga-5;товар;Комплект мебели из ротанга 5;89000;301;/product/komplekt-mebeli-iz-rotanga-5/;
+/salerotang/tproduct/387930922362-komplekt-mebeli-iz-rotanga-58;товар;Комплект мебели из ротанга 58;175000;301;/product/komplekt-mebeli-iz-rotanga-58/;то же название: /salerotang/tproduct/759183152893-komplekt-mebeli-iz-rotanga-58 — сверить состав и цену
+/salerotang/tproduct/398053959183-komplekt-mebeli-iz-rotanga-19;товар;Комплект мебели из ротанга «№19»;35000;301;/product/komplekt-mebeli-iz-rotanga-19/;то же название: /komplekty/tproduct/612635143462-komplekt-mebeli-iz-rotanga-19 — сверить состав и цену
+/salerotang/tproduct/401975689073-komplekt-mebeli-iz-rotanga-34;товар;Комплект мебели из ротанга 34;212000;301;/product/komplekt-mebeli-iz-rotanga-34/;
+/salerotang/tproduct/431863147842-komplekt-mebeli-iz-rotanga-90;товар;Комплект мебели из ротанга 90;128300;301;/product/komplekt-mebeli-iz-rotanga-90/;
+/salerotang/tproduct/437847987782-komplekt-mebeli-iz-rotanga-57;товар;Комплект мебели из ротанга 57;120000;301;/product/komplekt-mebeli-iz-rotanga-57/;
+/salerotang/tproduct/457379401032-komplekt-mebeli-iz-rotanga-26;товар;Комплект мебели из ротанга 26;90000;301;/product/komplekt-mebeli-iz-rotanga-26/;
+/salerotang/tproduct/458275453572-komplekt-mebeli-iz-rotang-28;товар;Комплект мебели из ротанг 28;75000;301;/product/komplekt-mebeli-iz-rotang-28/;
+/salerotang/tproduct/465973529283-kokon-komo-lyuks-2h-iz-rotanga;товар;Кокон «Комо Люкс 2х» из ротанга;10000;301;/product/kokon-komo-lyuks-2h-iz-rotanga/;то же название: /kreslopodves/tproduct/295471229592-kokon-komo-lyuks-2h-iz-rotanga — сверить состав и цену
+/salerotang/tproduct/487164498412-komplekt-mebeli-iz-rotanga-32;товар;Комплект мебели из ротанга 32;179000;301;/product/komplekt-mebeli-iz-rotanga-32/;то же название: /salerotang/tproduct/719745946072-komplekt-mebeli-iz-rotanga-32 — сверить состав и цену
+/salerotang/tproduct/514839985543-kreslo-iz-roupa-bari-long;товар;Кресло из Роупа «Бари Лонг»;5400;301;/product/kreslo-iz-roupa-bari-long/;
+/salerotang/tproduct/517437746363-kokon-komo-iz-rotanga;товар;Кокон «Комо» из ротанга;25000;301;/product/kokon-komo-iz-rotanga/;то же название: /kreslopodves/tproduct/378404481692-kokon-komo-iz-rotanga — сверить состав и цену
+/salerotang/tproduct/535869356392-komplekt-mebeli-iz-rotanga-63;товар;Комплект мебели из ротанга 63;80000;301;/product/komplekt-mebeli-iz-rotanga-63/;
+/salerotang/tproduct/553267707082-komplekt-mebeli-iz-rotanga-41;товар;Комплект мебели из ротанга 41;155000;301;/product/komplekt-mebeli-iz-rotanga-41/;
+/salerotang/tproduct/581221798732-komplekt-mebeli-iz-rotang-21;товар;Комплект мебели из ротанг 21;19100;301;/product/komplekt-mebeli-iz-rotang-21/;
+/salerotang/tproduct/583157934932-komplekt-mebeli-iz-rotanga-6;товар;Комплект мебели из ротанга 6;49000;301;/product/komplekt-mebeli-iz-rotanga-6/;то же название: /salerotang/tproduct/308740298292-komplekt-mebeli-iz-rotanga-6 — сверить состав и цену
+/salerotang/tproduct/639299757162-komplekt-mebeli-iz-rotanga-25;товар;Комплект мебели из ротанга 25;95000;301;/product/komplekt-mebeli-iz-rotanga-25/;
+/salerotang/tproduct/719745946072-komplekt-mebeli-iz-rotanga-32;товар;Комплект мебели из ротанга 32;79000;301;/product/komplekt-mebeli-iz-rotanga-32/;то же название: /salerotang/tproduct/487164498412-komplekt-mebeli-iz-rotanga-32 — сверить состав и цену
+/salerotang/tproduct/721403700002-shezlong-retta-iz-rotangaroupa;товар;Шезлонг Ретта из ротанга/роупа;26900;301;/product/shezlong-retta-iz-rotangaroupa/;
+/salerotang/tproduct/759183152893-komplekt-mebeli-iz-rotanga-58;товар;Комплект мебели из ротанга 58;129000;301;/product/komplekt-mebeli-iz-rotanga-58/;то же название: /salerotang/tproduct/387930922362-komplekt-mebeli-iz-rotanga-58 — сверить состав и цену
+/salerotang/tproduct/799381349502-komplekt-mebeli-iz-rotang-27;товар;Комплект мебели из ротанг 27;95000;301;/product/komplekt-mebeli-iz-rotang-27/;
+/salerotang/tproduct/960898930193-kreslo-iz-roupa-bari-lyuks;товар;Кресло из Роупа «Бари Люкс»;7900;301;/product/kreslo-iz-roupa-bari-lyuks/;
+/salerotang/tproduct/962701427752-komplekt-mebeli-iz-rotanga-36;товар;Комплект мебели из ротанга 36;79000;301;/product/komplekt-mebeli-iz-rotanga-36/;
+/salerotang/tproduct/967777121862-komplekt-mebeli-iz-rotang-22;товар;Комплект мебели из ротанг 22;109000;301;/product/komplekt-mebeli-iz-rotang-22/;
+/salerotang/tproduct/990578457703-komplekt-mebeli-iz-rotanga-48;товар;Комплект мебели из ротанга 48;54000;301;/product/komplekt-mebeli-iz-rotanga-48/;
+/saleroup/tproduct/146453663492-komplekt-mebeli-iz-roupa-3;товар;Комплект мебели из роупа 3;89000;301;/product/komplekt-mebeli-iz-roupa-3/;то же название: /komplektyroup/tproduct/693213155512-komplekt-mebeli-iz-roupa-3 — сверить состав и цену
+/saleroup/tproduct/261878074692-komplekt-mebeli-iz-roupa-2;товар;Комплект мебели из роупа 2;80000;301;/product/komplekt-mebeli-iz-roupa-2/;то же название: /komplektyroup/tproduct/256015115232-komplekt-mebeli-iz-roupa-2 — сверить состав и цену
+/saleroup/tproduct/292881561882-komplekt-mebeli-iz-roupa-1;товар;Комплект мебели из роупа 1;76900;301;/product/komplekt-mebeli-iz-roupa-1/;то же название: /komplektyroup/tproduct/248028431432-komplekt-mebeli-iz-roupa-1 — сверить состав и цену
+/saleroup/tproduct/419602709112-komplekt-mebeli-iz-roupa-15;товар;Комплект мебели из роупа 15;105000;301;/product/komplekt-mebeli-iz-roupa-15/;то же название: /komplektyroup/tproduct/498601335132-komplekt-mebeli-iz-roupa-15 — сверить состав и цену
+/saleroup/tproduct/419901260632-komplekt-mebeli-iz-roupa-5;товар;Комплект мебели из роупа 5;226900;301;/product/komplekt-mebeli-iz-roupa-5/;то же название: /komplektyroup/tproduct/255771956062-komplekt-mebeli-iz-roupa-5 — сверить состав и цену
+/saleroup/tproduct/525374467852-komplekt-mebeli-iz-roupa-16;товар;Комплект мебели из роупа 16;259000;301;/product/komplekt-mebeli-iz-roupa-16/;то же название: /komplektyroup/tproduct/557325965772-komplekt-mebeli-iz-roupa-16 — сверить состав и цену
+/saleroup/tproduct/583233053833-stol-iz-rotanga-300h110-sm;товар;Стол из Ротанга 300х110 см;35000;301;/product/stol-iz-rotanga-300h110-sm/;
+/saleroup/tproduct/732626155772-komplekt-mebeli-iz-roupa-4;товар;Комплект мебели из роупа 4;200000;301;/product/komplekt-mebeli-iz-roupa-4/;то же название: /komplektyroup/tproduct/149316579202-komplekt-mebeli-iz-roupa-4 — сверить состав и цену
+/saleroup/tproduct/782057072663-stol-iz-hpl-220h100-sm;товар;Стол из HPL 220х100 см;59000;301;/product/stol-iz-hpl-220h100-sm/;
+/saleroup/tproduct/873528733212-komplekt-mebeli-iz-roupa-17;товар;Комплект мебели из роупа 17;345000;301;/product/komplekt-mebeli-iz-roupa-17/;то же название: /komplektyroup/tproduct/271238734072-komplekt-mebeli-iz-roupa-17 — сверить состав и цену
+/shezlong/tproduct/240877075662-shezlong-retta;товар;Шезлонг Ретта;59000;301;/product/shezlong-retta/;
+/shezlong/tproduct/418007338102-shezlong-onda-iz-rotanga;товар;Шезлонг «Онда» из ротанга;36900;301;/product/shezlong-onda-iz-rotanga/;
+/shezlong/tproduct/595355773362-shezlong-sorrento-iz-rotanga;товар;Шезлонг «Сорренто» из ротанга;34900;301;/product/shezlong-sorrento-iz-rotanga/;
+/shezlong/tproduct/997508870402-shezlong-ponte-s-podlokotnikami-iz-rotan;товар;Шезлонг «Понте» (С подлокотниками) из ротанга;38900;301;/product/shezlong-ponte-s-podlokotnikami-iz-rotanga/;
+/stol/tproduct/100843313702-stol-onda-iz-rotanga;товар;Стол «Онда» из ротанга;12900;301;/product/stol-onda-iz-rotanga/;
+/stol/tproduct/239282092152-obedennie-stoli-s-krashenim-steklom-ral;товар;Обеденные столы с крашеным стеклом RAL;29900;301;/product/obedennye-stoly-s-krashenym-steklom-ral/;
+/stol/tproduct/251516934972-obedennii-stol-ponte-iz-rotanga;товар;Обеденный стол «Понте» из ротанга;26900;301;/product/obedennyy-stol-ponte-iz-rotanga/;
+/stol/tproduct/256244504632-obedennii-stol-palermo-iz-rotanga;товар;Обеденный стол «Палермо» из ротанга;31900;301;/product/obedennyy-stol-palermo-iz-rotanga/;
+/stol/tproduct/369859751202-obedennii-stol-neapol-iz-rotanga;товар;Обеденный стол «Неаполь» из ротанга;46900;301;/product/obedennyy-stol-neapol-iz-rotanga/;
+/stol/tproduct/370762835582-obedennii-stol-rim-iz-rotanga;товар;Обеденный стол «Рим» из ротанга;29900;301;/product/obedennyy-stol-rim-iz-rotanga/;
+/stol/tproduct/496725106562-obedennii-stol-arko-iz-rotanga;товар;Обеденный стол «Арко» из ротанга;44900;301;/product/obedennyy-stol-arko-iz-rotanga/;
+/stol/tproduct/498140630452-kofeinii-stol-terlago-launzh-iz-rotanga;товар;Кофейный стол «Терлаго Лаунж» из ротанга;25900;301;/product/kofeynyy-stol-terlago-launzh-iz-rotanga/;
+/stol/tproduct/498513478092-stol-ponte-launzh-iz-rotanga;товар;Стол «Понте Лаунж» из ротанга;14900;301;/product/stol-ponte-launzh-iz-rotanga/;
+/stol/tproduct/553756281982-obedennie-stoli-s-dpk;товар;Обеденные столы с ДПК;20000;301;/product/obedennye-stoly-s-dpk/;
+/stol/tproduct/676190277452-stol-turin-launzh-iz-rotanga;товар;Стол «Турин Лаунж» из ротанга;9900;301;/product/stol-turin-launzh-iz-rotanga/;
+/stol/tproduct/697313753132-kofeinii-stol-alvera-launzh-iz-rotanga;товар;Кофейный стол «Альвера Лаунж» из ротанга;16900;301;/product/kofeynyy-stol-alvera-launzh-iz-rotanga/;
+/stol/tproduct/740345692882-kofeinii-stol-sorrento-launzh-iz-rotanga;товар;Кофейный стол «Сорренто Лаунж» из ротанга;24900;301;/product/kofeynyy-stol-sorrento-launzh-iz-rotanga/;
+/stol/tproduct/760608721302-kofeinii-stol-rimmini-launzh-iz-rotanga;товар;Кофейный стол «Риммини Лаунж» из ротанга;17900;301;/product/kofeynyy-stol-rimmini-launzh-iz-rotanga/;
+/stol/tproduct/769355981912-obedennie-stoli-s-derevyannoi-installyat;товар;Обеденные столы с деревянной инсталляцией;30000;301;/product/obedennye-stoly-s-derevyannoy-installyatsiey/;
+/stol/tproduct/807715688692-obedennii-stol-ovara-iz-rotanga;товар;Обеденный стол «Овара» из ротанга;33900;301;/product/obedennyy-stol-ovara-iz-rotanga/;
+/tproduct/685095834682-copy-komplekt-mebeli-iz-rotang-25;товар;"Комплект мебели из ротанг ""№25""";176300;301;/product/komplekt-mebeli-iz-rotang-25/;«Copy:» в названии
+/uglovyedivany/tproduct/425279570482-p-obraznie-divani-volterra-lyuks-iz-rota;товар;П-образные диваны «Вольтерра Люкс» из ротанга;;301;/product/p-obraznye-divany-volterra-lyuks-iz-rotanga/;
+/uglovyedivany/tproduct/738942450432-uglovie-divani-voltera-lyuks-iz-rotanga;товар;Угловые диваны «Вольтера Люкс» из ротанга;129000;301;/product/uglovye-divany-voltera-lyuks-iz-rotanga/;
+/tproduct/121969165582-sac-marin-yellow;товар-демо;Sac Marin Yellow;108;410;;демо-товар Tilda или пустая заглушка — не импортировать
+/tproduct/175447806982-sale-roup;товар-демо;sale роуп;;410;;демо-товар Tilda или пустая заглушка — не импортировать
+/tproduct/322548644472-sac-marin-yellow;товар-демо;Sac Marin Yellow;108;410;;демо-товар Tilda или пустая заглушка — не импортировать
+/tproduct/498455188682-underwater-wearable-watches;товар-демо;Underwater wearable watches;90;410;;демо-товар Tilda или пустая заглушка — не импортировать
+/tproduct/661752667342-dining-chair-by-estebanmoreno;товар-демо;Dining Chair by esteban+moreno;79;410;;демо-товар Tilda или пустая заглушка — не импортировать
+/tproduct/661985197072-underwater-wearable-watches;товар-демо;Underwater wearable watches;90;410;;демо-товар Tilda или пустая заглушка — не импортировать
+/tproduct/897024892502-dining-chair-by-estebanmoreno;товар-демо;Dining Chair by esteban+moreno;79;410;;демо-товар Tilda или пустая заглушка — не импортировать
+/cvetrotanga/tproduct/214798576092-indiiskoe-derevo;цвет-как-товар;Индийское дерево;;301;/catalog/rotang/;образец цвета → ColorOption, не товар
+/cvetrotanga/tproduct/242524824912-mokko;цвет-как-товар;Мокко;;301;/catalog/rotang/;образец цвета → ColorOption, не товар
+/cvetrotanga/tproduct/348489140802-snezhnii;цвет-как-товар;Снежный;;301;/catalog/rotang/;образец цвета → ColorOption, не товар
+/cvetrotanga/tproduct/546428075652-belii-dub;цвет-как-товар;Белый дуб;;301;/catalog/rotang/;образец цвета → ColorOption, не товар
+/cvetrotanga/tproduct/580500712742-bronza;цвет-как-товар;Бронза;;301;/catalog/rotang/;образец цвета → ColorOption, не товар
+/cvetrotanga/tproduct/654282953522-venge;цвет-как-товар;Венге;;301;/catalog/rotang/;образец цвета → ColorOption, не товар
+/cvetrotanga/tproduct/712745633312-chyornii-dub;цвет-как-товар;Чёрный дуб;;301;/catalog/rotang/;образец цвета → ColorOption, не товар
+/cvetrotanga/tproduct/816394543702-grafit;цвет-как-товар;Графит;;301;/catalog/rotang/;образец цвета → ColorOption, не товар
+/cvetrotanga/tproduct/941312048392-dimchatii;цвет-как-товар;Дымчатый;;301;/catalog/rotang/;образец цвета → ColorOption, не товар
+/cvetrotanga/tproduct/953089171422-karamel;цвет-как-товар;Карамель;;301;/catalog/rotang/;образец цвета → ColorOption, не товар
+/cvetrotanga/tproduct/957751528822-gorkii-shokolad;цвет-как-товар;Горький шоколад;;301;/catalog/rotang/;образец цвета → ColorOption, не товар

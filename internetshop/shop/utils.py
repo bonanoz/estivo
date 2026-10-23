@@ -6,6 +6,10 @@ from django.utils.text import slugify
 
 bot = telebot.TeleBot(os.environ.get('BOT_TOKEN'))
 CHAT_ID = os.environ.get('CHAT_ID')
+# Отправка идёт внутри запроса: по умолчанию 15+30 с, а gunicorn убивает воркер через 30 с.
+telebot.apihelper.CONNECT_TIMEOUT = 3
+telebot.apihelper.READ_TIMEOUT = 5
+TELEGRAM_MAX_LEN = 4096
 
 PHONE_RE = re.compile(r'^\+?[78][\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{2}[\s\-]?\d{2}$')
 
@@ -31,6 +35,8 @@ def notify_telegram(text):
     """Отправляет сообщение в Telegram-чат менеджера. Не бросает исключений —
     заявка должна сохраняться в БД независимо от доступности Telegram API.
     """
+    if len(text) > TELEGRAM_MAX_LEN:  # длиннее Telegram отклоняет целиком; полный текст есть в админке
+        text = text[:TELEGRAM_MAX_LEN - 1] + '…'
     try:
         bot.send_message(CHAT_ID, text)
         return True

@@ -1,0 +1,47 @@
+<!-- @dsCard group="Commerce" height=520 subtitle="Catalogue card: priced, on sale, price on request" -->
+<style>
+  .es-product { position: relative; display: flex; flex-direction: column; gap: 10px; width: var(--module); }
+  .es-product__photo { aspect-ratio: 1 / 1; background: var(--surface-muted); border-radius: var(--radius-none); }
+  .es-product__fav { position: absolute; top: 10px; right: 10px; background: var(--surface-white); }
+  .es-product__stock { font: 300 14px/17px var(--font-body); color: var(--muted); }
+  .es-product__name { margin: 0; font: 300 16px/24px var(--font-body); color: var(--ink); }
+  .es-product__sku { font: 300 14px/17px var(--font-body); color: var(--muted); }
+  .es-product__price { font: 800 16px/24px var(--font-body); color: var(--ink); }
+  .es-product__old { margin-left: 8px; font: 300 14px/17px var(--font-body); color: var(--muted); text-decoration: line-through; }
+  .es-product__swatches { display: flex; gap: 6px; }
+  .es-product__swatch { width: 20px; height: 20px; border: 1px solid var(--ink); border-radius: 50%; }
+  .es-product .es-btn { width: 100%; margin-top: auto; }
+  .es-product-grid { display: grid; grid-template-columns: repeat(auto-fill, var(--module)); gap: var(--gutter); padding: 20px; background: var(--surface); }
+  @media (max-width: 767px) { .es-product-grid { grid-template-columns: 1fr 1fr; padding: 16px; } .es-product { width: auto; } }
+</style>
+<div class="es es-product-grid">
+  <article class="es-product">
+    <div class="es-product__photo" role="img" aria-label="[фото товара]"></div>
+    <button class="es-icon-btn es-product__fav" type="button" aria-label="В избранное"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M10 17s-6-3.6-6-8a3.3 3.3 0 0 1 6-1.9A3.3 3.3 0 0 1 16 9c0 4.4-6 8-6 8z"/></svg></button>
+    <span class="es-product__stock">В наличии</span>
+    <h3 class="es-product__name">Комплект: диван, 2 кресла, стол</h3>
+    <span class="es-product__sku">Арт. К-60</span>
+    <span class="es-product__price">от 189 000 ₽</span>
+    <div class="es-product__swatches" aria-label="Цвета плетения">
+      <span class="es-product__swatch" style="background:#3b3632" title="Графит"></span>
+      <span class="es-product__swatch" style="background:#c8b79a" title="Песок"></span>
+    </div>
+    <button class="es-btn es-btn--dark" type="button">В корзину</button>
+  </article>
+  <article class="es-product">
+    <div class="es-product__photo" role="img" aria-label="[фото товара]"></div>
+    <button class="es-icon-btn es-product__fav" type="button" aria-label="В избранное"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M10 17s-6-3.6-6-8a3.3 3.3 0 0 1 6-1.9A3.3 3.3 0 0 1 16 9c0 4.4-6 8-6 8z"/></svg></button>
+    <span class="es-product__stock">Под заказ</span>
+    <h3 class="es-product__name">Кресло-кокон, роуп</h3>
+    <span class="es-product__price">от 64 900 ₽<span class="es-product__old">72 000 ₽</span></span>
+    <button class="es-btn es-btn--dark" type="button">В корзину</button>
+  </article>
+  <article class="es-product">
+    <div class="es-product__photo" role="img" aria-label="[фото товара]"></div>
+    <button class="es-icon-btn es-product__fav" type="button" aria-label="В избранное"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M10 17s-6-3.6-6-8a3.3 3.3 0 0 1 6-1.9A3.3 3.3 0 0 1 16 9c0 4.4-6 8-6 8z"/></svg></button>
+    <span class="es-product__stock">Под заказ</span>
+    <h3 class="es-product__name">Стол обеденный, HPL</h3>
+    <span class="es-product__price">Цена по запросу</span>
+    <button class="es-btn es-btn--dark" type="button">Узнать цену</button>
+  </article>
+</div>

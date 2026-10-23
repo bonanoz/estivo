@@ -1,0 +1,42 @@
+{% load humanize shop_tags %}{% comment %}
+Блок отзывов PDP. Ожидает `product`, `reviews` (опубликованные), `review_form`.
+Форма всегда в разметке; <details> раскрывает её без JS.
+{% endcomment %}
+<section id="reviews" class="pdp-section" aria-labelledby="reviews-title">
+    <div class="reviews-head">
+        <div>
+            <h2 id="reviews-title" class="pdp-h2">Отзывы</h2>
+            {% if stats %}
+            <p class="reviews-summary">
+                <span class="reviews-summary__score">{{ stats.avg|floatformat:1 }}</span>
+                <span class="stars"><svg class="star" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2 6.3 20.3l1.2-6.4L2.8 9.5l6.4-.8L12 2.8z"/></svg></span>
+                <span>{{ stats.count }} {% if stats.count == 1 %}отзыв{% elif stats.count >= 2 and stats.count <= 4 %}отзыва{% else %}отзывов{% endif %}</span>
+            </p>
+            {% else %}
+            <p class="reviews-summary">Отзывов пока нет. Станьте первым.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if reviews %}
+    <ul class="reviews-list">
+        {% for review in reviews %}
+        <li class="review-item">
+            <div class="review-item__top">
+                <span class="review-item__author">{{ review.author }}</span>
+                <span class="stars" role="img" aria-label="Оценка {{ review.rating }} из 5">{% for _ in "12345" %}<svg class="star{% if forloop.counter > review.rating %} star-off{% endif %}" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2 6.3 20.3l1.2-6.4L2.8 9.5l6.4-.8L12 2.8z"/></svg>{% endfor %}</span>
+            </div>
+            {% if review.usage_duration %}<p class="review-item__meta">Пользуется: {{ review.usage_duration }}</p>{% endif %}
+            <p class="review-item__text">{{ review.text }}</p>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <details class="review-write" {% if review_form.errors %}open{% endif %}>
+        <summary class="btn btn-outline">Написать отзыв</summary>
+        <div class="review-write__body">
+            {% include 'partials/htmx/_review_form.html' %}
+        </div>
+    </details>
+</section>
