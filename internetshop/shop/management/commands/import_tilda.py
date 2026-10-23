@@ -1,5 +1,8 @@
 """Импорт товаров из CSV-экспорта Tilda Store. Идемпотентно по Product.tilda_id.
 
+Уже импортированные товары по умолчанию не трогаются (правки цен, скидок и текстов в админке
+сохраняются); перезаписать их данными из CSV — флаг ``--update``.
+
 Товары без tilda_id (демо seed_demo) не трогаются. Правила разбора — в
 docs/specs/tilda-migration/SPEC.md, раздел (c).
 """
@@ -113,6 +116,10 @@ class Command(BaseCommand):
         parser.add_argument('csv_path')
         parser.add_argument('--dry-run', action='store_true', help='Ничего не писать в БД')
         parser.add_argument('--with-photos', action='store_true', help='Скачать фото по URL')
+        parser.add_argument(
+            '--update', action='store_true',
+            help='Перезаписать уже импортированные товары данными из CSV (затрёт правки и скидки из админки)',
+        )
         parser.add_argument('--report', default='import_report.csv', help='Путь отчёта (CSV)')
 
     def handle(self, *args, **opts):
@@ -122,6 +129,7 @@ class Command(BaseCommand):
         except OSError as e:
             raise CommandError(str(e))
         self.photos = opts['with_photos'] and not opts['dry_run']
+        self.update = opts['update']
         self.stats = Counter()
         self.report = []  # (tilda_id, title, price, reason)
         with transaction.atomic():
@@ -264,6 +272,8 @@ class Command(BaseCommand):
                 slug = f'{slug[:160 - len(str(tid)) - 1]}-{tid}'
             product = Product.objects.create(tilda_id=tid, slug=slug, **fields)
             self.stats['created'] += 1
+        elif not self.update:
+            self.stats['same'] += 1
         else:
             changed = [k for k, v in fields.items() if getattr(product, k) != v]
             for k in changed:

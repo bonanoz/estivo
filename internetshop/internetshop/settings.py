@@ -176,7 +176,7 @@ STORAGES = {
 
 # Медиа в S3-совместимом хранилище (Cloudflare R2 / Supabase Storage / AWS S3): диск на бесплатных
 # хостингах эфемерный, загруженные через админку фото и .glb пропадают при перезапуске.
-# Включается, только если задан AWS_STORAGE_BUCKET_NAME; иначе — локальный диск (MEDIA_ROOT).
+# Включается, если задан AWS_STORAGE_BUCKET_NAME (на проде обязателен, см. ниже); иначе — локальный диск (MEDIA_ROOT).
 if os.environ.get('AWS_STORAGE_BUCKET_NAME'):
     STORAGES['default'] = {"BACKEND": "storages.backends.s3.S3Storage"}
     AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
@@ -219,6 +219,10 @@ if not DEBUG:
     if SECRET_KEY == 'django-insecure-change-me' and 'test' not in sys.argv:
         from django.core.exceptions import ImproperlyConfigured
         raise ImproperlyConfigured('Задай SECRET_KEY в переменных окружения')
+    # При DEBUG=False Django не раздаёт media, а диск хостинга эфемерный: фото из админки молча пропадали бы.
+    if not os.environ.get('AWS_STORAGE_BUCKET_NAME') and 'test' not in sys.argv:
+        from django.core.exceptions import ImproperlyConfigured
+        raise ImproperlyConfigured('Задай AWS_STORAGE_BUCKET_NAME: без S3-хранилища загруженные фото не будут доступны')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

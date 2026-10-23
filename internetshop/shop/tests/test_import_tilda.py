@@ -124,11 +124,19 @@ class C2ImportTests(TildaImportBase):
         text = FIXTURE.read_text(encoding='utf-8-sig')
         self.assertIn('18800.00', text)
         modified.write_text(text.replace('18800.00', '19900.00'), encoding='utf-8-sig')
-        out = self.do_import(path=modified)
+        out = self.do_import('--update', path=modified)
         self.assertIn('создано 0', out)
         self.assertIn('обновлено 1', out)
         self.assertEqual(Product.objects.count(), 12)
         self.assertEqual(by_tid(LIMA).price, 19900)
+
+    def test_c2_reimport_without_update_keeps_admin_edits(self):
+        self.do_import()
+        Product.objects.filter(tilda_id=LIMA).update(price=15000, old_price=18800, description='правка')
+        out = self.do_import()
+        self.assertIn('обновлено 0', out)
+        lima = by_tid(LIMA)
+        self.assertEqual((lima.price, lima.old_price, lima.description), (15000, 18800, 'правка'))
 
     def test_c2_dry_run_writes_nothing(self):
         before = (Product.objects.count(), ColorOption.objects.count(),

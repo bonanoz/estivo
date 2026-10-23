@@ -1,5 +1,6 @@
 """Template tags для общего каркаса (подвал): данные, которые нельзя достать из текущего контекста."""
 from django import template
+from django.conf import settings
 from django.db.models import Avg, Count
 
 from shop.models import Product, Review
@@ -15,6 +16,16 @@ MATERIAL_GENITIVE = {'ротанг': 'ротанга', 'роуп': 'роупа',
 def material_genitive(name):
     """«Ротанг» -> «ротанга» (для «Кресла из ротанга»)."""
     return MATERIAL_GENITIVE.get(name.lower(), name.lower())
+
+
+@register.filter
+def absolute(url):
+    """Абсолютный URL на основном домене (SITE_URL), а не на том хосте, с которого пришёл запрос.
+
+    Уже абсолютные ссылки (медиа в S3/R2) возвращаются как есть.
+    """
+    url = str(url)
+    return url if url.startswith(('http://', 'https://')) else settings.SITE_URL.rstrip('/') + url
 
 
 @register.simple_tag

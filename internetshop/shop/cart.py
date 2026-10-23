@@ -134,7 +134,8 @@ class Cart:
             }
 
     def __len__(self):
-        return sum(item['quantity'] for item in self._cart.values())
+        # По загруженным строкам: снятые с продажи товары не должны попадать в счётчик шапки.
+        return sum(item['quantity'] for item in self)
 
     @property
     def count(self):

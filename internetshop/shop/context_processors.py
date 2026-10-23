@@ -43,12 +43,11 @@ def cart(request):
 def wishlist(request):
     """Избранное — счётчик в шапке и состояние сердечек на карточках.
 
-    ``wishlist`` поддерживает ``{% if product.id in wishlist %}``,
-    ``wishlist.count`` и ``wishlist.ids``.
+    ``wishlist`` поддерживает ``{% if product.id in wishlist %}`` и ``wishlist.count``.
     """
     from .wishlist import Wishlist
     wl = Wishlist(request)
-    return {'wishlist': wl, 'wishlist_ids': wl.ids}
+    return {'wishlist': wl}
 
 
 def site_settings(request):

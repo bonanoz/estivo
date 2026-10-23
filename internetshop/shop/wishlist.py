@@ -26,10 +26,6 @@ class Wishlist:
     def count(self):
         return len(self._ids)
 
-    @property
-    def ids(self):
-        return set(self._ids)
-
     def add(self, product_id):
         if product_id not in self._ids:
             self._ids.append(product_id)

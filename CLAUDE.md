@@ -117,7 +117,7 @@ scraped from the original Tilda site). `product_detail` is slug-based.
 Cart flow (`shop/cart.py` + cart views): the `Cart` class wraps `request.session['cart']`. A line is
 keyed by product **plus chosen colors**, so the same product in different colors are separate lines
 (`shop/cart.py:_line_id`). Views: `cart_add` (validates colors against `available_colors` via
-`_parse_colors`, then HTMX drawer fragment, legacy AJAX-JSON, or redirect to a safe `next`), `cart_update`, `cart_remove`, `cart_detail`, and
+`_valid_colors`, then HTMX drawer fragment, legacy AJAX-JSON, or redirect to a safe `next`), `cart_update`, `cart_remove`, `cart_detail`, and
 `checkout` (creates `Order` + `OrderItem`s, `recalc_total`, Telegram, clears cart → `order_success`).
 The product page's "В корзину" button posts via htmx and opens the cart drawer; removing a line without JS stores a
 session notice so `cart_detail` still offers «Вернуть» (`cart_undo`); "Оформить заявку" posts with `name=checkout` and

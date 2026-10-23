@@ -1,10 +1,22 @@
+from urllib.parse import urlsplit
+
+from django.conf import settings
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
 
 from .models import Product
 
 
-class ProductSitemap(Sitemap):
+class SiteUrlSitemap(Sitemap):
+    """<loc> на основном домене (SITE_URL), а не на хосте запроса (например *.onrender.com)."""
+
+    protocol = urlsplit(settings.SITE_URL).scheme
+
+    def get_domain(self, site=None):
+        return urlsplit(settings.SITE_URL).netloc
+
+
+class ProductSitemap(SiteUrlSitemap):
     changefreq = 'weekly'
     priority = 0.8
 
@@ -18,7 +30,27 @@ class ProductSitemap(Sitemap):
         return item.updated_at
 
 
-class StaticViewSitemap(Sitemap):
+class CatalogSitemap(SiteUrlSitemap):
+    """Разделы каталога «материал» и «материал + категория» — только с доступными товарами."""
+
+    changefreq = 'weekly'
+    priority = 0.7
+
+    def items(self):
+        pairs = list(
+            Product.objects.filter(is_available=True, material__isnull=False)
+            .order_by('material__slug', 'category__slug')
+            .values_list('material__slug', 'category__slug').distinct()
+        )
+        materials = sorted({m for m, _ in pairs})
+        return [(m,) for m in materials] + [(m, c) for m, c in pairs if c]
+
+    def location(self, item):
+        name = 'catalog_by_material' if len(item) == 1 else 'catalog_by_category'
+        return reverse(name, args=item)
+
+
+class StaticViewSitemap(SiteUrlSitemap):
     changefreq = 'monthly'
     priority = 0.5
 

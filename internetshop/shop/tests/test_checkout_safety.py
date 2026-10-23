@@ -61,6 +61,14 @@ class CheckoutSafetyTests(TestCase):
         self.assertRedirects(resp, reverse('cart_detail'))
         self.assertFalse(Order.objects.exists())
 
+    def test_header_count_skips_unavailable_product(self):
+        other = make_product(name='Кресло Снятое', price=1000)
+        self.client.post(reverse('cart_add', args=[self.product.id]))
+        self.client.post(reverse('cart_add', args=[other.id]), {'quantity': 3})
+        type(other).objects.filter(pk=other.pk).update(is_available=False)
+        resp = self.client.get(reverse('cart_detail'))
+        self.assertEqual(resp.context['cart'].count, 1)
+
     def test_invalid_email_rejected(self):
         self.client.post(reverse('cart_add', args=[self.product.id]))
         resp, _ = self.checkout({**ORDER_DATA, 'customer_email': 'abc'})

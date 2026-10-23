@@ -3,10 +3,11 @@ import re
 from pathlib import Path
 from urllib.parse import urlsplit
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from shop.models import Category, ColorOption, Material
+from shop.templatetags.shop_tags import absolute
 
 from .helpers import make_product, parse
 
@@ -80,3 +81,35 @@ class E7LegacyStaticRemovedTests(TestCase):
 
     def test_vendored_model_viewer_kept(self):
         self.assertTrue((STATIC_DIR / 'js' / 'vendor' / 'model-viewer.min.js').exists())
+
+
+@override_settings(SITE_URL='https://estivo63.ru', ALLOWED_HOSTS=['testserver', 'estivo.onrender.com'])
+class SiteUrlTests(TestCase):
+    """Canonical, og, robots и sitemap ведут на SITE_URL, а не на хост запроса (*.onrender.com)."""
+
+    @classmethod
+    def setUpTestData(cls):
+        material = Material.objects.create(name='Ротанг', slug='rotang')
+        category = Category.objects.create(name='Кресла', slug='kresla')
+        cls.product = make_product(name='Кресло Домен', material=material, category=category)
+
+    def test_canonical_and_og_url_use_site_url(self):
+        root = parse(self.client.get(self.product.get_absolute_url(), HTTP_HOST='estivo.onrender.com'))
+        expected = 'https://estivo63.ru' + self.product.get_absolute_url()
+        self.assertEqual(root.find('link', attrs={'rel': 'canonical'}).get('href'), expected)
+        self.assertEqual(root.find('meta', attrs={'property': 'og:url'}).get('content'), expected)
+
+    def test_robots_sitemap_line(self):
+        body = self.client.get('/robots.txt', HTTP_HOST='estivo.onrender.com').content.decode()
+        self.assertIn('Sitemap: https://estivo63.ru/sitemap.xml', body)
+
+    def test_sitemap_has_catalog_pages_on_site_url(self):
+        body = self.client.get('/sitemap.xml', HTTP_HOST='estivo.onrender.com').content.decode()
+        locs = re.findall(r'<loc>(.*?)</loc>', body)
+        self.assertTrue(locs and all(loc.startswith('https://estivo63.ru/') for loc in locs), locs)
+        self.assertIn('https://estivo63.ru/catalog/rotang/', locs)
+        self.assertIn('https://estivo63.ru/catalog/rotang/kresla/', locs)
+
+    def test_absolute_keeps_s3_urls(self):
+        self.assertEqual(absolute('https://cdn.example.com/p.jpg'), 'https://cdn.example.com/p.jpg')
+        self.assertEqual(absolute('/media/p.jpg'), 'https://estivo63.ru/media/p.jpg')

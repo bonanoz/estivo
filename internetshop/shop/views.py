@@ -279,20 +279,20 @@ def catalog_by_category(request, material_slug, category_slug):
     return render(request, 'catalog_list.html', context)
 
 
-def _selected_colors(request, product):
-    """Предвыбор цветов из ``?weave=&cushion=&frame=`` — только реально доступные
-    товару цвета нужного типа отделки; всё остальное молча игнорируется."""
+def _valid_colors(product, data, prefix=''):
+    """``{finish_type: color_id}`` из ``data[prefix + finish_type]`` — только цвета, реально
+    привязанные к товару и нужного типа отделки; подмену чужого color_id и мусор отсекаем."""
     available = {c.id: c for c in product.available_colors.all()}
-    selected = {}
+    colors = {}
     for finish_type, _label in ColorOption.FINISH_TYPE_CHOICES:
         try:
-            color_id = int(request.GET.get(finish_type))
+            color_id = int(data.get(prefix + finish_type))
         except (TypeError, ValueError):
             continue
         color = available.get(color_id)
         if color is not None and color.finish_type == finish_type:
-            selected[finish_type] = color_id
-    return selected
+            colors[finish_type] = color_id
+    return colors
 
 
 def _product_context(request, product, review_form=None):
@@ -310,7 +310,7 @@ def _product_context(request, product, review_form=None):
         'related_products': related_products,
         'reviews': reviews,
         'breadcrumbs': crumbs,
-        'selected_colors': _selected_colors(request, product),
+        'selected_colors': _valid_colors(product, request.GET),  # предвыбор из ?weave=&cushion=&frame=
         'review_form': review_form or ReviewForm(),
         'datalayer': {'ecommerce': {'currencyCode': 'RUB', 'detail': {'products': [_dl_product(product)]}}},
     }
@@ -421,28 +421,6 @@ def contacts_page(request):
     return _lead_page(request, 'contacts.html', 'private', {'breadcrumbs': _crumbs('Контакты')})
 
 
-def _parse_colors(request, product):
-    """Считать выбранные цвета из POST и провалидировать по available_colors.
-
-    Возвращает ``{finish_type: color_id}`` только для цветов, реально
-    привязанных к товару, — подмену чужого color_id из формы отсекаем.
-    """
-    available = {c.id: c for c in product.available_colors.all()}
-    colors = {}
-    for finish_type, _label in ColorOption.FINISH_TYPE_CHOICES:
-        raw = request.POST.get(f'color_{finish_type}')
-        if not raw:
-            continue
-        try:
-            color_id = int(raw)
-        except (TypeError, ValueError):
-            continue
-        color = available.get(color_id)
-        if color is not None and color.finish_type == finish_type:
-            colors[finish_type] = color_id
-    return colors
-
-
 @require_POST
 def cart_add(request, product_id):
     product = get_object_or_404(Product, id=product_id, is_available=True)
@@ -454,7 +432,7 @@ def cart_add(request, product_id):
             response['HX-Redirect'] = url
             return response
         return redirect(url)
-    colors = _parse_colors(request, product)
+    colors = _valid_colors(product, request.POST, prefix='color_')
     try:
         quantity = max(1, int(request.POST.get('quantity', 1)))
     except (TypeError, ValueError):
