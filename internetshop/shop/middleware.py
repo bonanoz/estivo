@@ -21,6 +21,13 @@ def _load_map():
     return {_key(r[0]): (r[4], r[5]) for r in rows if len(r) > 5}
 
 
+def _section_url(path):
+    """Раздел каталога для /<раздел>/tproduct/…: куда карта ведёт /<раздел>, без query; иначе /catalog/."""
+    action, new_path = _load_map().get('/' + path.strip('/').split('/')[0], (None, ''))
+    new_path = new_path.split('?')[0]
+    return new_path if action == '301' and new_path.startswith('/catalog/') else '/catalog/'
+
+
 class TildaRedirectMiddleware:
     """Старые адреса Tilda: на 404 отдаёт 301/410 по карте (стоит после CommonMiddleware, чтобы
     видеть исходный 404 раньше APPEND_SLASH и не плодить цепочки)."""
@@ -40,6 +47,10 @@ class TildaRedirectMiddleware:
             if product:
                 return HttpResponsePermanentRedirect(product.get_absolute_url())
         action, new_path = _load_map().get(path, (None, None))
+        if action == '301' and new_path.startswith('/product/') \
+                and not Product.objects.filter(slug=new_path.split('/')[2]).exists():
+            # товар не импортирован (ручная проверка) — в раздел каталога, а не в 404
+            new_path = _section_url(path)
         if action == '301':
             return HttpResponsePermanentRedirect(new_path)
         if action == '410':

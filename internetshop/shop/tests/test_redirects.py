@@ -54,7 +54,11 @@ class E_d_RedirectTests(TestCase):
                     self.assertEqual(r.status_code, 200)
                 elif action == '301':
                     self.assertEqual(r.status_code, 301)
-                    self.assertEqual(r['Location'], new)
+                    if new.startswith('/product/'):
+                        # товаров в тестовой БД нет — запасной 301 в раздел каталога
+                        self.assertTrue(r['Location'].startswith('/catalog/'), r['Location'])
+                    else:
+                        self.assertEqual(r['Location'], new)
                 elif action == '410':
                     self.assertEqual(r.status_code, 410)
                 else:
@@ -103,6 +107,18 @@ class E_d_RedirectTests(TestCase):
                 self.assertEqual(r.status_code, 301)
                 self.assertEqual(r['Location'], p.get_absolute_url())
         self.assertEqual(p1.get_absolute_url(), '/product/novyy-slug-test/')
+
+    def test_e_d_missing_product_falls_back_to_section(self):
+        """Товар из карты не импортирован (ручная проверка) — 301 в раздел, не в 404."""
+        old = '/komplektyroup/tproduct/248028431432-komplekt-mebeli-iz-roupa-1'
+        self.assertEqual(self.client.get(old)['Location'], '/catalog/roup/komplekty/')
+        self.assertEqual(self.client.get('/tproduct/685095834682-copy-komplekt-mebeli-iz-rotang-25')['Location'],
+                         '/catalog/')
+        # раздел с query (/salerotang → /catalog/?flag=sale&…) — без query: скидки у импорта выключены
+        self.assertEqual(self.client.get('/salerotang/tproduct/517437746363-kokon-komo-iz-rotanga')['Location'],
+                         '/catalog/')
+        make_product(slug='komplekt-mebeli-iz-roupa-1')
+        self.assertEqual(self.client.get(old)['Location'], '/product/komplekt-mebeli-iz-roupa-1/')
 
     def test_e_d_news_tpost(self):
         for path in ('/news/tpost/lyuboy-adres', '/news/tpost/abc-123/'):
