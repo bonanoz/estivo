@@ -1,7 +1,10 @@
 import os
 import re
+from functools import wraps
 
 import telebot
+from django.core.cache import cache
+from django.http import HttpResponse
 from django.utils.text import slugify
 
 bot = telebot.TeleBot(os.environ.get('BOT_TOKEN'))
@@ -52,3 +55,28 @@ def clean_phone_number(value):
     if not PHONE_RE.match(value):
         raise ValueError('Введите номер телефона в формате +7 XXX XXX-XX-XX')
     return value
+
+
+def throttle_post(limit=5, window=600):
+    """Не больше ``limit`` POST с одного IP за ``window`` секунд; GET не считается.
+
+    shortcut: кэш LocMem — счётчик отдельный у каждого воркера gunicorn; для общего лимита нужен Redis/DB-кэш.
+    """
+    def decorator(view):
+        @wraps(view)
+        def wrapper(request, *args, **kwargs):
+            if request.method == 'POST':
+                # За прокси (Render) настоящий адрес клиента — последний в X-Forwarded-For; первый подделывается.
+                ip = (request.META.get('HTTP_X_FORWARDED_FOR', '').split(',')[-1].strip()
+                      or request.META.get('REMOTE_ADDR', ''))
+                key = f'throttle:{view.__name__}:{ip}'
+                cache.add(key, 0, window)
+                try:
+                    count = cache.incr(key)
+                except ValueError:
+                    count = 1
+                if count > limit:
+                    return HttpResponse('Слишком много запросов, попробуйте позже.', status=429)
+            return view(request, *args, **kwargs)
+        return wrapper
+    return decorator

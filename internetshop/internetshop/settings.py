@@ -215,6 +215,8 @@ if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 31536000  # shortcut: без preload/subdomains, расширить после проверки прода
+    SECURE_CONTENT_TYPE_NOSNIFF = True
     # SECRET_KEY по умолчанию небезопасный — на проде обязательно задать свой
     if SECRET_KEY == 'django-insecure-change-me' and 'test' not in sys.argv:
         from django.core.exceptions import ImproperlyConfigured
@@ -228,3 +230,6 @@ if not DEBUG:
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# Лимит POST (shop.utils.throttle_post) считается в кэше; в тестах он выключен, иначе серии POST с одного IP упираются в 429.
+CACHES = {'default': {'BACKEND': 'django.core.cache.backends.dummy.DummyCache' if 'test' in sys.argv
+                      else 'django.core.cache.backends.locmem.LocMemCache'}}

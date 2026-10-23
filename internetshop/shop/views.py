@@ -16,7 +16,7 @@ from .catalog_filters import SORT_CHOICES, apply_filters, apply_sort
 from .forms import LeadForm, OrderForm, ReviewForm
 from .models import Category, Collection, ColorOption, Material, Order, OrderItem, Product, Review
 from .templatetags.shop_tags import material_genitive
-from .utils import notify_telegram
+from .utils import notify_telegram, throttle_post
 from .wishlist import Wishlist
 
 CATALOG_PAGE_SIZE = 24
@@ -322,6 +322,7 @@ def product_detail(request, slug):
 
 
 @require_POST
+@throttle_post()
 def review_create(request, slug):
     """Отзыв с PDP: сохраняется неопубликованным, без Telegram-уведомления."""
     product = get_object_or_404(Product.objects.select_related('material', 'category'), slug=slug)
@@ -385,10 +386,12 @@ def _lead_page(request, template_name, lead_type, extra_context=None):
     return render(request, template_name, context)
 
 
+@throttle_post()
 def b2b_page(request):
     return _lead_page(request, 'b2b.html', 'b2b', {'breadcrumbs': _crumbs('Для бизнеса')})
 
 
+@throttle_post()
 def designers_page(request):
     return _lead_page(request, 'designers.html', 'designer', {'breadcrumbs': _crumbs('Дизайнерам')})
 
@@ -417,6 +420,7 @@ def faq_page(request):
     return render(request, 'faq.html', {'faq_items': FAQ_ITEMS, 'breadcrumbs': _crumbs('Вопросы и ответы')})
 
 
+@throttle_post()
 def contacts_page(request):
     return _lead_page(request, 'contacts.html', 'private', {'breadcrumbs': _crumbs('Контакты')})
 
@@ -550,6 +554,7 @@ def cart_detail(request):
     })
 
 
+@throttle_post()
 def checkout(request):
     cart = Cart(request)
     if cart.is_empty:
