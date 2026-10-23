@@ -41,3 +41,4 @@ internetshop/shop_data.json
 # Tilda CSV export and import report (real data, never commit)
 store-*.csv
 import_report.csv
+.env.prod
