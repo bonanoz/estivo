@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db.models import F
 from django.shortcuts import redirect
 
 from .models import (
@@ -71,6 +72,14 @@ class ProductAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
     filter_horizontal = ('available_colors',)
     inlines = [ProductImageInline]
+    actions = ['enable_sale']
+
+    @admin.action(description='Включить скидку')
+    def enable_sale(self, request, queryset):
+        n = queryset.filter(sale_price__isnull=False).update(
+            old_price=F('price'), price=F('sale_price'), sale_price=None,
+        )
+        self.message_user(request, f'Скидка включена у товаров: {n}')
 
 
 class OrderItemInline(admin.TabularInline):

@@ -208,6 +208,10 @@ class Product(models.Model):
 
     price = models.IntegerField(help_text='Цена в рублях (или цена "от" для комплектов)')
     old_price = models.IntegerField(null=True, blank=True, help_text='Прежняя цена — для акций')
+    sale_price = models.IntegerField(
+        'Цена со скидкой (выключена)', null=True, blank=True,
+        help_text='На сайте не выводится; админ-действие «Включить скидку» делает её основной ценой',
+    )
     offer_ends_at = models.DateField(
         'Акция до', null=True, blank=True,
         help_text='Промо-карточка в каталоге (?flag=sale) показывается до этой даты включительно',

@@ -213,7 +213,7 @@
     {% if product.description %}
     <section class="pdp-section" aria-labelledby="desc-title">
         <h2 id="desc-title" class="pdp-h2">Описание</h2>
-        <p class="pdp-description">{{ product.description }}</p>
+        <div class="pdp-description">{{ product.description|linebreaks }}</div>
     </section>
     {% endif %}
 
