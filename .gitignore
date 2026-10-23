@@ -37,3 +37,7 @@ internetshop/shop_data.json
 # Junction-ссылки на .agents/skills, их создаёт установщик skills (см. skills-lock.json)
 .claude/skills/supabase/
 .claude/skills/supabase-postgres-best-practices/
+
+# Tilda CSV export and import report (real data, never commit)
+store-*.csv
+import_report.csv
