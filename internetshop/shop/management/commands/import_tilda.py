@@ -48,7 +48,9 @@ SECTIONS = {
 COLORS_SECTION = 'цвета ротанга'
 R12_MANUAL = {'стол милан с hpl 180х110 см (роуп)'}
 
-DIM_RE = re.compile(r'(\d+)\s*[хxX×Х]\s*(\d+)\s*[хxX×Х]\s*(\d+)\s*(мм|см)?')
+DIM_RE = re.compile(
+    r'(?:Габариты|Размер)\s*:?\s*(\d+)\s*[хxX×Х]\s*(\d+)\s*[хxX×Х]\s*(\d+)\s*(мм|см)?', re.IGNORECASE,
+)
 
 
 def norm(title):
@@ -80,12 +82,9 @@ def parse_dims(text):
     return tuple(dims)
 
 
-def title_material(title):
+def title_materials(title):
     low = title.casefold()
-    for key, word in (('rotang', 'ротанг'), ('roup', 'роуп'), ('hpl', 'hpl'), ('shpon', 'шпон')):
-        if word in low:
-            return key
-    return None
+    return [k for k, w in (('rotang', 'ротанг'), ('roup', 'роуп'), ('hpl', 'hpl'), ('shpon', 'шпон')) if w in low]
 
 
 def title_category(title):
@@ -217,7 +216,9 @@ class Command(BaseCommand):
             if s.casefold() in SECTIONS:
                 mat_key, cat_key = SECTIONS[s.casefold()]
                 break
-        mat_key = mat_key or title_material(title)
+        found = title_materials(title)
+        # ровно один маркер материала в названии важнее раздела
+        mat_key = found[0] if len(found) == 1 else (mat_key or (found[0] if found else None))
         cat_key = cat_key or title_category(title)
 
         price = parse_price(r['Price'])
@@ -258,9 +259,9 @@ class Command(BaseCommand):
         tid = int(r['Tilda UID'])
         product = Product.objects.filter(tilda_id=tid).first()
         if product is None:
-            slug = ru_slugify(title)[:150]
+            slug = ru_slugify(title)[:160] or f'tilda-{tid}'
             if Product.objects.filter(slug=slug).exists():
-                slug = f'{slug}-{tid}'
+                slug = f'{slug[:160 - len(str(tid)) - 1]}-{tid}'
             product = Product.objects.create(tilda_id=tid, slug=slug, **fields)
             self.stats['created'] += 1
         else:
@@ -286,11 +287,11 @@ class Command(BaseCommand):
             try:
                 with urllib.request.urlopen(url, timeout=20) as resp:
                     data = resp.read()
-            except Exception as e:  # сеть не должна ронять импорт
+                name = url.rsplit('/', 1)[-1] or f'{product.slug}.jpg'
+                if not product.main_image:
+                    product.main_image.save(name, ContentFile(data))
+                else:
+                    ProductImage.objects.create(product=product, order=i, image=ContentFile(data, name=name))
+            except Exception as e:  # сеть/диск не должны ронять импорт
                 self.stderr.write(f'Фото не скачано ({product.name}): {url}: {e}')
-                continue
-            name = url.rsplit('/', 1)[-1] or f'{product.slug}.jpg'
-            if not product.main_image:
-                product.main_image.save(name, ContentFile(data))
-            else:
-                ProductImage.objects.create(product=product, order=i, image=ContentFile(data, name=name))
+                self.report.append((product.tilda_id, product.name, product.price, f'фото не скачано: {url}'))
