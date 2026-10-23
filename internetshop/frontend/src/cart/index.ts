@@ -83,6 +83,7 @@ Alpine.data('cartDrawer', () => ({
     const scope = this as unknown as DrawerScope;
     this.returnTo = lastTrigger ?? (document.activeElement as HTMLElement | null);
     this.open = true;
+    document.dispatchEvent(new CustomEvent('goal', { detail: 'cart_open' }));
     setScrollLock('cart-drawer', true);
     // Everything behind the dialog becomes inert (screen readers and Tab skip it).
     this.hiddenSiblings = Array.from(document.body.children).filter(

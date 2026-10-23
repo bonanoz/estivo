@@ -32,5 +32,6 @@ urlpatterns = [
     path('cart/remove/', views.cart_remove, name='cart_remove'),
     path('cart/undo/', views.cart_undo, name='cart_undo'),
     path('cart/checkout/', views.checkout, name='checkout'),
+    path('cookie-consent/', views.cookie_consent, name='cookie_consent'),
     path('order/success/', views.order_success, name='order_success'),
 ]

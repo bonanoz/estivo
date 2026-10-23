@@ -17,7 +17,7 @@
     <div class="page-container page-split">
         <div class="grid content-start gap-6">
             <ul class="page-spec">
-                <li><span class="page-spec__label">Телефон</span><a href="tel:{{ site_info.phone_href }}">{{ site_info.phone }}</a></li>
+                <li><span class="page-spec__label">Телефон</span><a data-goal="click_tel" href="tel:{{ site_info.phone_href }}">{{ site_info.phone }}</a></li>
                 <li><span class="page-spec__label">Email</span><a href="mailto:{{ site_info.email }}">{{ site_info.email }}</a></li>
                 <li><span class="page-spec__label">Адрес</span><span>{{ site_info.address }}</span></li>
                 {% for label, hours in site_info.work_hours %}
@@ -27,9 +27,9 @@
             <p class="page-note">{{ site_info.work_hours_note }}</p>
             <div class="flex flex-wrap gap-2">
                 <a href="{{ site_info.social_links.instagram }}" target="_blank" rel="noopener" class="btn btn-outline">Instagram</a>
-                <a href="{{ site_info.social_links.telegram }}" target="_blank" rel="noopener" class="btn btn-outline">Telegram</a>
-                <a href="{{ site_info.social_links.whatsapp }}" target="_blank" rel="noopener" class="btn btn-outline">WhatsApp</a>
-                <a href="{{ site_info.social_links.max }}" target="_blank" rel="noopener" class="btn btn-outline">Max</a>
+                <a data-goal="click_telegram" href="{{ site_info.social_links.telegram }}" target="_blank" rel="noopener" class="btn btn-outline">Telegram</a>
+                <a data-goal="click_whatsapp" href="{{ site_info.social_links.whatsapp }}" target="_blank" rel="noopener" class="btn btn-outline">WhatsApp</a>
+                <a data-goal="click_max" href="{{ site_info.social_links.max }}" target="_blank" rel="noopener" class="btn btn-outline">Max</a>
                 <a href="{{ site_info.social_links.vk }}" target="_blank" rel="noopener" class="btn btn-outline">VK</a>
             </div>
         </div>

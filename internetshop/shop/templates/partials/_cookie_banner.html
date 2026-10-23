@@ -1,0 +1,10 @@
+{# Полоса согласия на cookie: обычная форма POST, работает без JS. Текст — черновик до проверки юристом. #}
+<form method="post" action="{% url 'cookie_consent' %}" class="cookie-banner" data-cookie-banner role="region" aria-label="Cookie">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ request.path }}">
+    <p>Мы используем cookie: необходимые — для корзины, аналитические — для Яндекс Метрики. <a href="{% url 'privacy_page' %}#cookie" class="underline">Подробнее</a></p>
+    <div class="cookie-banner__actions">
+        <button type="submit" name="choice" value="analytics" class="btn btn-pill btn-dark">Принять аналитические</button>
+        <button type="submit" name="choice" value="necessary" class="btn btn-pill btn-outline">Только необходимые</button>
+    </div>
+</form>
