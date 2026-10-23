@@ -288,10 +288,11 @@ class Command(BaseCommand):
                 with urllib.request.urlopen(url, timeout=20) as resp:
                     data = resp.read()
                 name = url.rsplit('/', 1)[-1] or f'{product.slug}.jpg'
-                if not product.main_image:
-                    product.main_image.save(name, ContentFile(data))
-                else:
-                    ProductImage.objects.create(product=product, order=i, image=ContentFile(data, name=name))
+                with transaction.atomic():  # savepoint: упавший INSERT не ломает внешнюю транзакцию
+                    if not product.main_image:
+                        product.main_image.save(name, ContentFile(data))
+                    else:
+                        ProductImage.objects.create(product=product, order=i, image=ContentFile(data, name=name))
             except Exception as e:  # сеть/диск не должны ронять импорт
                 self.stderr.write(f'Фото не скачано ({product.name}): {url}: {e}')
                 self.report.append((product.tilda_id, product.name, product.price, f'фото не скачано: {url}'))
