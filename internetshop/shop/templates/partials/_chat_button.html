@@ -3,7 +3,8 @@
 <details> работает без JS; Alpine добавляет закрытие по Esc. Нижний отступ можно поднять переменной --contact-offset
 (например, под липкую панель покупки на мобильном).
 {% endcomment %}
-<div data-contact-button class="fixed right-4 z-[var(--z-overlay)]" style="bottom: calc(var(--contact-offset, 0px) + 16px)">
+{# .chat-inline (body): на мобильном кнопка не плавает над CTA/полями формы, а стоит в конце страницы #}
+<div data-contact-button class="fixed right-4 z-[var(--z-overlay)] [.chat-inline_&]:max-md:static [.chat-inline_&]:max-md:mb-4 [.chat-inline_&]:max-md:ml-auto [.chat-inline_&]:max-md:mr-4 [.chat-inline_&]:max-md:w-12" style="bottom: calc(var(--contact-offset, 0px) + 16px)">
     <details class="group relative" x-data @keydown.escape="$el.open = false">
         <summary class="flex h-12 w-12 cursor-pointer list-none items-center justify-center rounded-full bg-graphite text-white transition-opacity duration-200 hover:opacity-85 [&::-webkit-details-marker]:hidden"
                  aria-label="Связаться с нами">

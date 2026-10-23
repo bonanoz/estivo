@@ -3,6 +3,7 @@
 
 {% block meta_title %}{{ product.name }}{% if product.material and product.material.name|lower not in product.name|lower %} из {{ product.material.name|material_genitive }}{% endif %} | ESTIVO{% endblock %}
 {% block meta_description %}{{ product.short_description|default:product.description|truncatewords:24 }}{% endblock %}
+{% block body_class %}{% if not product.price %}chat-inline{% endif %}{% endblock %}
 {% block og_title %}{{ product.name }}{% if product.material and product.material.name|lower not in product.name|lower %} из {{ product.material.name|material_genitive }}{% endif %}{% endblock %}
 {% block og_image %}{% if product.main_image %}{{ request.scheme }}://{{ request.get_host }}{{ product.main_image.url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/placeholders/product.svg' %}{% endif %}{% endblock %}
 

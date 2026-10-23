@@ -7,6 +7,7 @@
 {# Сокращённая шапка и подвал: только логотип и телефон, «Нужна помощь?» - без меню и поиска. #}
 {% block header %}{% include 'partials/_header.html' with minimal=True %}{% endblock %}
 {% block footer %}{% include 'partials/_footer.html' with minimal=True %}{% endblock %}
+{% block body_class %}chat-inline{% endblock %}
 
 {% block content %}
 <section class="checkout">
