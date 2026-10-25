@@ -4,6 +4,7 @@ from django.conf import settings
 from django.db.models import Avg, Count
 
 from shop.models import Product, Review
+from shop.storage import thumb_name
 
 register = template.Library()
 
@@ -16,6 +17,12 @@ MATERIAL_GENITIVE = {'ротанг': 'ротанга', 'роуп': 'роупа',
 def material_genitive(name):
     """«Ротанг» -> «ротанга» (для «Кресла из ротанга»)."""
     return MATERIAL_GENITIVE.get(name.lower(), name.lower())
+
+
+@register.filter
+def thumb_url(image):
+    """Миниатюра для карточек (shop/storage.py кладёт её рядом с каждым .webp); у прочих файлов — сам файл."""
+    return image.storage.url(thumb_name(image.name)) if image.name.endswith('.webp') else image.url
 
 
 @register.filter

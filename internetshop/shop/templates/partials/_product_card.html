@@ -1,4 +1,4 @@
-{% load static humanize %}{% comment %}
+{% load static humanize shop_tags %}{% comment %}
 Карточка товара. Ожидает `product`. Бейджи: Новинка (is_new), Хит (is_bestseller), Скидка (old_price > price).
 Для списков во view стоит делать prefetch_related('available_colors'), иначе по запросу на карточку.
 Сердце: hx-post на /wishlist/toggle/<id>/ (ответ заменяет саму кнопку; счётчик в шапке приходит OOB).
@@ -13,7 +13,7 @@
             {% if product.old_price and product.old_price > product.price %}<span class="badge badge-sale">Скидка</span>{% endif %}
         </div>
         {% if product.main_image %}
-        <img src="{{ product.main_image.url }}" alt="{{ product.name }}" loading="lazy" width="800" height="600">
+        <img src="{{ product.main_image|thumb_url }}" srcset="{{ product.main_image|thumb_url }} 640w, {{ product.main_image.url }} 2000w" sizes="(min-width: 1200px) 275px, (min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw" alt="{{ product.name }}" loading="lazy" width="800" height="600">
         {% else %}
         <img src="{% static 'img/placeholders/product.svg' %}" alt="{{ product.name }}" loading="lazy" width="800" height="600">
         {% endif %}

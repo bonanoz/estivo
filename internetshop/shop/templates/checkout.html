@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static humanize %}
+{% load static humanize shop_tags %}
 
 {% block meta_title %}Оформление заявки | ESTIVO{% endblock %}
 {% block meta_description %}Оформление заявки на подобранную мебель ESTIVO. Менеджер свяжется с вами для согласования деталей и стоимости.{% endblock %}
@@ -26,7 +26,7 @@
                     <li class="checkout-line">
                         <div class="checkout-line__media">
                             {% if item.product.main_image %}
-                            <img src="{{ item.product.main_image.url }}" alt="" loading="lazy" decoding="async" width="160" height="120">
+                            <img src="{{ item.product.main_image|thumb_url }}" alt="" loading="lazy" decoding="async" width="160" height="120">
                             {% else %}
                             <img src="{% static 'img/placeholders/product.svg' %}" alt="" loading="lazy" decoding="async" width="160" height="120">
                             {% endif %}

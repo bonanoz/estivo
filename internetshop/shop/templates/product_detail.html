@@ -59,10 +59,10 @@
             <div class="pdp-gallery__thumbs">
                 <ul class="pdp-gallery__strip" data-gallery-strip>
                     {% if product.main_image %}
-                    <li><button type="button" data-full="{{ product.main_image.url }}" data-alt="{{ product.name }}" aria-current="true" aria-label="Показать фото 1"><img src="{{ product.main_image.url }}" alt="" width="96" height="72" loading="lazy" decoding="async"></button></li>
+                    <li><button type="button" data-full="{{ product.main_image.url }}" data-alt="{{ product.name }}" aria-current="true" aria-label="Показать фото 1"><img src="{{ product.main_image|thumb_url }}" alt="" width="96" height="72" loading="lazy" decoding="async"></button></li>
                     {% endif %}
                     {% for img in photos %}
-                    <li><button type="button" data-full="{{ img.image.url }}" data-alt="{{ product.name }} — фото {{ forloop.counter|add:1 }}" aria-current="false" aria-label="Показать фото {{ forloop.counter|add:1 }}"><img src="{{ img.image.url }}" alt="" width="96" height="72" loading="lazy" decoding="async"></button></li>
+                    <li><button type="button" data-full="{{ img.image.url }}" data-alt="{{ product.name }} — фото {{ forloop.counter|add:1 }}" aria-current="false" aria-label="Показать фото {{ forloop.counter|add:1 }}"><img src="{{ img.image|thumb_url }}" alt="" width="96" height="72" loading="lazy" decoding="async"></button></li>
                     {% endfor %}
                 </ul>
                 <div class="pdp-gallery__progress" aria-hidden="true"><span data-gallery-progress></span></div>
