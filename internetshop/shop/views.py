@@ -28,7 +28,8 @@ REMOVED_NOTICE_KEY = 'cart_removed_notice'
 
 def _bestsellers(limit=8):
     """Хиты продаж; если не отмечено ни одного — избранные товары."""
-    available = Product.objects.filter(is_available=True).prefetch_related(*CARD_PREFETCH)
+    available = (Product.objects.filter(is_available=True)
+                 .select_related('material', 'category').prefetch_related(*CARD_PREFETCH))
     products = list(available.filter(is_bestseller=True)[:limit])
     if not products:
         products = list(available.filter(is_featured=True)[:limit])
@@ -126,7 +127,7 @@ HOME_SEGMENTS = [
 def home(request):
     # «Цена по запросу» (price=0) на главную не берём: витрина обещает цены.
     featured_products = (Product.objects.filter(is_featured=True, is_available=True, price__gt=0)
-                         .select_related('material').prefetch_related(*CARD_PREFETCH)[:8])
+                         .select_related('material', 'category').prefetch_related(*CARD_PREFETCH)[:8])
     reviews = Review.objects.filter(is_published=True).select_related('product')[:6]
     return render(request, 'home.html', {
         'featured_products': featured_products,
@@ -278,7 +279,7 @@ def _valid_colors(product, data, prefix=''):
 def _product_context(request, product, review_form=None):
     related_products = (
         Product.objects.filter(is_available=True, category=product.category)
-        .exclude(pk=product.pk).prefetch_related(*CARD_PREFETCH)[:4]
+        .exclude(pk=product.pk).select_related('material', 'category').prefetch_related(*CARD_PREFETCH)[:4]
     )
     reviews = product.reviews.filter(is_published=True)
     crumbs = [('Каталог', reverse('catalog_list'))]

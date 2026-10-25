@@ -33,6 +33,9 @@
     <script>window.dataLayer=window.dataLayer||[]</script>
     {% if analytics_consent %}{% include 'partials/_metrika.html' %}{% endif %}
 
+    {# Chromium/Яндекс Браузер скачивают страницу при наведении на ссылку — переход кажется мгновенным. Только prefetch (без JS и Метрики), корзину и заказ не трогаем. #}
+    <script type="speculationrules">{"prefetch": [{"where": {"and": [{"href_matches": "/*"}, {"not": {"href_matches": "/cart/*"}}, {"not": {"href_matches": "/order/*"}}, {"not": {"href_matches": "/wishlist/*"}}, {"not": {"href_matches": "/cookie-consent/*"}}, {"not": {"selector_matches": "[data-no-prefetch]"}}]}, "eagerness": "moderate"}]}</script>
+
     {% vite_hmr_client %}
     {% vite_asset 'src/main.ts' %}
     {% block extra_head %}{% endblock %}

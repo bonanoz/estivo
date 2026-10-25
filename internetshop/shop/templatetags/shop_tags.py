@@ -1,6 +1,7 @@
 """Template tags для общего каркаса (подвал): данные, которые нельзя достать из текущего контекста."""
 from django import template
 from django.conf import settings
+from django.core.cache import cache
 from django.db.models import Avg, Count
 
 from shop.models import Product, Review
@@ -9,6 +10,7 @@ from shop.storage import thumb_name
 register = template.Library()
 
 FOOTER_CATEGORY_LIMIT = 12
+FOOTER_CACHE_SECONDS = 300  # каждый запрос к БД на проде ~25 мс, а подвал есть на каждой странице
 # shortcut: родительный падеж материалов — словарь, а не поле модели; новый материал вне словаря даст lower() без склонения.
 MATERIAL_GENITIVE = {'ротанг': 'ротанга', 'роуп': 'роупа', 'шпон': 'шпона', 'hpl': 'HPL'}
 
@@ -37,7 +39,15 @@ def absolute(url):
 
 @register.simple_tag
 def footer_data():
-    """Популярные разделы каталога (SEO-ссылки) и сводка по опубликованным отзывам."""
+    """Популярные разделы каталога (SEO-ссылки) и сводка по опубликованным отзывам.
+
+    shortcut: кэш на 5 минут без сброса — новый раздел или отзыв появится в подвале с задержкой;
+    если станет мешать, чистить ключ в save() Product/Review.
+    """
+    return cache.get_or_set('footer_data', _footer_data, FOOTER_CACHE_SECONDS)
+
+
+def _footer_data():
     seen = set()
     categories = []
     rows = (
