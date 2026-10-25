@@ -1,11 +1,11 @@
-{% load static humanize %}{% comment %}
+{% load static humanize shop_tags %}{% comment %}
 Промо-карточка акции (макет estivo-tilda/components/OfferCard). Ожидает `product` с old_price > price и offer_ends_at.
 Кнопка ведёт на форму «Узнать цену» (contacts_page?product=<slug>) - лид получает source_page='price-request:<slug>'.
 {% endcomment %}
 <article class="offer-card">
     <div class="offer-card__media">
         {% if product.main_image %}
-        <img src="{{ product.main_image.url }}" alt="{{ product.name }}" loading="lazy" width="800" height="600">
+        <img src="{{ product.main_image|thumb_url }}" srcset="{{ product.main_image|thumb_url }} 640w, {{ product.main_image.url }} 2000w" sizes="(min-width: 768px) 560px, 100vw" alt="{{ product.name }}" loading="lazy" width="800" height="600">
         {% else %}
         <img src="{% static 'img/placeholders/product.svg' %}" alt="{{ product.name }}" loading="lazy" width="800" height="600">
         {% endif %}

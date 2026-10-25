@@ -186,7 +186,12 @@ seeds Material/Category/Collection/Product/Review/`ColorOption` rows (plus dimen
 color bindings) for local development; safe to rerun (`get_or_create`, colors/dimensions re-applied
 each run).
 
-Media (uploaded photos, `.glb` models) lives under `MEDIA_ROOT` (`media/`). `settings.STORAGES` must
+Media (uploaded photos, `.glb` models) lives under `MEDIA_ROOT` (`media/`), or in an S3 bucket when
+`AWS_STORAGE_BUCKET_NAME` is set. Both default storages are `shop.storage.Compressed*`: every saved image is
+converted to WebP (long side ≤2000 px, EXIF rotation applied) unless that would be larger; non-images pass through.
+Every `*.webp` also gets a card thumbnail next to it (`x.w640.webp`, `shop.storage.thumb_name`); templates use the
+`thumb_url` filter (falls back to the full file for non-WebP) and `srcset` on product/offer cards.
+Files uploaded before that are re-encoded and get thumbnails via `python manage.py compress_media` (idempotent, keeps originals). `settings.STORAGES` must
 define **both** `default` (FileSystemStorage) and `staticfiles` — omitting `default` makes any
 `<file>.url` raise `InvalidStorageError` (surfaces only once a real image/model is uploaded).
 

@@ -1,4 +1,4 @@
-{% load static humanize %}{% comment %}
+{% load static humanize shop_tags %}{% comment %}
 Одна позиция корзины. Ожидает item, idx (порядковый номер, для стабильных id кнопок - HTMX возвращает фокус
 по id после замены фрагмента) и mode ('drawer' | 'page').
 Без JS формы работают как обычный POST + redirect; с HTMX - меняют #cart-lines.
@@ -6,7 +6,7 @@
 <li class="cart-line" data-line="{{ item.line_id }}">
     <a href="{{ item.product.get_absolute_url }}" class="cart-line__media" tabindex="-1" aria-hidden="true">
         {% if item.product.main_image %}
-        <img src="{{ item.product.main_image.url }}" alt="" loading="lazy" decoding="async" width="160" height="120">
+        <img src="{{ item.product.main_image|thumb_url }}" alt="" loading="lazy" decoding="async" width="160" height="120">
         {% else %}
         <img src="{% static 'img/placeholders/product.svg' %}" alt="" loading="lazy" decoding="async" width="160" height="120">
         {% endif %}

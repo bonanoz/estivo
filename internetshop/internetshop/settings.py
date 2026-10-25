@@ -166,8 +166,9 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 STORAGES = {
     # Загруженные файлы (media: фото товаров, .glb-модели). Обязателен —
     # без ключа 'default' обращение к <файл>.url даёт InvalidStorageError.
+    # Compressed*: фото при загрузке ужимаются в WebP (shop/storage.py).
     "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "BACKEND": "shop.storage.CompressedFileSystemStorage",
     },
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
@@ -178,7 +179,7 @@ STORAGES = {
 # хостингах эфемерный, загруженные через админку фото и .glb пропадают при перезапуске.
 # Включается, если задан AWS_STORAGE_BUCKET_NAME (на проде обязателен, см. ниже); иначе — локальный диск (MEDIA_ROOT).
 if os.environ.get('AWS_STORAGE_BUCKET_NAME'):
-    STORAGES['default'] = {"BACKEND": "storages.backends.s3.S3Storage"}
+    STORAGES['default'] = {"BACKEND": "shop.storage.CompressedS3Storage"}
     AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
     AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
@@ -189,6 +190,9 @@ if os.environ.get('AWS_STORAGE_BUCKET_NAME'):
     AWS_QUERYSTRING_AUTH = not AWS_S3_CUSTOM_DOMAIN
     AWS_DEFAULT_ACL = None
     AWS_S3_FILE_OVERWRITE = False
+    # Имена файлов не перезаписываются (новая загрузка = новое имя), поэтому кэш браузера можно держать год.
+    # Без этого Supabase отдаёт `private, no-cache` и фото качаются заново на каждой странице.
+    AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'public, max-age=31536000, immutable'}
 
 # Vite (frontend/ -> shop/static/dist). В dev-режиме django-vite подключает dev-сервер Vite и не читает
 # manifest, поэтому тесты и `VITE_DEV_MODE=1` не требуют собранного dist/.

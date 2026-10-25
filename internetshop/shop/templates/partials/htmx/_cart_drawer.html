@@ -1,4 +1,4 @@
-{% load static humanize %}{% comment %}
+{% load static humanize shop_tags %}{% comment %}
 Выезжающая корзина после «В корзину» (ответ HTMX на POST /cart/add/<id>/).
 Состояние (открыть/закрыть, фокус, Esc) - Alpine-компонент cartDrawer из frontend/src/cart/index.ts.
 Строки и итог - общий фрагмент _cart_lines.html (степпер и «Удалить» меняют его через HTMX).
@@ -34,7 +34,7 @@
                         <a href="{{ product.get_absolute_url }}" class="cart-recs__item">
                             <span class="cart-recs__media">
                                 {% if product.main_image %}
-                                <img src="{{ product.main_image.url }}" alt="" loading="lazy" width="96" height="72">
+                                <img src="{{ product.main_image|thumb_url }}" alt="" loading="lazy" width="96" height="72">
                                 {% else %}
                                 <img src="{% static 'img/placeholders/product.svg' %}" alt="" loading="lazy" width="96" height="72">
                                 {% endif %}

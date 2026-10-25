@@ -6,4 +6,5 @@ pip install -r requirements.txt
 cd internetshop
 python manage.py collectstatic --noinput
 python manage.py migrate --noinput
+python manage.py compress_media  # фото в WebP + миниатюры; повторно — только проверка, что всё на месте
 python manage.py clearsessions
