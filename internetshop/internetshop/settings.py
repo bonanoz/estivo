@@ -77,6 +77,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_htmx.middleware.HtmxMiddleware',
+    'shop.middleware.clear_prefetch_on_post',
 ]
 
 ROOT_URLCONF = 'internetshop.urls'

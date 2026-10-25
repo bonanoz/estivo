@@ -79,3 +79,14 @@ class TildaRedirectMiddleware:
         if action == '410':
             return render(request, '410.html', status=410)
         return response
+
+
+def clear_prefetch_on_post(get_response):
+    """После POST (корзина, избранное, формы) сбрасывает страницы, заранее скачанные по speculationrules
+    в base.html: иначе переход показал бы старый счётчик корзины. Браузеры без поддержки заголовок игнорируют."""
+    def middleware(request):
+        response = get_response(request)
+        if request.method == 'POST':
+            response['Clear-Site-Data'] = '"prefetchCache"'
+        return response
+    return middleware
