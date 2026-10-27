@@ -50,6 +50,10 @@ python manage.py runserver
   `shop/tests/test_design_tokens.py` guards the tokens and bans (shadows, gradients, <14px, Gilroy weights outside 300–800).
   Design source of truth: `docs/design-system/estivo-tilda/` (owner decision 2026-10-22; read-only except
   `MAPPING.md`, which maps its tokens/`es-*` components onto the project), applied in `docs/design-system.md`.
+- Overrides the global "UI references" rule: here only **Lucide** applies (copy the SVG inline, `stroke-width="1.5"`,
+  no npm package) plus **React Aria / Radix UI** as an a11y/behaviour reference only. Don't pull shadcn/ui, Magic UI,
+  Aceternity, Motion/Motion Primitives, GSAP, Anime.js, Uiverse, mapcn, Spline — React stack or banned
+  shadows/gradients/hover transforms (`docs/design-system.md` §3).
 
 ### Required environment (`.env` in `internetshop/`, never committed)
 
