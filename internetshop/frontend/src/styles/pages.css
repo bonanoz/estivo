@@ -97,6 +97,17 @@
   }
 }
 
+/* es-card: обведённая карточка преимущества («Почему ESTIVO») */
+.page-card {
+  padding: var(--space-3);
+  border: 1px solid var(--color-ink);
+  border-radius: var(--radius-none);
+}
+.page-card__icon {
+  margin-bottom: var(--space-2);
+  color: var(--color-brand);
+}
+
 /* ---- Typography ---- */
 .page-h1,
 .page-h2,

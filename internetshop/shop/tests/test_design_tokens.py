@@ -273,6 +273,11 @@ class E_A_ForbiddenPatternsTests(SimpleTestCase):
                               template_files() + ts_files())
         self.assertEqual(bad, [])
 
+    def test_svg_stroke_width_1_5(self):
+        """П7: линия иконок 1,5px; SVG из Lucide по умолчанию с stroke-width="2"."""
+        bad = self.offenders(r'stroke-width="(?!1\.5")[^"]*"', template_files() + ts_files())
+        self.assertEqual(bad, [])
+
     @staticmethod
     def _to_px(num, unit):
         return num if unit == 'px' else num * 16
