@@ -63,8 +63,10 @@ def norm(title):
 def clean_text(raw):
     t = re.sub(r'(?i)<br\s*/?>|</(p|div|li)>', '\n', raw or '')
     t = html.unescape(strip_tags(t))
-    t = re.sub(r'Error get alias|BUY NOW|Copy:', '', t)
+    t = re.sub(r'Error get alias|BUY NOW|Copy:', '', t).replace('#nbsp;', ' ')
     lines = [' '.join(ln.split()) for ln in t.splitlines()]
+    # подпись «Цвет ротанга»/«Цвета роупа» из карточки Tilda — не описание
+    lines = [ln for ln in lines if ln not in ('Цвет ротанга', 'Цвета роупа')]
     return re.sub(r'\n{3,}', '\n\n', '\n'.join(lines)).strip()
 
 
