@@ -4,7 +4,7 @@
 {% endcomment %}
 {% if minimal %}
 <footer class="border-t border-ink bg-bg text-ink"> {# taste-skill-ignore: estivo-tilda П4, hairline ink #}
-    <div class="mx-auto flex w-full max-w-[var(--container)] flex-col gap-4 px-4 py-6 md:flex-row md:items-center md:justify-between md:px-6">
+    <div class="page-container flex flex-col gap-4 py-6 md:flex-row md:items-center md:justify-between">
         <div>
             <p class="m-0 font-display text-2xl">Нужна помощь?</p>
             <p class="m-0 text-[0.95rem] opacity-80">Поможем выбрать модель и оформить заявку.</p>
@@ -20,7 +20,7 @@
 {% else %}
 {% footer_data as footer %}
 <footer class="border-t border-ink bg-bg text-ink"> {# taste-skill-ignore: estivo-tilda П4, hairline ink #}
-    <div class="mx-auto w-full max-w-[var(--container)] px-4 py-10 md:px-6 md:py-16">
+    <div class="page-container py-10 md:py-16">
         <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
             <div>
                 <a href="{% url 'home' %}" class="inline-flex min-h-11 items-center"><img src="{% static 'img/estivo-logo.svg' %}" alt="ESTIVO" width="140" height="56" class="h-auto w-[140px]"></a>
