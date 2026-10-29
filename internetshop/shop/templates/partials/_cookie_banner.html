@@ -1,10 +1,10 @@
-{# Полоса согласия на cookie: обычная форма POST, работает без JS. Текст — черновик до проверки юристом. #}
-<form method="post" action="{% url 'cookie_consent' %}" class="cookie-banner" data-cookie-banner role="region" aria-label="Cookie">
+{# Полоса согласия на cookie: обычная форма POST, работает без JS; с htmx уходит без перезагрузки (ответ — пусто или счётчик Метрики). Текст — черновик до проверки юристом. #}
+<form method="post" action="{% url 'cookie_consent' %}" hx-post="{% url 'cookie_consent' %}" hx-swap="outerHTML" class="cookie-banner" data-cookie-banner role="region" aria-label="Cookie">
     {% csrf_token %}
     <input type="hidden" name="next" value="{{ request.path }}">
     <p>Используем cookie и Яндекс Метрику. <a href="{% url 'privacy_page' %}#cookie" class="underline">Подробнее</a></p>
     <div class="cookie-banner__actions">
-        <button type="submit" name="choice" value="analytics" class="btn btn-pill btn-dark">Принять аналитические</button>
-        <button type="submit" name="choice" value="necessary" class="btn btn-pill btn-outline">Только необходимые</button>
+        <button type="submit" name="choice" value="analytics" class="btn btn-pill btn-dark">Принять все</button>
+        <button type="submit" name="choice" value="necessary" class="btn btn-pill btn-outline">Принять обязательные</button>
     </div>
 </form>

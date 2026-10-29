@@ -6,6 +6,7 @@ from django.db import transaction
 from django.db.models import F, Q
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.http import url_has_allowed_host_and_scheme
@@ -299,7 +300,9 @@ def _product_context(request, product, review_form=None):
 
 
 def product_detail(request, slug):
-    product = get_object_or_404(Product.objects.select_related('material', 'category'), slug=slug)
+    # Цвета читают и _valid_colors, и colors_by_type в шаблоне — один запрос на двоих.
+    product = get_object_or_404(
+        Product.objects.select_related('material', 'category').prefetch_related('available_colors'), slug=slug)
     return render(request, 'product_detail.html', _product_context(request, product))
 
 
@@ -607,12 +610,17 @@ def order_success(request):
 
 @require_POST
 def cookie_consent(request):
-    """Согласие на cookie без JS: ставит cookie и возвращает на страницу, откуда пришли."""
+    """Согласие на cookie: без JS — редирект обратно; из htmx — без перезагрузки, полоса заменяется ответом
+    (пусто или счётчик Метрики, если его на странице ещё нет)."""
     choice = request.POST.get('choice')
     if choice not in ('analytics', 'necessary'):
         return HttpResponseBadRequest('Unknown choice')
-    target = _safe_redirect_target(request, request.POST.get('next') or request.headers.get('Referer'), '/')
-    response = HttpResponseRedirect(target)
+    if request.headers.get('HX-Request'):
+        load_metrika = choice == 'analytics' and request.COOKIES.get('cookie_consent') != 'analytics'
+        response = HttpResponse(render_to_string('partials/_metrika.html') if load_metrika else '')
+    else:
+        target = _safe_redirect_target(request, request.POST.get('next') or request.headers.get('Referer'), '/')
+        response = HttpResponseRedirect(target)
     response.set_cookie('cookie_consent', choice, max_age=365 * 86400, samesite='Lax')
     return response
 

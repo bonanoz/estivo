@@ -111,6 +111,22 @@ class G1ConsentViewTests(TestCase):
                 self.assertEqual(resp.status_code, 302)
                 self.assertNotIn('evil.example', resp['Location'])
 
+    def test_g1_htmx_no_redirect(self):
+        """htmx: 200 без редиректа, cookie ставится; счётчик Метрики приходит только при «Принять все»."""
+        for choice, has_metrika in (('analytics', True), ('necessary', False)):
+            with self.subTest(choice=choice):
+                resp = self.client.post(self.url(), {'choice': choice}, **HX)
+                self.assertEqual(resp.status_code, 200)
+                self.assertEqual(resp.cookies['cookie_consent'].value, choice)
+                self.assertEqual('mc.yandex.ru/metrika' in resp.content.decode(), has_metrika)
+
+    def test_g1_banner_labels_and_htmx(self):
+        root = parse(self.client.get(reverse('home')))
+        banner = root.find(attrs={'data-cookie-banner': True})
+        self.assertEqual(banner.get('hx-post'), self.url())
+        labels = [b.text.strip() for b in banner.find_all('button')]
+        self.assertEqual(labels, ['Принять все', 'Принять обязательные'])
+
     def test_g1_unknown_choice_400(self):
         resp = self.client.post(self.url(), {'choice': 'everything'})
         self.assertEqual(resp.status_code, 400)
