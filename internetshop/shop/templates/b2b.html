@@ -4,11 +4,13 @@
 {% block meta_title %}Мебель для ресторанов, отелей и кафе — оптом от производителя | ESTIVO{% endblock %}
 {% block meta_description %}Плетёная мебель для отелей, ресторанов, кафе и гостевых домов от производителя ESTIVO. Объёмы, сроки, гарантия, коммерческое предложение под ваш проект.{% endblock %}
 
+{% block body_class %}chat-inline{% endblock %}
+
 {% block content %}
 <section class="page-section pt-6 md:pt-8">
     <div class="page-container">
         {% include 'partials/_breadcrumbs.html' with crumbs=breadcrumbs %}
-        <div class="page-head mt-6 max-w-[64ch]">
+        <div class="page-head mt-6">
             <h1 class="page-h1">Оснащение отелей, ресторанов и кафе</h1>
             <p class="page-lead">Оснащаем террасы, лаунж-зоны и общественные пространства: мебель выдерживает до 120 кг на посадочное место. Среди наших клиентов — «Марусовка» (Казань), «Австерия» и MEWS (Тольятти), Glampoint (Калининград).</p>
         </div>
@@ -45,7 +47,7 @@
                 <li>Доставка ТК до двери по всей России.</li>
             </ul>
             <div>
-                <a href="#zayavka" class="btn btn-dark btn-lg">Запросить коммерческое предложение</a>
+                <a href="#zayavka" class="btn btn-primary btn-lg">Запросить коммерческое предложение</a>
             </div>
         </div>
     </div>
@@ -53,7 +55,7 @@
 
 <section class="page-section page-section--alt" id="zayavka">
     <div class="page-container page-container--narrow">
-        <div class="page-head page-head--center text-center">
+        <div class="page-head">
             <h2 class="page-h2">Расскажите о вашем объекте</h2>
             <p class="page-lead">Опишите задачу — рассчитаем стоимость и сроки под ваш проект.</p>
         </div>
