@@ -117,7 +117,7 @@
 
             {% if not product.price %}
             <div class="pdp-actions" data-buy-anchor>
-                <a href="{% url 'contacts_page' %}?product={{ product.slug }}" class="btn btn-outline btn-lg btn-block">Узнать цену</a>
+                <a href="{% url 'contacts_page' %}?product={{ product.slug }}" class="btn btn-dark btn-lg btn-block">Узнать цену</a>
             </div>
             {% else %}
             <form method="post" action="{% url 'cart_add' product.id %}" id="pdp-form" data-pdp-form>
@@ -239,10 +239,9 @@
 <!-- Липкая панель покупки (мобильные) -->
 {% if product.price %}
 <div class="pdp-sticky" data-sticky-bar inert>
-    <div class="pdp-sticky__info">
-        <span class="pdp-sticky__name">{{ product.name }}</span>
-        <span class="pdp-sticky__price">{{ product.price|intcomma }}&nbsp;₽</span>
-    </div>
+    <button type="submit" form="pdp-form" class="btn btn-dark" data-add-to-cart
+            hx-post="{% url 'cart_add' product.id %}" hx-include="#pdp-form"
+            hx-target="#cart-drawer-slot" hx-swap="innerHTML" hx-disabled-elt="this">В корзину</button>
     <button type="submit" form="pdp-form" name="checkout" value="1" class="btn btn-primary" data-no-ajax>Оформить заявку</button>
 </div>
 {% endif %}

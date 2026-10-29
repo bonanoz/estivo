@@ -325,26 +325,6 @@
   color: var(--color-ink-soft);
 }
 
-/* ---- Related carousel ---- */
-.pdp-carousel {
-  display: flex;
-  gap: var(--space-3);
-  margin: 0;
-  padding: 0 0 var(--space-2);
-  list-style: none;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-}
-.pdp-carousel > li {
-  flex: 0 0 min(72vw, 280px);
-  scroll-snap-align: start;
-}
-@media (min-width: 1024px) {
-  .pdp-carousel > li {
-    flex-basis: calc((100% - 3 * var(--space-3)) / 4);
-  }
-}
-
 /* ---- Reviews ---- */
 .reviews-summary {
   display: flex;
@@ -442,10 +422,10 @@
   right: 0;
   bottom: 0;
   z-index: var(--z-sticky);
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
+  gap: var(--space-2);
   padding: var(--space-2) var(--space-3) calc(var(--space-2) + env(safe-area-inset-bottom));
   background: var(--color-surface);
   visibility: hidden;
@@ -460,25 +440,8 @@
   transition: transform var(--dur-fast) var(--ease);
 }
 .pdp-sticky .btn {
-  flex: 0 0 auto;
-}
-.pdp-sticky__info {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-.pdp-sticky__name {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 0.9rem;
-  color: var(--color-ink-soft);
-}
-.pdp-sticky__price {
-  font-family: var(--font-display);
-  font-size: 1.35rem;
-  font-weight: 600;
-  white-space: nowrap;
+  padding-inline: var(--space-3);
+  min-height: 44px;
 }
 @media (min-width: 1024px) {
   .pdp-sticky {
