@@ -96,7 +96,7 @@
 | E4 | Страница товара | 2 | E1 | `templates/product_detail.html`, `partials/_reviews.html`, `partials/htmx/_review_form.html`, `frontend/src/styles/product.css`, `frontend/src/product/*` | sonnet / medium | done | merge 6b7bc08 |
 | E5 | Корзина и оформление | 2 | E1 | `templates/cart.html`, `templates/checkout.html`, `partials/htmx/_cart_*.html`, `frontend/src/styles/cart.css`, `frontend/src/styles/request.css` | sonnet / medium | done | merge a3840d6 |
 | E6 | Остальные страницы | 2 | E1 | `templates/{about,b2b,designers,contacts,faq,delivery_payment,warranty,privacy,404,410,500,order_success}.html`, `partials/_cta_section.html`, `partials/_lead_form.html`, `partials/_breadcrumbs.html`, `frontend/src/styles/pages.css` | sonnet / medium | done | merge ab85b2c |
-| E7 | Документация | 3 | E2–E6 | `docs/design-system.md`, `docs/design-system/estivo-tilda/MAPPING.md`, `CLAUDE.md`, `.taste-skill/direction.json` | sonnet / medium | todo | |
+| E7 | Документация | 3 | E2–E6 | `docs/design-system.md`, `docs/design-system/estivo-tilda/MAPPING.md`, `CLAUDE.md`, `.taste-skill/direction.json` | sonnet / medium | done | сделал оркестратор, 73a69f0 |
 
 Статусы: `todo` → `in_progress` → `review` → `done` (или `blocked` + причина в журнале).
 
@@ -215,12 +215,12 @@
 
 ## Критерии готовности всей задачи
 
-- [ ] Полный набор тестов проекта зелёный
-- [ ] `npm run build` (tsc + vite) без ошибок, `collectstatic` без ошибок (ручная проверка)
-- [ ] Линтер дизайна без FAIL вне allow-list (ручная проверка)
-- [ ] Все публичные страницы на 390 и 1440 без горизонтальной прокрутки (ручная проверка), с одним `h1` (тест `PagesTests`)
-- [ ] `.btn-primary` встречается только в разрешённых местах из «Правила кнопок»
-- [ ] Новые тексты сайта прошли `site-copy-check` (ручная проверка)
+- [x] Полный набор тестов проекта зелёный
+- [x] `npm run build` (tsc + vite) без ошибок, `collectstatic` без ошибок (ручная проверка)
+- [x] Линтер дизайна без FAIL вне allow-list (ручная проверка)
+- [x] Все публичные страницы на 390 и 1440 без горизонтальной прокрутки (ручная проверка), с одним `h1` (тест `PagesTests`)
+- [x] `.btn-primary` встречается только в разрешённых местах из «Правила кнопок»
+- [x] Новые тексты сайта прошли `site-copy-check` (ручная проверка)
 
 ## Журнал
 
@@ -230,3 +230,4 @@
 - 2026-10-29 E1 done: 2 попытки (ревью: поле внутри 1360 съедало контент до 1264px → `.page-container` = `calc(var(--container) + 2 * var(--page-pad))`; строка фактов переделана по черновику на Gilroy 16px). Для волны 2: worktree может создаться от master — сверить базу с `feat/ui-refresh`; в worktree нужен `collectstatic`; перевести `max-w-[var(--container)] px-4 md:px-6` на `page-container`; свои `clamp`-размеры заголовков в catalog/product/cart/pages.css привести к шкале display/h2/h3
 - 2026-10-29 волна 2: E3 done с первой попытки (merge 8e5e9a6). E2, E4, E5, E6 — CHANGES, вторая попытка: E2 — зона нажатия ссылок в hero < 44px, лишняя подпись «О нас»; E4 — «Узнать цену» должна быть btn-dark, липкая панель как в черновике (две кнопки без названия и цены); E5 — размеры вторичных заголовков вне шкалы; E6 — 500.html со старыми цветами и терракотовой кнопкой, h1 about в 5–6 строк из-за max-w-[64ch], серая плашка в _cta_section даёт вторую серую зону. На сведение: catalog.css `.filter-panel` без JS — max-width без полей; отступ `.catalog-banner__text` на телефоне; `.offer-card__title` в request.css вне шкалы; описание баннера каталога повторяет строку фактов (решить на site-copy-check)
 - 2026-10-29 волна 2 смержена: E5, E4, E2, E6 со второй попытки. После всех merge 432 теста, красные только 5 DocsTests (E7). Мёртвое на сведение: `.page-grid--3` (только отзывы главной), `.page-split*` (about, b2b, contacts, designers — живы); у `.pdp-sticky .btn` запас по ширине на 360px почти нулевой — «Оформить заявку» может уйти в две строки
+- 2026-10-29 E7 по решению пользователя сделал оркестратор, без воркера (73a69f0). Сведение: липкая панель товара в одну строку на 360px, `.filter-panel` без JS на ширине контента, отступ описания баннера каталога, заголовки `.offer-card__title` и `.filter-panel__title` на шкале h3, вес 500 у названий товаров снят, удалены мёртвые `.pdp-meta` и `.cart-drawer__added`. Линтер: 16 FAIL (`eyebrow`, `hairline`) — одобренные приёмы, строки помечены `taste-skill-ignore`, правила добавлены в allow-list для `inspect.mjs`; итог 0 FAIL, 11 WARN как на master. site-copy-check новых текстов: детектор 0/100. Итог: 432 теста зелёные, build и collectstatic без ошибок, 17 страниц на 360 без горизонтальной прокрутки, один h1

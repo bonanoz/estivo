@@ -169,7 +169,7 @@
     line-height: 1.2;
     margin: 0 0 var(--space-3);
     text-wrap: balance;
-    /* long uppercase words (e.g. «конфиденциальности») overflow 390px otherwise */
+    /* long words (e.g. «конфиденциальности») overflow 360px otherwise */
     hyphens: auto;
     overflow-wrap: anywhere;
   }
@@ -355,7 +355,7 @@
     display: flex;
     width: 100%;
   }
-  /* accent: only the request CTA (cart drawer, cart, checkout) */
+  /* accent: only the request action, places listed in docs/design-system.md §3 */
   .btn-primary {
     background: var(--color-accent);
     color: var(--color-on-accent);
@@ -371,7 +371,7 @@
     padding: 10px 20px;
   }
   /* Подпись над заголовком: добавляет сведения, которых нет в самом заголовке */
-  .eyebrow {
+  .eyebrow { /* taste-skill-ignore: подпись над заголовком из одобренного обновления 29.10.2026 */
     margin: 0 0 var(--space-2);
     font-family: var(--font-body);
     font-size: 14px;
@@ -389,7 +389,7 @@
     gap: var(--space-2) var(--space-5);
     margin: 0;
     padding: 20px 0 0;
-    border-top: 1px solid var(--color-ink);
+    border-top: 1px solid var(--color-ink); /* taste-skill-ignore: линия-разделитель из одобренного обновления 29.10.2026 */
     list-style: none;
   }
   .facts-strip__item {
@@ -697,7 +697,6 @@
     margin: 0;
     font-family: var(--font-display);
     font-size: 1.35rem;
-    font-weight: 500;
     line-height: 1.15;
     display: -webkit-box;
     -webkit-box-orient: vertical;

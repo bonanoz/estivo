@@ -45,7 +45,7 @@ python manage.py runserver
   referenced by `@font-face` — don't delete or rename them.
 - Design QA gates before merging UI work: `node ~/.claude/skills/design-taste-frontend/scripts/lint.mjs
   internetshop/shop/templates internetshop/frontend/src` must show no FAIL outside the allow-list
-  (palette-claude/terracotta/cream, card-rows, few-pictures, no-real-pictures, no-footage, still-page; stored in
+  (palette-claude/terracotta/cream, card-rows, few-pictures, no-real-pictures, no-footage, still-page, eyebrow, hairline; stored in
   `.taste-skill/direction.json`, see `docs/design-system.md` §7), plus the ui-ux-pro-max pre-delivery checklist;
   `shop/tests/test_design_tokens.py` guards the tokens and bans (shadows, gradients, <14px, Gilroy weights outside 300–800).
   The design is described in `docs/design-system.md` alone (owner approved the grid/typography/button refresh

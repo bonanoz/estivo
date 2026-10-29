@@ -71,6 +71,7 @@
 | display: `h1`, `.page-h1` | `--font-display` (Cormorant Garamond) | 400 | `clamp(44px, 6vw, 76px)` / 1.02 |
 | `h2`, `.page-h2` | `--font-display` | 400 | `clamp(32px, 3.6vw, 48px)` / 1.05 |
 | `h3`, `.page-h3`, заголовки в узких колонках и панелях | `--font-display` | 400 | 24px / 1.2 |
+| названия товаров в карточках, строках корзины и поиске | `--font-display` | 400 | 19–22px / 1.15 |
 | `.eyebrow` — подпись над заголовком | `--font-body` (Gilroy) | 500, прописные, `letter-spacing: 0.08em` | 14px, цвет `ink-muted` |
 | `.lead` | `--font-body` | `--weight-body-regular` (400) | 20/31 |
 | основной текст | `--font-body` | `--weight-body-regular` (400) | 16/24 |
@@ -240,7 +241,9 @@ SVG в шаблон (без npm-пакета) и ставить `stroke-width="1
       проходят.
 - [ ] `node ~/.claude/skills/design-taste-frontend/scripts/lint.mjs internetshop/shop/templates internetshop/frontend/src`
       без FAIL вне allow-list (`.taste-skill/direction.json`: palette-claude/terracotta/cream, card-rows, few-pictures,
-      no-real-pictures, no-footage, still-page). Точечные `taste-skill-ignore` — только с причиной рядом.
+      no-real-pictures, no-footage, still-page, eyebrow, hairline; этот список читает проверка в браузере `inspect.mjs`).
+      Статический `lint.mjs` список не читает: строки с `.eyebrow` и линиями-разделителями из обновления 29.10.2026
+      помечены `taste-skill-ignore` с причиной. Новые пометки — только с причиной рядом.
 - [ ] Чек-лист ui-ux-pro-max перед сдачей.
 - [ ] Браузер 1440, 390 и 360: нет горизонтальной прокрутки, контролы ≥ 44×44, текст ≥ 14px, фокус виден.
 - [ ] Длинные названия, пустые списки, нет фото, `price == 0` не ломают сетку.

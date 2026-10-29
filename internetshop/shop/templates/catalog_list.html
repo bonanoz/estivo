@@ -15,7 +15,7 @@
             <div class="lg:col-span-7">
             {# Русская форма слова «модель» по двум последним цифрам числа #}
             {% with n=total_count|stringformat:"d" %}
-            <p class="eyebrow">{% if current_material %}{{ current_material.name }}{% elif search %}Поиск{% else %}Каталог{% endif %} · {{ total_count }} {% if n|slice:"-2:" == "11" or n|slice:"-2:" == "12" or n|slice:"-2:" == "13" or n|slice:"-2:" == "14" %}моделей{% elif n|slice:"-1:" == "1" %}модель{% elif n|slice:"-1:" == "2" or n|slice:"-1:" == "3" or n|slice:"-1:" == "4" %}модели{% else %}моделей{% endif %}</p>
+            <p class="eyebrow">{% if current_material %}{{ current_material.name }}{% elif search %}Поиск{% else %}Каталог{% endif %} · {{ total_count }} {% if n|slice:"-2:" == "11" or n|slice:"-2:" == "12" or n|slice:"-2:" == "13" or n|slice:"-2:" == "14" %}моделей{% elif n|slice:"-1:" == "1" %}модель{% elif n|slice:"-1:" == "2" or n|slice:"-1:" == "3" or n|slice:"-1:" == "4" %}модели{% else %}моделей{% endif %}</p> {# taste-skill-ignore: подпись над заголовком из одобренного обновления 29.10.2026 #}
             {% endwith %}
             <h1 class="catalog-banner__title">
                 {% if current_category %}{{ current_category.name }} из {{ current_material.name|material_genitive }}

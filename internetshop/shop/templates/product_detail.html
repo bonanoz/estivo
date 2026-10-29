@@ -81,7 +81,7 @@
             </div>
 
 
-            {% if product.category or product.material %}<p class="eyebrow">{% if product.category %}{{ product.category.name }}{% endif %}{% if product.category and product.material %} · {% endif %}{% if product.material %}{{ product.material.name }}{% endif %}</p>{% endif %}
+            {% if product.category or product.material %}<p class="eyebrow">{% if product.category %}{{ product.category.name }}{% endif %}{% if product.category and product.material %} · {% endif %}{% if product.material %}{{ product.material.name }}{% endif %}</p>{% endif %} {# taste-skill-ignore: подпись над заголовком из одобренного обновления 29.10.2026 #}
             <div class="pdp-titlebar">
                 <h1 class="pdp-title">{{ product.name }}</h1>
                 <div class="pdp-heart">
