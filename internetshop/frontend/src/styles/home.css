@@ -20,14 +20,13 @@
   .home-hero__media {
     margin-inline: 0;
     margin-right: calc(-1 * ((100vw - min(100vw, var(--container) + 2 * var(--page-pad))) / 2 + var(--page-pad)));
-    aspect-ratio: 4 / 5;
+    aspect-ratio: 13 / 14;
   }
 }
 
 /* фото «Кто мы» на всю ширину экрана */
 .home-story__media {
   aspect-ratio: 16 / 9;
-  border-radius: 0;
 }
 @media (min-width: 1024px) {
   .home-story__media {
@@ -48,5 +47,4 @@
 }
 .why-list__icon {
   color: var(--color-brand);
-  flex: none;
 }

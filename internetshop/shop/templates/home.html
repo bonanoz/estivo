@@ -6,23 +6,23 @@
 {% block og_image %}{% if site_settings.hero_image %}{{ site_settings.hero_image.url|absolute }}{% else %}{{ block.super }}{% endif %}{% endblock %}
 
 {% block content %}
-<section data-section="hero" class="page-section home-hero">
+<section data-section="hero" class="page-section home-hero pt-0 lg:pt-16">
     <div class="page-container grid grid-cols-1 items-center gap-6 lg:grid-cols-12">
         <div class="home-hero__media lg:col-span-6 lg:col-start-7 lg:row-start-1">
             {% if site_settings.hero_image %}
-            <img src="{{ site_settings.hero_image.url }}" alt="Плетёное кресло и диван ESTIVO на террасе">
+            <img src="{{ site_settings.hero_image.url }}" fetchpriority="high" alt="Плетёное кресло и диван ESTIVO на террасе">
             {% else %}
-            <img src="{% static 'img/placeholders/hero.svg' %}" alt="Плетёная мебель ESTIVO на террасе">
+            <img src="{% static 'img/placeholders/hero.svg' %}" fetchpriority="high" alt="Плетёная мебель ESTIVO на террасе">
             {% endif %}
         </div>
         <div class="grid gap-5 lg:col-span-6 lg:col-start-1 lg:row-start-1">
-            <p class="eyebrow">Своё производство · Тольятти</p>
+            <p class="eyebrow mb-0">Своё производство · Тольятти</p>
             <h1 class="page-h1">Плетёная мебель из ротанга и роупа</h1>
             <p class="page-lead">Плетём вручную на металлическом каркасе. Делаем по каталогу и в ваш размер, доставляем по всей России.</p>
             <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
                 <a href="{% url 'contacts_page' %}" data-goal="click_pick_set" class="btn btn-primary btn-lg">Подобрать комплект</a>
-                <a href="{% url 'catalog_by_material' 'rotang' %}" class="underline">Каталог ротанга</a>
-                <a href="{% url 'catalog_by_material' 'roup' %}" class="underline">Каталог роупа</a>
+                <a href="{% url 'catalog_by_material' 'rotang' %}" class="underline inline-flex items-center min-h-[var(--tap-min)]">Каталог ротанга</a>
+                <a href="{% url 'catalog_by_material' 'roup' %}" class="underline inline-flex items-center min-h-[var(--tap-min)]">Каталог роупа</a>
             </div>
         </div>
     </div>
@@ -30,7 +30,7 @@
 
 <section data-section="proof" aria-label="Коротко о гарантиях" class="page-section page-section--tight">
     <div class="page-container">
-    <ul class="grid list-none m-0 p-0 grid-cols-2 gap-4 md:gap-6 lg:grid-cols-12">
+    <ul class="grid list-none m-0 p-0 grid-cols-2 gap-4 border-t border-[var(--color-ink)] pt-6 md:grid-cols-4 md:gap-6 lg:grid-cols-12">
         <li class="grid content-start gap-1 lg:col-span-3"><span class="page-h3">Гарантия {{ site_info.warranty }}</span><span class="page-note">на каркас, плетение и подушки</span></li>
         <li class="grid content-start gap-1 lg:col-span-3"><span class="page-h3">Изготовление {{ site_info.production_term }}</span><span class="page-note">в наличии — отгрузка за 3 дня</span></li>
         <li class="grid content-start gap-1 lg:col-span-3"><span class="page-h3">3 цеха и склад 650 м²</span><span class="page-note">своё производство в Тольятти</span></li>
@@ -68,7 +68,6 @@
     </div>
     <div class="page-container grid grid-cols-1 gap-4 pt-8 md:gap-6 lg:grid-cols-12">
         <div class="grid content-start gap-3 lg:col-span-5">
-            <p class="eyebrow">О нас</p>
             <h2 class="page-h2">Кто мы</h2>
         </div>
         <div class="grid content-start gap-5 lg:col-span-7">
