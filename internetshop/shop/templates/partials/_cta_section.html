@@ -1,11 +1,11 @@
 {% comment %} Финальный CTA-блок над подвалом (вместо рассылки). Опциональные переменные: cta_title, cta_text, cta_button {% endcomment %}
-<section class="py-12 md:py-20">
-    <div class="mx-auto w-full max-w-[var(--container)] px-4 md:px-6">
-        <div class="border border-ink bg-surface-alt px-6 py-12 text-center text-ink md:px-12 md:py-16">
+<section class="page-section">
+    <div class="page-container">
+        <div class="border border-ink px-6 py-12 text-center text-ink md:px-12 md:py-16">
             <h2 class="mx-auto mb-4 max-w-[20ch]">{{ cta_title|default:"Обсудим вашу мебель?" }}</h2>
             <p class="mx-auto mb-6 max-w-[60ch] opacity-90">{{ cta_text|default:"Оставьте заявку — рассчитаем стоимость, подберём модели и материалы под вашу задачу. Гарантия 3 года, изготовление от 4 недель, доставка ТК до двери." }}</p>
             <div class="flex flex-wrap justify-center gap-3">
-                <a href="{% url 'contacts_page' %}" class="btn btn-dark btn-lg">{{ cta_button|default:"Оставить заявку" }}</a>
+                <a href="{% url 'contacts_page' %}" class="btn btn-primary btn-lg">{{ cta_button|default:"Оставить заявку" }}</a>
                 <a data-goal="click_tel" href="tel:{{ site_info.phone_href }}" class="btn btn-outline btn-lg">{{ site_info.phone }}</a>
             </div>
         </div>

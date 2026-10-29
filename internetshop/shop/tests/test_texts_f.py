@@ -142,7 +142,9 @@ class FHomeTests(FWorld):
     def test_f1_h1_matches_audit(self):
         h1s = self.root.find_all('h1')
         self.assertEqual(len(h1s), 1)
-        self.assertEqual(visible(h1s[0]), 'Плетёная мебель из ротанга и роупа — своё производство в Тольятти')
+        # ui-refresh: «Тольятти» ушло из h1 в подпись над ним, остаётся в <title> и meta description
+        self.assertEqual(visible(h1s[0]), 'Плетёная мебель из ротанга и роупа')
+        self.assertIn('Тольятти', visible(self.root.find('title')))
 
     def test_f1_hero_buttons(self):
         self.assertIsNotNone(self.hero)
@@ -175,14 +177,21 @@ class FWhyEstivoTests(FWorld):
         }
 
     def test_f2_block_present_with_points(self):
-        for name, url in self.pages().items():
+        # ui-refresh: полный блок только на главной
+        text = self.get_text(self.pages()['home'])
+        self.assertIn('Почему ESTIVO', text)
+        self.assertIn('3 года', text)
+        self.assertIn('от 4 недель', text)
+        self.assertIn('50%', text)
+        self.assertIn('до двери', text)
+
+    def test_f2_catalog_and_pdp_have_facts_strip_instead(self):
+        for name in ('catalog', 'pdp'):
             with self.subTest(page=name):
-                text = self.get_text(url)
-                self.assertIn('Почему ESTIVO', text)
+                text = self.get_text(self.pages()[name])
+                self.assertNotIn('Почему ESTIVO', text)
                 self.assertIn('3 года', text)
                 self.assertIn('от 4 недель', text)
-                self.assertIn('50%', text)
-                self.assertIn('до двери', text)
 
     def test_f2_no_instalment_point(self):
         for name, url in self.pages().items():

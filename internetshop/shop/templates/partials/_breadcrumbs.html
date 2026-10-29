@@ -1,10 +1,10 @@
 {% comment %} Ожидает `crumbs` — список кортежей (название, url|None). Последний пункт без url — текущая страница. {% endcomment %}
 <nav class="breadcrumbs" aria-label="Хлебные крошки">
     <ol class="m-0 flex list-none flex-wrap items-center gap-x-2 p-0 text-[0.9rem] text-ink-soft">
-        <li><a href="{% url 'home' %}" class="inline-flex min-h-6 items-center hover:opacity-85">Главная</a></li>
+        <li><a href="{% url 'home' %}" class="tap-area inline-flex min-h-6 items-center hover:opacity-85">Главная</a></li>
         {% for label, url in crumbs %}
         <li class="flex items-center gap-2" aria-hidden="true">/</li>
-        <li>{% if url %}<a href="{{ url }}" class="inline-flex min-h-6 items-center hover:opacity-85">{{ label }}</a>{% else %}<span aria-current="page">{{ label }}</span>{% endif %}</li>
+        <li>{% if url %}<a href="{{ url }}" class="tap-area inline-flex min-h-6 items-center hover:opacity-85">{{ label }}</a>{% else %}<span aria-current="page">{{ label }}</span>{% endif %}</li>
         {% endfor %}
     </ol>
 </nav>

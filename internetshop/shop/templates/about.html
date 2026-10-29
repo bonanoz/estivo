@@ -8,8 +8,8 @@
 <section class="page-section pt-6 md:pt-8">
     <div class="page-container">
         {% include 'partials/_breadcrumbs.html' with crumbs=breadcrumbs %}
-        <div class="page-head mt-6 max-w-[64ch]">
-            <h1 class="page-h1">ESTIVO — плетёная мебель для открытых пространств, своё производство в Тольятти</h1>
+        <div class="page-head mt-6">
+            <h1 class="page-h1 lg:max-w-[75%]">ESTIVO — плетёная мебель для открытых пространств, своё производство в Тольятти</h1>
             <p class="page-lead">Делаем плетёную мебель ручной работы больше 10 лет, за это время изготовили больше 10 000 изделий. Своё производство в Тольятти: 3 цеха и склад 650 м², сварка и покраска металла. Плетём вручную из искусственного ротанга (ПЭ) и роупа.</p>
         </div>
     </div>
@@ -21,7 +21,7 @@
             {% if site_settings.about_image %}
             <img src="{{ site_settings.about_image.url }}" alt="Производство ESTIVO: мастер плетёт каркас кресла" loading="lazy">
             {% else %}
-            <img src="{% static 'img/placeholders/hero.svg' %}" alt="Производство ESTIVO: мастер плетёт каркас кресла" loading="lazy">
+            <img src="{% static 'img/workshop/master-frame.webp' %}" alt="Производство ESTIVO: мастер оплетает металлический каркас" loading="lazy">
             {% endif %}
         </div>
         <div class="grid content-center gap-4">
@@ -50,7 +50,7 @@
 </section>
 {% endif %}
 
-<section class="page-section page-section--dark">
+<section class="page-section">
     <div class="page-container">
         <div class="page-head">
             <h2 class="page-h2">8 этапов создания мебели</h2>

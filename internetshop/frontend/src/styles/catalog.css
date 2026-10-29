@@ -21,26 +21,16 @@
 .catalog-banner__title {
   margin: 0;
   max-width: 18ch;
-  font-family: var(--font-display);
-  font-size: clamp(2.4rem, 6vw, 4.75rem);
-  font-weight: 500;
-  line-height: 1.02;
 }
 .catalog-banner__text {
   max-width: 46ch;
-  margin: var(--space-3) 0 0;
+  margin: 0;
   color: var(--color-ink-soft);
   font-size: 1.1rem;
 }
 @media (min-width: 1024px) {
   .catalog-banner {
-    display: grid;
-    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
     align-items: end;
-    gap: var(--space-5);
-  }
-  .catalog-banner__text {
-    margin: 0;
   }
 }
 
@@ -101,8 +91,8 @@
 .filter-panel {
   margin: 0 auto var(--space-3);
   width: 100%;
-  max-width: var(--container);
-  padding: 0 var(--space-3);
+  max-width: calc(var(--container) + 2 * var(--page-pad));
+  padding: 0 var(--page-pad);
 }
 .filter-panel__sheet {
   display: flex;
@@ -119,9 +109,8 @@
 }
 .filter-panel__title {
   margin: 0;
-  font-family: var(--font-display);
-  font-size: 1.75rem;
-  font-weight: 500;
+  font-size: 24px;
+  line-height: 1.2;
 }
 .filter-panel__body {
   display: flex;
@@ -367,9 +356,9 @@ a.pager__link:active {
 .catalog-section-title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(1.75rem, 3vw, 2.5rem);
-  font-weight: 500;
-  line-height: 1.1;
+  font-size: clamp(32px, 3.6vw, 48px);
+  font-weight: 400;
+  line-height: 1.05;
 }
 .catalog-empty__text {
   margin: var(--space-2) 0 var(--space-3);
@@ -489,7 +478,6 @@ a.pager__link:active {
   min-width: 0;
   font-family: var(--font-display);
   font-size: 1.2rem;
-  font-weight: 500;
   line-height: 1.15;
 }
 .search-row__price {
@@ -500,8 +488,8 @@ a.pager__link:active {
 .search-empty {
   margin: 0 0 var(--space-2);
   font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: 500;
+  font-size: 24px;
+  line-height: 1.2;
 }
 .search-hint {
   margin: 0 0 var(--space-2);

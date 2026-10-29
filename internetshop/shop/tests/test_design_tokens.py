@@ -1,6 +1,7 @@
-"""E-A (tilda-migration, a1-a4): токены и базовые стили из estivo-tilda.
+"""E-A (tilda-migration, a1-a4): токены и базовые стили.
 
-Контракт читает исходники как текст (CSS, TS, шаблоны) и tokens.css системы.
+Контракт читает исходники как текст (CSS, TS, шаблоны). Цвета сверяются с tokens.css из estivo-tilda (архив,
+палитра не менялась); размеры и веса после ui-refresh (docs/specs/ui-refresh/SPEC.md) заданы литералами ниже.
 Источник правил: docs/specs/tilda-migration/SPEC.md (эпик a) и
 docs/design-system/estivo-tilda/MAPPING.md (таблицы 1 и 2, пробелы П1-П8).
 Шаг a5 (документы) и браузерные проверки (прокрутка, 44x44) здесь не покрываются.
@@ -8,7 +9,7 @@ docs/design-system/estivo-tilda/MAPPING.md (таблицы 1 и 2, пробел�
 Допущения парсера:
 - CSS разбирается регулярками по «листовым» блокам `селектор { объявления }` (без вложенных
   скобок); @layer/@media-обёртки игнорируются, комментарии вырезаются.
-- font-weight: в CSS разрешены var(--weight-body-regular|bold) и 300-800 (лицензия Gilroy 300-800,
+- font-weight: в CSS разрешены var(--weight-body-regular|bold|ui) и 300-800 (лицензия Gilroy 300-800,
   владелец 23.10.2026). 100/200/900 допустимы только в правиле с font-family: var(--font-display)
   (Cormorant Garamond), иначе это Gilroy без файла начертания.
 - font-size: px < 14 и rem/em < 0.875 запрещены (em считается как rem - допущение);
@@ -112,17 +113,6 @@ class E_A_ThemeBlockTests(SimpleTestCase):
         '--border-input': '--color-border-input',
         '--on-dark': '--color-on-dark',
     }
-    SIZE_MAP = {
-        '--radius-none': '--radius-none',
-        '--radius-sm': '--radius-sm',
-        '--radius-md': '--radius-md',
-        '--radius-pill': '--radius-pill',
-        '--container': '--container',
-        '--module': '--module',
-        '--gutter': '--gutter',
-        '--control-height': '--control-height',
-        '--tap-min': '--tap-min',
-    }
     REMOVED = [
         '--shadow-md', '--radius-lg', '--color-accent-dark', '--color-accent-soft',
         '--color-accent-text', '--color-line', '--color-line-strong', '--color-error',
@@ -130,7 +120,7 @@ class E_A_ThemeBlockTests(SimpleTestCase):
     ]
     ADDED = [
         '--color-ink-black', '--color-graphite', '--color-brand', '--color-on-accent',
-        '--color-on-dark', '--color-border-input', '--color-scrim', '--module', '--gutter',
+        '--color-on-dark', '--color-border-input', '--color-scrim', '--page-pad', '--weight-ui',
         '--control-height', '--tap-min', '--radius-none',
     ]
 
@@ -171,20 +161,20 @@ class E_A_ThemeBlockTests(SimpleTestCase):
         self.assertIn(norm(theme.get('--color-on-accent', '')), ('var(--color-ink)', '#281913'))
         self.assertEqual(norm(theme.get('--color-scrim', '')), 'rgba(0,0,0,0.6)')
 
-    def test_sizes_match_tokens_css(self):
-        theme, ds = theme_tokens(), ds_tokens()
-        for ds_name, our in self.SIZE_MAP.items():
-            self.assertEqual(norm(theme.get(our, '')), norm(ds[ds_name]), f'{our} != tokens.css {ds_name}')
-
     def test_sizes_match_spec_literals(self):
         theme = theme_tokens()
         expected = {
-            '--radius-sm': '4px', '--radius-md': '5px', '--radius-pill': '30px', '--container': '1160px',
-            '--container-narrow': '692px', '--module': '224px', '--gutter': '10px',
-            '--control-height': '60px', '--tap-min': '44px',
+            '--radius-sm': '4px', '--radius-md': '5px', '--radius-pill': '30px', '--container': '1360px',
+            '--container-narrow': '692px', '--control-height': '52px', '--tap-min': '44px',
+            '--page-pad': 'clamp(16px,4vw,48px)',
+            '--weight-body-regular': '400', '--weight-body-bold': '800', '--weight-ui': '600',
         }
         for k, v in expected.items():
             self.assertEqual(norm(theme.get(k, '')), v, k)
+
+    def test_module_and_gutter_removed(self):
+        theme = theme_tokens()
+        self.assertEqual([t for t in ('--module', '--gutter') if t in theme], [])
 
 
 class E_A_ForbiddenPatternsTests(SimpleTestCase):
@@ -230,7 +220,7 @@ class E_A_ForbiddenPatternsTests(SimpleTestCase):
         self.assertEqual(bad, [])
 
     def test_font_weight_only_licensed_for_body_font(self):
-        ok_values = {'var(--weight-body-regular)', 'var(--weight-body-bold)', 'inherit', 'normal', 'bold',
+        ok_values = {'var(--weight-body-regular)', 'var(--weight-body-bold)', 'var(--weight-ui)', 'inherit', 'normal', 'bold',
                      '300', '400', '500', '600', '700', '800'}
         bad = []
         for name, sel, body in all_rules():

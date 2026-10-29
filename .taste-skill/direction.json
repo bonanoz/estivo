@@ -1,4 +1,15 @@
 {
-  "note": "Brand locked by docs/design-system/estivo-tilda/ (applied in docs/design-system.md); no drawn direction. See docs/design-system.md §7.",
-  "allow": ["palette-claude", "palette-terracotta", "palette-cream", "card-rows", "few-pictures", "no-real-pictures", "no-footage", "still-page"]
+  "note": "Brand locked by docs/design-system.md (colors and fonts from the Tilda archive docs/design-system/estivo-tilda/, grid and components from the 2026-10-29 refresh); no drawn direction. See docs/design-system.md §7.",
+  "allow": [
+    "palette-claude",
+    "palette-terracotta",
+    "palette-cream",
+    "card-rows",
+    "few-pictures",
+    "no-real-pictures",
+    "no-footage",
+    "still-page",
+    "eyebrow",
+    "hairline"
+  ]
 }

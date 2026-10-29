@@ -1,5 +1,10 @@
 # estivo-tilda → Django: сопоставление
 
+> **Архив с 29.10.2026.** Владелец одобрил новую сетку, шкалу заголовков и компоненты
+> (`docs/design-system/proposals/2026-10-28-ui-refresh.md`). Действующее описание дизайна — только
+> `docs/design-system.md`. Отсюда остались цвета, шрифты и пометки П1–П8, на которые ссылается этот документ;
+> размеры (1160px, модули 224px, высота 60px) и компоненты ниже больше не действуют.
+
 **Дата:** 22.10.2026. **Источник стиля:** эта папка (`README.md`, `tokens.css`, `components/bundle.css`). По решению владельца от 22.10.2026 она заменяет `DESIGN.md`, `UX.md` и `docs/design-system.md` (см. `docs/specs/tilda-migration/SPEC.md`, «Решения владельца»).
 **Куда переносим:** блок `@theme` и `@layer base/components` в `internetshop/frontend/src/styles/main.css` и страничные файлы `styles/{catalog,product,cart,pages}.css`. `bundle.css` целиком не подключаем: классы `es-*` переписываются в существующие классы проекта (`.btn`, `.form-input`…), чтобы не держать две системы.
 

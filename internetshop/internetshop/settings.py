@@ -119,6 +119,8 @@ DATABASES = {
         'OPTIONS': {
             'client_encoding': 'UTF8',
         },
+        # Параллельные прогоны из разных worktree иначе делят одну test_internetshop и мешают друг другу.
+        'TEST': {'NAME': os.environ.get('DB_TEST_NAME') or None},
     }
 }
 

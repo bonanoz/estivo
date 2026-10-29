@@ -94,11 +94,6 @@
 .pdp-badges:empty {
   display: none;
 }
-.pdp-meta {
-  margin: 0 0 var(--space-1);
-  font-size: 0.95rem;
-  color: var(--color-ink-soft);
-}
 .pdp-titlebar {
   display: flex;
   align-items: flex-start;
@@ -108,9 +103,9 @@
 .pdp-title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(2rem, 3.5vw, 2.75rem);
-  font-weight: 500;
-  line-height: 1.1;
+  font-size: clamp(32px, 3.6vw, 48px);
+  font-weight: 400;
+  line-height: 1.05;
   color: var(--color-ink);
 }
 .pdp-heart {
@@ -313,9 +308,9 @@
 .pdp-h2 {
   margin: 0 0 var(--space-3);
   font-family: var(--font-display);
-  font-size: clamp(1.75rem, 3vw, 2.25rem);
-  font-weight: 500;
-  line-height: 1.15;
+  font-size: clamp(32px, 3.6vw, 48px);
+  font-weight: 400;
+  line-height: 1.05;
 }
 .pdp-description {
   max-width: 70ch;
@@ -323,26 +318,6 @@
   white-space: pre-line;
   line-height: 1.7;
   color: var(--color-ink-soft);
-}
-
-/* ---- Related carousel ---- */
-.pdp-carousel {
-  display: flex;
-  gap: var(--space-3);
-  margin: 0;
-  padding: 0 0 var(--space-2);
-  list-style: none;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-}
-.pdp-carousel > li {
-  flex: 0 0 min(72vw, 280px);
-  scroll-snap-align: start;
-}
-@media (min-width: 1024px) {
-  .pdp-carousel > li {
-    flex-basis: calc((100% - 3 * var(--space-3)) / 4);
-  }
 }
 
 /* ---- Reviews ---- */
@@ -360,21 +335,14 @@
   color: var(--color-ink);
 }
 .reviews-list {
-  display: grid;
-  gap: var(--space-3);
   margin: var(--space-4) 0;
   padding: 0;
   list-style: none;
-}
-@media (min-width: 768px) {
-  .reviews-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+  border-bottom: 1px solid var(--color-border-input); /* taste-skill-ignore: линия-разделитель из одобренного обновления 29.10.2026 */
 }
 .review-item {
-  padding: var(--space-3);
-  border-radius: var(--radius-none);
-  background: var(--color-surface);
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--color-border-input); /* taste-skill-ignore: линия-разделитель из одобренного обновления 29.10.2026 */
 }
 .review-item__top {
   display: flex;
@@ -391,6 +359,7 @@
   color: var(--color-ink-soft);
 }
 .review-item__text {
+  max-width: 70ch;
   margin: var(--space-2) 0 0;
   line-height: 1.6;
 }
@@ -432,7 +401,7 @@
 .review-success {
   padding: var(--space-3);
   border-radius: var(--radius-none);
-  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border-input);
 }
 .review-success p {
   margin: 0;
@@ -449,10 +418,10 @@
   right: 0;
   bottom: 0;
   z-index: var(--z-sticky);
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
+  gap: var(--space-2);
   padding: var(--space-2) var(--space-3) calc(var(--space-2) + env(safe-area-inset-bottom));
   background: var(--color-surface);
   visibility: hidden;
@@ -466,23 +435,13 @@
   transform: none;
   transition: transform var(--dur-fast) var(--ease);
 }
-.pdp-sticky__info {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
+/* липкая панель не должна закрывать элемент в фокусе (WCAG 2.4.11) */
+html:has(.pdp-sticky.is-visible) {
+  scroll-padding-bottom: 96px;
 }
-.pdp-sticky__name {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 0.9rem;
-  color: var(--color-ink-soft);
-}
-.pdp-sticky__price {
-  font-family: var(--font-display);
-  font-size: 1.35rem;
-  font-weight: 600;
-  white-space: nowrap;
+.pdp-sticky .btn {
+  /* «Оформить заявку» в одну строку от 360px */
+  padding-inline: var(--space-2);
 }
 @media (min-width: 1024px) {
   .pdp-sticky {

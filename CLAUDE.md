@@ -45,11 +45,14 @@ python manage.py runserver
   referenced by `@font-face` — don't delete or rename them.
 - Design QA gates before merging UI work: `node ~/.claude/skills/design-taste-frontend/scripts/lint.mjs
   internetshop/shop/templates internetshop/frontend/src` must show no FAIL outside the allow-list
-  (palette-claude/terracotta/cream, card-rows, few-pictures, no-real-pictures, no-footage, still-page; stored in
+  (palette-claude/terracotta/cream, card-rows, few-pictures, no-real-pictures, no-footage, still-page, eyebrow, hairline; stored in
   `.taste-skill/direction.json`, see `docs/design-system.md` §7), plus the ui-ux-pro-max pre-delivery checklist;
   `shop/tests/test_design_tokens.py` guards the tokens and bans (shadows, gradients, <14px, Gilroy weights outside 300–800).
-  Design source of truth: `docs/design-system/estivo-tilda/` (owner decision 2026-10-22; read-only except
-  `MAPPING.md`, which maps its tokens/`es-*` components onto the project), applied in `docs/design-system.md`.
+  The design is described in `docs/design-system.md` alone (owner approved the grid/typography/button refresh
+  2026-10-29, `docs/design-system/proposals/2026-10-28-ui-refresh.md`): content width `--container` 1360px on 12
+  columns, side padding `--page-pad` outside it (`.page-container`), one sentence-case heading scale, `.btn-primary`
+  only for the request action. `docs/design-system/estivo-tilda/` is an archive of the Tilda look (colors and fonts
+  came from there); its sizes and components no longer apply.
 - Overrides the global "UI references" rule: here only **Lucide** applies (copy the SVG inline, `stroke-width="1.5"`,
   no npm package) plus **React Aria / Radix UI** as an a11y/behaviour reference only. Don't pull shadcn/ui, Magic UI,
   Aceternity, Motion/Motion Primitives, GSAP, Anime.js, Uiverse, mapcn, Spline — React stack or banned
@@ -150,7 +153,7 @@ get `breadcrumbs` (list of `(label, url|None)`) from their views and render `par
 `cart` and `wishlist` into every template.
 
 **Frontend (`internetshop/frontend/`)**: Vite entry `src/main.ts` imports `styles/main.css` (Tailwind v4: `@theme`
-tokens, `@layer base/components`; page CSS in `styles/{catalog,product,cart,pages}.css`), registers htmx and
+tokens, `@layer base/components`; page CSS in `styles/{catalog,product,cart,pages,home,request}.css`), registers htmx and
 Alpine, and auto-imports every `src/<feature>/index.ts` (`cart` drawer, `catalog` filter panel/focus-trap,
 `product` gallery/variants/sticky bar, `forms` phone mask + `form[data-once]` double-submit guard, `lib`
 `$scrollLock` helper shared by overlays, `motion` scroll reveal + counter/heart bump; page view transitions and
@@ -172,8 +175,8 @@ model-viewer, strip its trailing `//# sourceMappingURL=` comment or `collectstat
 
 Typography: headings use **Cormorant Garamond** (Google Fonts). Body/UI text uses **Gilroy**, which
 is a paid font; the owner has a license for weights 300–800 (confirmed 23.10.2026, files from their Tilda
-account). Defaults stay `--weight-body-regular` (300) / `--weight-body-bold` (800); 400–700 are available
-when the estivo-tilda design calls for them (the live Tilda site uses 400/500). The `.woff2` files live in
+account). Tokens: `--weight-body-regular` 400 (body text), `--weight-ui` 600 (buttons, UI labels),
+`--weight-body-bold` 800 (prices); 300 only in the sale banner line. The `.woff2` files live in
 `shop/static/fonts/gilroy/`; if they fail to load, `--font-body` falls back to `"Helvetica Neue", Arial`.
 
 Product/collection images are placeholders (`shop/static/img/placeholders/*.svg`) until real photos

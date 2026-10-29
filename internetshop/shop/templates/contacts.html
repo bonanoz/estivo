@@ -3,6 +3,8 @@
 {% block meta_title %}Контакты — ESTIVO, Тольятти{% endblock %}
 {% block meta_description %}Контакты ESTIVO: телефон {{ site_info.phone }}, {{ site_info.email }}, {{ site_info.address }}. Оставьте заявку — перезвоним или напишем в течение 5 минут в рабочее время.{% endblock %}
 
+{% block body_class %}chat-inline{% endblock %}
+
 {% block content %}
 <section class="page-section pt-6 md:pt-8">
     <div class="page-container">
@@ -14,11 +16,11 @@
 </section>
 
 <section class="page-section pt-0">
-    <div class="page-container page-split">
-        <div class="grid content-start gap-6">
+    <div class="page-container grid grid-cols-1 gap-6 lg:grid-cols-12">
+        <div class="grid content-start gap-6 lg:col-span-5">
             <ul class="page-spec">
-                <li><span class="page-spec__label">Телефон</span><a data-goal="click_tel" href="tel:{{ site_info.phone_href }}">{{ site_info.phone }}</a></li>
-                <li><span class="page-spec__label">Email</span><a href="mailto:{{ site_info.email }}">{{ site_info.email }}</a></li>
+                <li><span class="page-spec__label">Телефон</span><a data-goal="click_tel" href="tel:{{ site_info.phone_href }}" class="tap-area">{{ site_info.phone }}</a></li>
+                <li><span class="page-spec__label">Email</span><a href="mailto:{{ site_info.email }}" class="tap-area">{{ site_info.email }}</a></li>
                 <li><span class="page-spec__label">Адрес</span><span>{{ site_info.address }}</span></li>
                 {% for label, hours in site_info.work_hours %}
                 <li><span class="page-spec__label">{{ label }}</span><span>{{ hours }}</span></li>
@@ -33,7 +35,7 @@
                 <a href="{{ site_info.social_links.vk }}" target="_blank" rel="noopener" class="btn btn-outline">VK</a>
             </div>
         </div>
-        <div>
+        <div class="lg:col-span-6 lg:col-start-7">
             <div class="page-head">
                 <h2 class="page-h2">Оставить заявку</h2>
             </div>
