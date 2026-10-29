@@ -63,7 +63,7 @@
             <a href="{% url 'catalog_list' %}" class="btn btn-outline btn-block" @click.prevent="close()">Продолжить покупки</a>
             <a href="{% url 'cart_detail' %}" class="cart-summary__link">Открыть корзину</a>
             {% else %}
-            <a href="{% url 'catalog_list' %}" class="btn btn-outline btn-block">Продолжить покупки</a>
+            <a href="{% url 'catalog_list' %}" class="cart-summary__link">Продолжить покупки</a>
             {% endif %}
         </div>
     </div>
