@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "docs/design-system/proposals/2026-10-28-ui-refresh.html"
+        ],
+        "createdAt": "2026-10-27T20:25:55.789Z",
+        "reason": "Claude triage: all hits are inside the scaled 1440px mock screens (.screen/.m-*), paddings are calc(var(--u)*N) container-query units reproducing the real site's spacing at ~0.45 scale; not real UI"
+      },
+      {
+        "rule": "tight-leading",
+        "value": "*",
+        "files": [
+          "docs/design-system/proposals/2026-10-28-ui-refresh.html"
+        ],
+        "createdAt": "2026-10-27T20:25:56.061Z",
+        "reason": "Claude triage: 1.02-1.1 only on Cormorant display headings >=32px (mock and page h1/h2), same display leading as the site's .page-h1/.page-h2; body text is 1.5-1.6"
+      }
+    ]
+  }
+}

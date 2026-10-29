@@ -42,3 +42,6 @@ internetshop/shop_data.json
 store-*.csv
 import_report.csv
 .env.prod
+
+# impeccable: кэш хука, локальный
+.impeccable/hook.cache.json
