@@ -156,6 +156,7 @@
 | `.btn-outline` | `es-btn--outline` | граница и текст `graphite`, без заливки на hover |
 | `.btn-primary` | `es-btn--accent` | `accent`, текст `on-accent`, 16px `--weight-ui`; места — по правилу выше |
 | `.btn-lg` / `.btn-block` | — | высота `--control-height` (52px), 16px / во всю ширину |
+| `.tap-area` | — | короткая ссылка вне абзаца (крошки, «Смотреть модели», телефон в контактах): `::after` растягивает зону нажатия до 44px по высоте, вёрстка не сдвигается |
 | `.icon-btn` | `es-icon-btn` | 44×44 (`--tap-min`), круг, 1px `ink`, прозрачный, hover — opacity (П3) |
 | `.count-dot`, `.badge` | — | 14px, 800; `.badge` — `radius-md` |
 | `.form-field` / `.form-input` | `es-input`, `es-field-error` | видимый `<label for>`; высота `--control-height` (52px), `border-input`, фокус `graphite`, ошибка — граница и текст `brand` 14px, `aria-invalid` + `aria-describedby`; `font-size` поля ≥ 16px (iOS) |

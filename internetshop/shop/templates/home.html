@@ -91,7 +91,7 @@
             <li class="grid content-start gap-2 lg:col-span-3">
                 <h3 class="page-h3">{{ m.name }}</h3>
                 {% if m.description %}<p class="page-note">{{ m.description }}</p>{% endif %}
-                <a href="{% url 'catalog_by_material' m.slug %}" class="underline">Смотреть модели</a>
+                <a href="{% url 'catalog_by_material' m.slug %}" class="tap-area underline">Смотреть модели</a>
             </li>
             {% endfor %}
         </ul>

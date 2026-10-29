@@ -359,6 +359,7 @@
   color: var(--color-ink-soft);
 }
 .review-item__text {
+  max-width: 70ch;
   margin: var(--space-2) 0 0;
   line-height: 1.6;
 }
@@ -433,6 +434,10 @@
   visibility: visible;
   transform: none;
   transition: transform var(--dur-fast) var(--ease);
+}
+/* липкая панель не должна закрывать элемент в фокусе (WCAG 2.4.11) */
+html:has(.pdp-sticky.is-visible) {
+  scroll-padding-bottom: 96px;
 }
 .pdp-sticky .btn {
   /* «Оформить заявку» в одну строку от 360px */

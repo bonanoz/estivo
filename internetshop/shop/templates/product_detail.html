@@ -155,7 +155,7 @@
             <ul class="pdp-trust">
                 <li>
                     <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3Z"/><path d="m9 12 2 2 4-4"/></svg>
-                    <span><a href="{% url 'warranty_page' %}">Гарантия {{ product.warranty_years }} {% if product.warranty_years == 1 %}год{% elif product.warranty_years >= 2 and product.warranty_years <= 4 %}года{% else %}лет{% endif %}</a></span>
+                    <span><a href="{% url 'warranty_page' %}" class="tap-area">Гарантия {{ product.warranty_years }} {% if product.warranty_years == 1 %}год{% elif product.warranty_years >= 2 and product.warranty_years <= 4 %}года{% else %}лет{% endif %}</a></span>
                 </li>
                 <li>
                     <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.5"/><circle cx="17" cy="17.5" r="1.5"/></svg>

@@ -161,6 +161,8 @@
     </form>
 
     <div class="page-container pb-6 pt-5" id="catalog-results">
+        {# карточки — h3, без этого заголовка уровни прыгают с h1 на h3 #}
+        {% if offers or page_obj.object_list %}<h2 class="sr-only">Модели</h2>{% endif %}
         {% if offers %}
         <div class="offer-list">{% for product in offers %}{% include 'partials/_offer_card.html' %}{% endfor %}</div>
         {% endif %}

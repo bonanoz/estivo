@@ -272,6 +272,16 @@
     top: var(--space-2);
   }
 
+  /* Короткая ссылка вне абзаца: 44px под палец без сдвига вёрстки, как у .icon-btn */
+  .tap-area {
+    position: relative;
+  }
+  .tap-area::after {
+    content: '';
+    position: absolute;
+    inset: min(0px, calc((100% - var(--tap-min)) / 2)) 0;
+  }
+
   /* ---- Icon button: 34px circle to the eye (owner 22.10.2026), 44x44 to the finger via ::after ---- */
   .icon-btn {
     position: relative;
@@ -615,6 +625,7 @@
     font-size: 0.875rem;
   }
   .form-note {
+    max-width: 65ch;
     color: var(--color-ink-soft);
     font-size: 0.875rem;
   }

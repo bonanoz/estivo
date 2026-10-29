@@ -19,8 +19,8 @@
     <div class="page-container grid grid-cols-1 gap-6 lg:grid-cols-12">
         <div class="grid content-start gap-6 lg:col-span-5">
             <ul class="page-spec">
-                <li><span class="page-spec__label">Телефон</span><a data-goal="click_tel" href="tel:{{ site_info.phone_href }}">{{ site_info.phone }}</a></li>
-                <li><span class="page-spec__label">Email</span><a href="mailto:{{ site_info.email }}">{{ site_info.email }}</a></li>
+                <li><span class="page-spec__label">Телефон</span><a data-goal="click_tel" href="tel:{{ site_info.phone_href }}" class="tap-area">{{ site_info.phone }}</a></li>
+                <li><span class="page-spec__label">Email</span><a href="mailto:{{ site_info.email }}" class="tap-area">{{ site_info.email }}</a></li>
                 <li><span class="page-spec__label">Адрес</span><span>{{ site_info.address }}</span></li>
                 {% for label, hours in site_info.work_hours %}
                 <li><span class="page-spec__label">{{ label }}</span><span>{{ hours }}</span></li>
