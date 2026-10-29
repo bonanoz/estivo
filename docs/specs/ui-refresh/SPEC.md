@@ -90,7 +90,7 @@
 
 | ID | Эпик | Волна | Зависит от | Зона файлов | Модель / усилия | Статус | Ветка |
 |---|---|---|---|---|---|---|---|
-| E1 | Фундамент: токены, типографика, общие компоненты | 1 | — | `frontend/src/styles/main.css`, `frontend/src/styles/pages.css`, новый `frontend/src/styles/home.css` (пустой + импорт), `templates/base.html`, `partials/_header.html`, `partials/_footer.html`, `partials/_promo_bar.html`, новый `partials/_facts_strip.html` | sonnet / high | todo | |
+| E1 | Фундамент: токены, типографика, общие компоненты | 1 | — | `frontend/src/styles/main.css`, `frontend/src/styles/pages.css`, новый `frontend/src/styles/home.css` (пустой + импорт), `templates/base.html`, `partials/_header.html`, `partials/_footer.html`, `partials/_promo_bar.html`, новый `partials/_facts_strip.html`; в `templates/home.html` и `templates/about.html` — только снять класс `page-section--dark` | sonnet / high | todo | |
 | E2 | Главная | 2 | E1 | `templates/home.html`, `partials/_why_estivo.html`, `frontend/src/styles/home.css` | sonnet / medium | todo | |
 | E3 | Каталог и избранное | 2 | E1 | `templates/catalog_list.html`, `templates/wishlist.html`, `partials/_product_card.html`, `partials/_pagination.html`, `frontend/src/styles/catalog.css` | sonnet / medium | todo | |
 | E4 | Страница товара | 2 | E1 | `templates/product_detail.html`, `partials/_reviews.html`, `partials/htmx/_review_form.html`, `frontend/src/styles/product.css`, `frontend/src/product/*` | sonnet / medium | todo | |
@@ -202,7 +202,7 @@
 - **Критерии готовности:**
   - [ ] в `design-system.md` нет утверждений, что `estivo-tilda` — источник стиля, и нет значений 1160/224/60px/300 как текущих
   - [ ] `CLAUDE.md` проекта не утверждает «defaults stay 300/800» и «Design source of truth: estivo-tilda»
-  - [ ] `aiw-ru scan docs/design-system.md` без находок P0–P1
+  - [ ] `aiw-ru scan docs/design-system.md` без находок P0–P1 (ручная проверка)
 - **Тесты:** `shop/tests/test_ui_refresh.py::DocsTests` (проверки строк в документах)
 - **Ручная проверка:** —
 
@@ -216,12 +216,14 @@
 ## Критерии готовности всей задачи
 
 - [ ] Полный набор тестов проекта зелёный
-- [ ] `npm run build` (tsc + vite) без ошибок, `collectstatic` без ошибок
-- [ ] Линтер дизайна без FAIL вне allow-list
-- [ ] Все публичные страницы на 390 и 1440 без горизонтальной прокрутки, с одним `h1`
+- [ ] `npm run build` (tsc + vite) без ошибок, `collectstatic` без ошибок (ручная проверка)
+- [ ] Линтер дизайна без FAIL вне allow-list (ручная проверка)
+- [ ] Все публичные страницы на 390 и 1440 без горизонтальной прокрутки (ручная проверка), с одним `h1` (тест `PagesTests`)
 - [ ] `.btn-primary` встречается только в разрешённых местах из «Правила кнопок»
-- [ ] Новые тексты сайта прошли `site-copy-check`
+- [ ] Новые тексты сайта прошли `site-copy-check` (ручная проверка)
 
 ## Журнал
 
 - 2026-10-29 spec создан; модели и усилия по ответу пользователя (ревьюер opus/high, E1 и тесты high); WIP и предложение закоммичены в master (bce20d5, 725eae4); в `settings.py` добавлено имя тестовой БД из `DB_TEST_NAME`
+- 2026-10-29 тесты-контракт: новый `test_ui_refresh.py` (E1–E7); изменены существующие под спеку: `test_design_tokens.py` (размеры 1360/52, `--page-pad`/`--weight-ui`/400 литералами, убраны `--module`/`--gutter` и сверка размеров с `estivo-tilda`, в допустимых весах добавлен `var(--weight-ui)`; запреты не тронуты), `test_request_panel.py::EbAccentTests` (набор мест `.btn-primary` по «Правилу кнопок»), `test_texts_f.py` (h1 главной без «Тольятти»; «Почему ESTIVO» только на главной, в каталоге и товаре — строка фактов)
+- 2026-10-29 зона E1 расширена: снять `page-section--dark` в `home.html:98` и `about.html:53` (иначе `FoundationTests.test_e1_section_dark_removed` не закрыть в волне 1); остальное в этих шаблонах — E2 и E6

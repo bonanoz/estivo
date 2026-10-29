@@ -205,7 +205,11 @@ class EbOfferCardTests(TestCase):
 
 
 class EbAccentTests(TestCase):
-    ALLOWED = {'_cart_drawer.html', '_cart_lines.html', 'cart.html', 'checkout.html', '_offer_card.html', 'home.html'}
+    # «Правило кнопок» из docs/specs/ui-refresh/SPEC.md: терракота только у заявки
+    ALLOWED = {
+        '_cart_drawer.html', '_cart_lines.html', 'cart.html', 'checkout.html', '_offer_card.html', 'home.html',
+        'product_detail.html', '_cta_section.html', 'catalog_list.html', 'b2b.html', 'designers.html', '_lead_form.html',
+    }
 
     def test_b8_btn_primary_only_in_allowed_templates(self):
         root = Path(settings.BASE_DIR) / 'shop' / 'templates'
