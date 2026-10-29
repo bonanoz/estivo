@@ -21,10 +21,6 @@
 .catalog-banner__title {
   margin: 0;
   max-width: 18ch;
-  font-family: var(--font-display);
-  font-size: clamp(2.4rem, 6vw, 4.75rem);
-  font-weight: 500;
-  line-height: 1.02;
 }
 .catalog-banner__text {
   max-width: 46ch;
@@ -34,10 +30,7 @@
 }
 @media (min-width: 1024px) {
   .catalog-banner {
-    display: grid;
-    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
     align-items: end;
-    gap: var(--space-5);
   }
   .catalog-banner__text {
     margin: 0;
@@ -102,7 +95,7 @@
   margin: 0 auto var(--space-3);
   width: 100%;
   max-width: var(--container);
-  padding: 0 var(--space-3);
+  padding: 0 var(--page-pad);
 }
 .filter-panel__sheet {
   display: flex;
@@ -367,9 +360,9 @@ a.pager__link:active {
 .catalog-section-title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(1.75rem, 3vw, 2.5rem);
-  font-weight: 500;
-  line-height: 1.1;
+  font-size: clamp(32px, 3.6vw, 48px);
+  font-weight: 400;
+  line-height: 1.05;
 }
 .catalog-empty__text {
   margin: var(--space-2) 0 var(--space-3);
