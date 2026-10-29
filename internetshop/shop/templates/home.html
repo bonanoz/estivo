@@ -6,43 +6,47 @@
 {% block og_image %}{% if site_settings.hero_image %}{{ site_settings.hero_image.url|absolute }}{% else %}{{ block.super }}{% endif %}{% endblock %}
 
 {% block content %}
-<section data-section="hero" class="page-section pt-6 md:pt-10">
-    <div class="page-container grid items-center gap-8 md:grid-cols-2 md:gap-12">
-        <div class="grid gap-5">
-            <h1 class="page-h1">Плетёная мебель из ротанга и роупа — своё производство в Тольятти</h1>
-            <p class="page-lead">Плетём вручную на металлическом каркасе. Делаем по каталогу и в ваш размер, доставляем по всей России.</p>
-            <div class="flex flex-wrap gap-3">
-                <a href="{% url 'contacts_page' %}" data-goal="click_pick_set" class="btn btn-primary btn-lg">Подобрать комплект</a>
-                <a href="{% url 'catalog_by_material' 'rotang' %}" class="btn btn-outline btn-lg">Каталог ротанга</a>
-                <a href="{% url 'catalog_by_material' 'roup' %}" class="btn btn-outline btn-lg">Каталог роупа</a>
-            </div>
-        </div>
-        <div class="page-media aspect-[3/2] md:aspect-[4/5]">
+<section data-section="hero" class="page-section home-hero">
+    <div class="page-container grid grid-cols-1 items-center gap-6 lg:grid-cols-12">
+        <div class="home-hero__media lg:col-span-6 lg:col-start-7 lg:row-start-1">
             {% if site_settings.hero_image %}
             <img src="{{ site_settings.hero_image.url }}" alt="Плетёное кресло и диван ESTIVO на террасе">
             {% else %}
             <img src="{% static 'img/placeholders/hero.svg' %}" alt="Плетёная мебель ESTIVO на террасе">
             {% endif %}
         </div>
+        <div class="grid gap-5 lg:col-span-6 lg:col-start-1 lg:row-start-1">
+            <p class="eyebrow">Своё производство · Тольятти</p>
+            <h1 class="page-h1">Плетёная мебель из ротанга и роупа</h1>
+            <p class="page-lead">Плетём вручную на металлическом каркасе. Делаем по каталогу и в ваш размер, доставляем по всей России.</p>
+            <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
+                <a href="{% url 'contacts_page' %}" data-goal="click_pick_set" class="btn btn-primary btn-lg">Подобрать комплект</a>
+                <a href="{% url 'catalog_by_material' 'rotang' %}" class="underline">Каталог ротанга</a>
+                <a href="{% url 'catalog_by_material' 'roup' %}" class="underline">Каталог роупа</a>
+            </div>
+        </div>
     </div>
 </section>
 
-<section data-section="proof" aria-label="Коротко о гарантиях" class="pb-8">
+<section data-section="proof" aria-label="Коротко о гарантиях" class="page-section page-section--tight">
     <div class="page-container">
-    <ul class="page-grid grid-cols-2 md:grid-cols-4">
-        <li class="grid content-start gap-1"><span class="page-h3">Гарантия {{ site_info.warranty }}</span><span class="page-note">на каркас, плетение и подушки</span></li>
-        <li class="grid content-start gap-1"><span class="page-h3">Изготовление {{ site_info.production_term }}</span><span class="page-note">в наличии — отгрузка за 3 дня</span></li>
-        <li class="grid content-start gap-1"><span class="page-h3">3 цеха и склад 650 м²</span><span class="page-note">своё производство в Тольятти</span></li>
-        <li class="grid content-start gap-1"><span class="page-h3">Доставка ТК до двери</span><span class="page-note">по всей России</span></li>
+    <ul class="grid list-none m-0 p-0 grid-cols-2 gap-4 md:gap-6 lg:grid-cols-12">
+        <li class="grid content-start gap-1 lg:col-span-3"><span class="page-h3">Гарантия {{ site_info.warranty }}</span><span class="page-note">на каркас, плетение и подушки</span></li>
+        <li class="grid content-start gap-1 lg:col-span-3"><span class="page-h3">Изготовление {{ site_info.production_term }}</span><span class="page-note">в наличии — отгрузка за 3 дня</span></li>
+        <li class="grid content-start gap-1 lg:col-span-3"><span class="page-h3">3 цеха и склад 650 м²</span><span class="page-note">своё производство в Тольятти</span></li>
+        <li class="grid content-start gap-1 lg:col-span-3"><span class="page-h3">Доставка ТК до двери</span><span class="page-note">по всей России</span></li>
     </ul>
     </div>
 </section>
 
 {% if featured_products %}
-<section data-section="products" class="page-section pt-0">
+<section data-section="products" class="page-section">
     <div class="page-container">
         <div class="page-head page-head--row">
-            <h2 class="page-h2">Популярные модели</h2>
+            <div class="grid gap-2">
+                <p class="eyebrow">Каталог</p>
+                <h2 class="page-h2">Популярные модели</h2>
+            </div>
             <a href="{% url 'catalog_list' %}" class="btn btn-outline">Весь каталог</a>
         </div>
         <ul class="grid grid-cols-2 gap-4 md:grid-cols-4 list-none m-0 p-0">
@@ -54,17 +58,20 @@
 </section>
 {% endif %}
 
-<section data-section="story" class="page-section">
-    <div class="page-container page-split">
-        <div class="page-media">
-            {% if site_settings.about_image %}
-            <img src="{{ site_settings.about_image.url }}" alt="Мастерская ESTIVO: плетение и сборка мебели" loading="lazy">
-            {% else %}
-            <img src="{% static 'img/placeholders/collection.svg' %}" alt="Мастерская ESTIVO: плетение и сборка мебели" loading="lazy">
-            {% endif %}
-        </div>
-        <div class="grid content-center gap-5">
+<section data-section="story" class="page-section page-section--loose">
+    <div class="home-story__media page-media">
+        {% if site_settings.about_image %}
+        <img src="{{ site_settings.about_image.url }}" alt="Мастерская ESTIVO: плетение и сборка мебели" loading="lazy">
+        {% else %}
+        <img src="{% static 'img/placeholders/collection.svg' %}" alt="Мастерская ESTIVO: плетение и сборка мебели" loading="lazy">
+        {% endif %}
+    </div>
+    <div class="page-container grid grid-cols-1 gap-4 pt-8 md:gap-6 lg:grid-cols-12">
+        <div class="grid content-start gap-3 lg:col-span-5">
+            <p class="eyebrow">О нас</p>
             <h2 class="page-h2">Кто мы</h2>
+        </div>
+        <div class="grid content-start gap-5 lg:col-span-7">
             <p class="page-lead">ESTIVO — производитель плетёной мебели полного цикла. Плетём вручную из искусственного ротанга (ПЭ) и роупа, сами свариваем и красим металлические каркасы.</p>
             <p class="page-lead">Всё производство — в Тольятти: 3 цеха и склад 650 м². Поэтому каждое изделие проходит контроль от первого плетения до упаковки.</p>
             <div>
@@ -75,14 +82,14 @@
 </section>
 
 {% if materials %}
-<section data-section="materials" class="page-section page-section--alt">
+<section data-section="materials" class="page-section">
     <div class="page-container">
         <div class="page-head">
             <h2 class="page-h2">Из чего мы делаем мебель</h2>
         </div>
-        <ul class="page-grid page-grid--4">
+        <ul class="grid list-none m-0 p-0 grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-12">
             {% for m in materials %}
-            <li class="grid content-start gap-2">
+            <li class="grid content-start gap-2 lg:col-span-3">
                 <h3 class="page-h3">{{ m.name }}</h3>
                 {% if m.description %}<p class="page-note">{{ m.description }}</p>{% endif %}
                 <a href="{% url 'catalog_by_material' m.slug %}" class="underline">Смотреть модели</a>
@@ -100,9 +107,9 @@
         <div class="page-head">
             <h2 class="page-h2">Как мы работаем</h2>
         </div>
-        <ol class="page-grid page-grid--4 page-steps">
+        <ol class="page-steps grid list-none m-0 p-0 grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-12">
             {% for title, text in production_steps %}
-            <li>
+            <li class="lg:col-span-3">
                 <h3 class="page-h3">{{ forloop.counter }}. {{ title }}</h3>
                 <p class="page-lead">{{ text }}</p>
             </li>
@@ -116,9 +123,9 @@
         <div class="page-head">
             <h2 class="page-h2">Для кого мы работаем</h2>
         </div>
-        <ul class="page-grid page-grid--3">
+        <ul class="grid list-none m-0 p-0 grid-cols-1 gap-6 md:grid-cols-3 lg:grid-cols-12">
             {% for seg in segments %}
-            <li class="grid content-start gap-3">
+            <li class="grid content-start gap-3 lg:col-span-4">
                 <h3 class="page-h3">{{ seg.title }}</h3>
                 <p class="page-note">{{ seg.description }}</p>
                 <a href="{% url seg.cta_url_name %}" class="btn btn-outline justify-self-start">{{ seg.cta_text }}</a>
