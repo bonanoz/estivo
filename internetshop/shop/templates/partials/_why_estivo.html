@@ -1,36 +1,42 @@
-{% comment %}Блок «Почему ESTIVO» (§14 аудита): главная, каталог, карточка. Пункт про рассрочку не выводится (решение 23.10.2026).
-Карточки — es-card; иконки — Lucide v0.460 (ISC), линия 1,5.{% endcomment %}
-<section data-section="why-estivo" class="page-section page-section--alt" aria-labelledby="why-estivo-title">
-    <div class="page-container">
-        <div class="page-head">
+{% comment %}Блок «Почему ESTIVO» (§14 аудита): только главная. Пункт про рассрочку не выводится (решение 23.10.2026).
+Список без рамок; иконки — Lucide v0.460 (ISC), линия 1,5.{% endcomment %}
+<section data-section="why-estivo" class="page-section page-section--loose" aria-labelledby="why-estivo-title">
+    <div class="page-container grid grid-cols-1 gap-6 lg:grid-cols-12">
+        <div class="grid content-start gap-2 lg:col-span-4">
+            <p class="eyebrow">О компании</p>
             <h2 id="why-estivo-title" class="page-h2">Почему ESTIVO</h2>
         </div>
-        <ul class="page-grid page-grid--3">
-            <li class="page-card grid content-start gap-2">
-                <svg class="page-card__icon" viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/></svg>
-                <h3 class="page-h3">Своё производство в Тольятти</h3>
+        <ul class="list-none m-0 p-0 lg:col-span-8">
+            <li class="why-list__item">
+                <svg class="why-list__icon" viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/></svg>
+                <div class="grid content-start gap-2"><h3 class="page-h3">Своё производство в Тольятти</h3>
                 <p class="page-note">3 цеха и склад 650 м², сварка и покраска металла.</p>
+                </div>
             </li>
-            <li class="page-card grid content-start gap-2">
-                <svg class="page-card__icon" viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/></svg>
-                <h3 class="page-h3">Изготовим в вашем размере и цвете</h3>
+            <li class="why-list__item">
+                <svg class="why-list__icon" viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/></svg>
+                <div class="grid content-start gap-2"><h3 class="page-h3">Изготовим в вашем размере и цвете</h3>
                 <p class="page-note">В наличии: Отгрузка в течение 3 дней.</p>
                 <p class="page-note">Под заказ: Изготовление {{ site_info.production_term }}.</p>
+                </div>
             </li>
-            <li class="page-card grid content-start gap-2">
-                <svg class="page-card__icon" viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
-                <h3 class="page-h3">Гарантия {{ site_info.warranty }}</h3>
+            <li class="why-list__item">
+                <svg class="why-list__icon" viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+                <div class="grid content-start gap-2"><h3 class="page-h3">Гарантия {{ site_info.warranty }}</h3>
                 <p class="page-note">На каркас, плетение и подушки. <a href="{% url 'warranty_page' %}" class="underline">Условия гарантии</a></p>
+                </div>
             </li>
-            <li class="page-card grid content-start gap-2">
-                <svg class="page-card__icon" viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 5-2.414-2.414A2 2 0 0 0 14.172 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2"/><path d="M21.378 12.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"/><path d="M8 18h1"/></svg>
-                <h3 class="page-h3">Работаем по договору</h3>
+            <li class="why-list__item">
+                <svg class="why-list__icon" viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 5-2.414-2.414A2 2 0 0 0 14.172 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2"/><path d="M21.378 12.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"/><path d="M8 18h1"/></svg>
+                <div class="grid content-start gap-2"><h3 class="page-h3">Работаем по договору</h3>
                 <p class="page-note">50% предоплата, 50% — после фото- и видеоотчёта о готовой мебели.</p>
+                </div>
             </li>
-            <li class="page-card grid content-start gap-2">
-                <svg class="page-card__icon" viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
-                <h3 class="page-h3">Доставка до двери</h3>
+            <li class="why-list__item">
+                <svg class="why-list__icon" viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+                <div class="grid content-start gap-2"><h3 class="page-h3">Доставка до двери</h3>
                 <p class="page-note">Транспортной компанией до двери по всей России.</p>
+                </div>
             </li>
         </ul>
     </div>
