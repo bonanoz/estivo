@@ -382,42 +382,25 @@
     color: var(--color-ink-muted);
   }
 
-  /* Строка фактов (partials/_facts_strip.html): 4 колонки на десктопе, 2 на телефоне, пункты разделены линией */
+  /* Строка фактов (partials/_facts_strip.html): линия сверху, пункты в ряд, на телефоне столбиком */
   .facts-strip {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
     margin: 0;
-    padding: 0;
+    padding: 20px 0 0;
+    border-top: 1px solid var(--color-ink);
     list-style: none;
   }
   .facts-strip__item {
     margin: 0;
-    padding: var(--space-3) var(--space-3) var(--space-3) 0;
-    font-family: var(--font-display);
-    font-size: 24px;
-    line-height: 1.2;
+    font-family: var(--font-body);
+    font-size: 16px;
   }
-  .facts-strip__item:nth-child(even) {
-    padding-left: var(--space-3);
-    border-left: 1px solid var(--color-border-input);
-  }
-  .facts-strip__item:nth-child(n + 3) {
-    border-top: 1px solid var(--color-border-input);
-  }
-  @media (min-width: 1024px) {
+  @media (max-width: 767px) {
     .facts-strip {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-    .facts-strip__item,
-    .facts-strip__item:nth-child(even),
-    .facts-strip__item:nth-child(n + 3) {
-      padding: var(--space-3) var(--space-4);
-      border-top: 0;
-      border-left: 1px solid var(--color-border-input);
-    }
-    .facts-strip__item:first-child {
-      padding-left: 0;
-      border-left: 0;
+      flex-direction: column;
+      gap: var(--space-2);
     }
   }
 

@@ -3,7 +3,8 @@
 /* ---- Layout ---- */
 .page-container {
   width: 100%;
-  max-width: var(--container);
+  /* --container задаёт ширину контента, поля сверху: на 1440 контент 1344px */
+  max-width: calc(var(--container) + 2 * var(--page-pad));
   margin-inline: auto;
   padding-inline: var(--page-pad);
 }
