@@ -108,9 +108,9 @@
 .pdp-title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(2rem, 3.5vw, 2.75rem);
-  font-weight: 500;
-  line-height: 1.1;
+  font-size: clamp(32px, 3.6vw, 48px);
+  font-weight: 400;
+  line-height: 1.05;
   color: var(--color-ink);
 }
 .pdp-heart {
@@ -313,9 +313,9 @@
 .pdp-h2 {
   margin: 0 0 var(--space-3);
   font-family: var(--font-display);
-  font-size: clamp(1.75rem, 3vw, 2.25rem);
-  font-weight: 500;
-  line-height: 1.15;
+  font-size: clamp(32px, 3.6vw, 48px);
+  font-weight: 400;
+  line-height: 1.05;
 }
 .pdp-description {
   max-width: 70ch;
@@ -360,21 +360,14 @@
   color: var(--color-ink);
 }
 .reviews-list {
-  display: grid;
-  gap: var(--space-3);
   margin: var(--space-4) 0;
   padding: 0;
   list-style: none;
-}
-@media (min-width: 768px) {
-  .reviews-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+  border-bottom: 1px solid var(--color-border-input);
 }
 .review-item {
-  padding: var(--space-3);
-  border-radius: var(--radius-none);
-  background: var(--color-surface);
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--color-border-input);
 }
 .review-item__top {
   display: flex;
@@ -432,7 +425,7 @@
 .review-success {
   padding: var(--space-3);
   border-radius: var(--radius-none);
-  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border-input);
 }
 .review-success p {
   margin: 0;
@@ -465,6 +458,9 @@
   visibility: visible;
   transform: none;
   transition: transform var(--dur-fast) var(--ease);
+}
+.pdp-sticky .btn {
+  flex: 0 0 auto;
 }
 .pdp-sticky__info {
   display: flex;

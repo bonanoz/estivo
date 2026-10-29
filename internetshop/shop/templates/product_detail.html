@@ -31,12 +31,12 @@
   }
 }
 </script>
-<div class="mx-auto w-full max-w-[var(--container)] px-4 pb-16 pt-4 md:px-6" data-pdp>
+<div class="page-container pb-16 pt-4" data-pdp>
     {% include 'partials/_breadcrumbs.html' with crumbs=breadcrumbs %}
 
-    <div class="mt-4 lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-12">
+    <div class="mt-4 grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-12">
         <!-- Галерея / 3D-модель -->
-        <div class="pdp-gallery lg:sticky lg:top-24 lg:self-start" data-gallery>
+        <div class="pdp-gallery lg:col-span-7 lg:sticky lg:top-24 lg:self-start" data-gallery>
             {% if product.model_3d %}
             <div class="pdp-gallery__main" data-model-3d>
                 <model-viewer
@@ -73,7 +73,7 @@
         </div>
 
         <!-- Покупка -->
-        <div class="mt-8 lg:mt-0">
+        <div class="mt-4 lg:mt-0 lg:col-span-5">
             <div class="pdp-badges">
                 {% if product.is_new %}<span class="badge badge-new">Новинка</span>{% endif %}
                 {% if product.is_bestseller %}<span class="badge badge-hit">Хит</span>{% endif %}
@@ -81,6 +81,7 @@
             </div>
 
 
+            {% if product.category or product.material %}<p class="eyebrow">{% if product.category %}{{ product.category.name }}{% endif %}{% if product.category and product.material %} · {% endif %}{% if product.material %}{{ product.material.name }}{% endif %}</p>{% endif %}
             <div class="pdp-titlebar">
                 <h1 class="pdp-title">{{ product.name }}</h1>
                 <div class="pdp-heart">
@@ -116,7 +117,7 @@
 
             {% if not product.price %}
             <div class="pdp-actions" data-buy-anchor>
-                <a href="{% url 'contacts_page' %}?product={{ product.slug }}" class="btn btn-dark btn-lg btn-block">Узнать цену</a>
+                <a href="{% url 'contacts_page' %}?product={{ product.slug }}" class="btn btn-outline btn-lg btn-block">Узнать цену</a>
             </div>
             {% else %}
             <form method="post" action="{% url 'cart_add' product.id %}" id="pdp-form" data-pdp-form>
@@ -144,7 +145,7 @@
                             hx-target="#cart-drawer-slot" hx-swap="innerHTML" hx-disabled-elt="this">
                         В корзину — {{ product.price|intcomma }}&nbsp;₽
                     </button>
-                    <button type="submit" name="checkout" value="1" class="btn btn-outline btn-lg btn-block" data-no-ajax>Оформить заявку</button>
+                    <button type="submit" name="checkout" value="1" class="btn btn-primary btn-lg btn-block" data-no-ajax>Оформить заявку</button>
                 </div>
                 <p class="sr-only" role="status" data-add-status></p>
             </form>
@@ -218,7 +219,7 @@
     </section>
     {% endif %}
 
-    {% include 'partials/_why_estivo.html' %}
+    <section class="page-section page-section--tight">{% include 'partials/_facts_strip.html' %}</section>
 
     {% include 'partials/_reviews.html' with stats=stats %}
 
@@ -226,7 +227,7 @@
     <section class="pdp-section" aria-labelledby="related-title">
         <h2 id="related-title" class="pdp-h2">Вам может подойти</h2>
         <p><a href="{% url 'catalog_list' %}" class="underline">Другие модели</a></p>
-        <ul class="pdp-carousel">
+        <ul class="grid grid-cols-2 gap-4 md:gap-6 lg:grid-cols-4">
             {% for item in related_products %}
             <li>{% include 'partials/_product_card.html' with product=item %}</li>
             {% endfor %}
@@ -242,9 +243,7 @@
         <span class="pdp-sticky__name">{{ product.name }}</span>
         <span class="pdp-sticky__price">{{ product.price|intcomma }}&nbsp;₽</span>
     </div>
-    <button type="submit" form="pdp-form" class="btn btn-dark" data-add-to-cart
-            hx-post="{% url 'cart_add' product.id %}" hx-include="#pdp-form"
-            hx-target="#cart-drawer-slot" hx-swap="innerHTML" hx-disabled-elt="this">В корзину</button>
+    <button type="submit" form="pdp-form" name="checkout" value="1" class="btn btn-primary" data-no-ajax>Оформить заявку</button>
 </div>
 {% endif %}
 {% endblock %}
