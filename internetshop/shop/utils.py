@@ -54,8 +54,13 @@ def notify_telegram(text, label=None):
     try:
         bot.send_message(CHAT_ID, text)
         return True
-    except Exception:
-        logger.warning('Не удалось отправить в Telegram: %s', label or 'без номера', exc_info=True)
+    except Exception as exc:
+        # Текст исключения requests содержит URL запроса с токеном бота и текстом сообщения (ПДн), а logging
+        # печатает ещё и цепочку __cause__/__context__. Поэтому в лог идёт подставное исключение без цепочки
+        # и без текста, но с исходным трейсбэком.
+        safe = Exception(type(exc).__name__)
+        logger.warning('Не удалось отправить в Telegram: %s', label or 'без номера',
+                       exc_info=(Exception, safe, exc.__traceback__))
         return False
 
 

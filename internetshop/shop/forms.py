@@ -44,7 +44,7 @@ class HoneypotMixin:
 
 
 class OrderForm(HoneypotMixin, AriaErrorsMixin, forms.ModelForm):
-    aria_error_fields = ('customer_name', 'customer_phone', 'customer_email')
+    aria_error_fields = ('customer_name', 'customer_phone', 'customer_email', 'delivery_address', 'comment')
 
     # В модели это TextField без лимита; ограничиваем в форме, без миграции.
     delivery_address = forms.CharField(

@@ -141,6 +141,26 @@ class E1NotifyTelegramTests(SimpleTestCase):
             for secret in ('Иван', 'Петров', '900 111', 'ivan@example.com'):
                 self.assertNotIn(secret, rendered)
 
+    def test_e1_network_error_with_url_does_not_leak_token_or_pd_into_log(self):
+        import requests
+        import shop.utils
+        leak = '/bot123:SECRETTOKEN/sendMessage?text=Иван +79990001122'
+        try:
+            try:
+                raise OSError(leak)
+            except OSError as inner:
+                raise requests.exceptions.ConnectionError(leak) from inner
+        except requests.exceptions.ConnectionError as err:
+            error = err
+        with telegram_env(BOT_TOKEN=VALID_TOKEN, CHAT_ID='42'),                 mock.patch.object(shop.utils.bot, 'send_message', side_effect=error),                 self.assertLogs('shop', level='WARNING') as logs:
+            self.assertIs(notify_telegram('текст', label='заявка №4'), False)
+        record = logs.records[0]
+        self.assertTrue(record.exc_info, 'трейсбэк должен остаться')
+        rendered = logging.Formatter().format(record)
+        self.assertIn('Traceback', rendered)
+        for secret in ('SECRETTOKEN', 'Иван', '79990001122'):
+            self.assertNotIn(secret, rendered)
+
     def test_e1_success_returns_true_and_does_not_warn(self):
         with telegram_env(BOT_TOKEN=VALID_TOKEN, CHAT_ID='42'), \
                 mock.patch('telebot.TeleBot.send_message') as send:
