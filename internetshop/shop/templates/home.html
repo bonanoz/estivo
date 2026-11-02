@@ -6,7 +6,8 @@
 {% block og_image %}{% if site_settings.hero_image %}{{ site_settings.hero_image.url|absolute }}{% else %}{{ block.super }}{% endif %}{% endblock %}
 
 {% block content %}
-<section data-section="hero" class="page-section home-hero pt-0 lg:pt-16">
+{# Строка фактов прижата к первому экрану (pb-0 здесь, малый pt у proof): без линии её держит близость, а не рамка #}
+<section data-section="hero" class="page-section home-hero pt-0 pb-0 lg:pt-16">
     <div class="page-container grid grid-cols-1 items-center gap-6 lg:grid-cols-12">
         <div class="home-hero__media lg:col-span-6 lg:col-start-7 lg:row-start-1">
             {% if site_settings.hero_image %}
@@ -16,9 +17,8 @@
             {% endif %}
         </div>
         <div class="grid gap-5 lg:col-span-6 lg:col-start-1 lg:row-start-1">
-            <p class="eyebrow mb-0">Своё производство · Тольятти</p> {# taste-skill-ignore: подпись над заголовком из одобренного обновления 29.10.2026 #}
             <h1 class="page-h1">Плетёная мебель из ротанга и роупа</h1>
-            <p class="page-lead">Плетём вручную на металлическом каркасе. Делаем по каталогу и в ваш размер, доставляем по всей России.</p>
+            <p class="page-lead">Плетём вручную на металлическом каркасе в своём цеху в Тольятти. Делаем по каталогу и в ваш размер, доставляем по всей России.</p>
             <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
                 <a href="{% url 'contacts_page' %}" data-goal="click_pick_set" class="btn btn-primary btn-lg">Подобрать комплект</a>
                 <a href="{% url 'catalog_by_material' 'rotang' %}" class="underline inline-flex items-center min-h-[var(--tap-min)]">Каталог ротанга</a>
@@ -28,9 +28,9 @@
     </div>
 </section>
 
-<section data-section="proof" aria-label="Коротко о гарантиях" class="page-section page-section--tight">
+<section data-section="proof" aria-label="Коротко о гарантиях" class="page-section page-section--tight pt-8 md:pt-10">
     <div class="page-container">
-    <ul class="grid list-none m-0 p-0 grid-cols-2 gap-4 border-t border-[var(--color-ink)] pt-6 md:grid-cols-4 md:gap-6 lg:grid-cols-12"> {# taste-skill-ignore: линия-разделитель из одобренного обновления 29.10.2026 #}
+    <ul class="grid list-none m-0 p-0 grid-cols-2 gap-4 md:grid-cols-4 md:gap-6 lg:grid-cols-12">
         <li class="grid content-start gap-1 lg:col-span-3"><span class="page-h3">Гарантия {{ site_info.warranty }}</span><span class="page-note">на каркас, плетение и подушки</span></li>
         <li class="grid content-start gap-1 lg:col-span-3"><span class="page-h3">Изготовление {{ site_info.production_term }}</span><span class="page-note">в наличии — отгрузка за 3 дня</span></li>
         <li class="grid content-start gap-1 lg:col-span-3"><span class="page-h3">3 цеха и склад 650 м²</span><span class="page-note">своё производство в Тольятти</span></li>
@@ -43,10 +43,7 @@
 <section data-section="products" class="page-section">
     <div class="page-container">
         <div class="page-head page-head--row">
-            <div class="grid gap-2">
-                <p class="eyebrow">Каталог</p> {# taste-skill-ignore: подпись над заголовком из одобренного обновления 29.10.2026 #}
-                <h2 class="page-h2">Популярные модели</h2>
-            </div>
+            <h2 class="page-h2">Популярные модели</h2>
             <a href="{% url 'catalog_list' %}" class="btn btn-outline">Весь каталог</a>
         </div>
         <ul class="grid grid-cols-2 gap-4 md:grid-cols-4 list-none m-0 p-0">
@@ -101,19 +98,21 @@
 
 {% include 'partials/_why_estivo.html' %}
 
+{# Короткая версия этапов; все 8 — на «О нас». Порядок держит <ol>, номера не выводятся. #}
 <section data-section="process" class="page-section">
-    <div class="page-container">
-        <div class="page-head">
-            <h2 class="page-h2">Как мы работаем</h2>
+    <div class="page-container grid grid-cols-1 items-center gap-6 lg:grid-cols-12">
+        <div class="page-media lg:col-span-5">
+            <img src="{% static 'img/workshop/master-armchair.webp' %}" alt="Цех ESTIVO: мастер плетёт кресло из ротанга" width="896" height="952" loading="lazy">
         </div>
-        <ol class="page-steps grid list-none m-0 p-0 grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-12">
-            {% for title, text in production_steps %}
-            <li class="lg:col-span-3">
-                <h3 class="page-h3">{{ forloop.counter }}. {{ title }}</h3>
-                <p class="page-lead">{{ text }}</p>
-            </li>
-            {% endfor %}
-        </ol>
+        <div class="grid content-start gap-6 lg:col-span-6 lg:col-start-7">
+            <h2 class="page-h2">Как мы работаем</h2>
+            <ol class="page-steps grid list-none m-0 p-0 gap-6">
+                <li><h3 class="page-h3">Обсуждаем задачу</h3><p class="page-lead">Подбираем модель из каталога или проектируем свою под ваш размер и цвет.</p></li>
+                <li><h3 class="page-h3">Свариваем каркас и плетём</h3><p class="page-lead">Металлический каркас с порошковой окраской, плетение вручную в цеху в Тольятти.</p></li>
+                <li><h3 class="page-h3">Присылаем фото и видео</h3><p class="page-lead">Вы видите готовую мебель до отправки. Вторые 50% оплаты — после этого отчёта.</p></li>
+                <li><h3 class="page-h3">Доставляем до двери</h3><p class="page-lead">Упаковываем в пузырчатую и стрейч-плёнку, отправляем транспортной компанией по всей России.</p></li>
+            </ol>
+        </div>
     </div>
 </section>
 

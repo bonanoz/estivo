@@ -133,7 +133,6 @@ def home(request):
     return render(request, 'home.html', {
         'featured_products': featured_products,
         'materials': Material.objects.all(),
-        'production_steps': PRODUCTION_STEPS,
         'segments': HOME_SEGMENTS,
         'reviews': reviews,
     })

@@ -205,12 +205,9 @@
   gap: var(--space-2);
 }
 
-/* ---- FAQ accordion (native details, works without JS) ---- */
-.faq-item:first-child {
-  border-top: 1px solid var(--color-border-input); /* taste-skill-ignore: линия-разделитель из одобренного обновления 29.10.2026 */
-}
-.faq-item {
-  border-bottom: 1px solid var(--color-border-input); /* taste-skill-ignore: линия-разделитель из одобренного обновления 29.10.2026 */
+/* ---- FAQ accordion (native details, works without JS); вопросы разделены воздухом, без линий ---- */
+.faq-item + .faq-item {
+  margin-top: var(--space-1);
 }
 .faq-item[open] {
   padding-bottom: var(--space-3);

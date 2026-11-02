@@ -225,14 +225,7 @@
   background: var(--color-surface-alt);
 }
 .pdp-trust li {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
   min-height: 24px;
-}
-.pdp-trust svg {
-  flex: 0 0 auto;
-  color: var(--color-brand);
 }
 
 /* ---- Accordions (native <details>: works without JS, keyboard-operable) ---- */
@@ -335,14 +328,11 @@
   color: var(--color-ink);
 }
 .reviews-list {
+  display: grid;
+  gap: var(--space-5);
   margin: var(--space-4) 0;
   padding: 0;
   list-style: none;
-  border-bottom: 1px solid var(--color-border-input); /* taste-skill-ignore: линия-разделитель из одобренного обновления 29.10.2026 */
-}
-.review-item {
-  padding: var(--space-3) 0;
-  border-top: 1px solid var(--color-border-input); /* taste-skill-ignore: линия-разделитель из одобренного обновления 29.10.2026 */
 }
 .review-item__top {
   display: flex;
@@ -401,7 +391,7 @@
 .review-success {
   padding: var(--space-3);
   border-radius: var(--radius-none);
-  border: 1px solid var(--color-border-input);
+  background: var(--color-surface-alt);
 }
 .review-success p {
   margin: 0;

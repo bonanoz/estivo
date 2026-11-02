@@ -162,7 +162,6 @@
   flex-direction: column;
   gap: var(--space-3);
   padding: var(--space-4) 0 0;
-  border-top: 1px solid var(--color-ink); /* taste-skill-ignore: линия-разделитель из одобренного обновления 29.10.2026 */
 }
 .cart-summary__row {
   display: flex;
@@ -505,7 +504,6 @@
 }
 .checkout-summary {
   padding: var(--space-4) 0 0;
-  border-top: 1px solid var(--color-ink); /* taste-skill-ignore: линия-разделитель из одобренного обновления 29.10.2026 */
 }
 .checkout-summary__list {
   display: flex;

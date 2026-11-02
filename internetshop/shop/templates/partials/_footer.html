@@ -3,7 +3,7 @@
 {% include 'partials/_footer.html' with minimal=True %} — блок «Нужна помощь?» с телефоном и мессенджерами.
 {% endcomment %}
 {% if minimal %}
-<footer class="border-t border-ink bg-bg text-ink"> {# taste-skill-ignore: estivo-tilda П4, hairline ink #}
+<footer class="bg-surface-alt text-ink">
     <div class="page-container flex flex-col gap-4 py-6 md:flex-row md:items-center md:justify-between">
         <div>
             <p class="m-0 font-display text-2xl">Нужна помощь?</p>
@@ -19,12 +19,12 @@
 </footer>
 {% else %}
 {% footer_data as footer %}
-<footer class="border-t border-ink bg-bg text-ink"> {# taste-skill-ignore: estivo-tilda П4, hairline ink #}
+<footer class="bg-surface-alt text-ink">
     <div class="page-container py-10 md:py-16">
         <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
             <div>
                 <a href="{% url 'home' %}" class="inline-flex min-h-11 items-center"><img src="{% static 'img/estivo-logo.svg' %}" alt="ESTIVO" width="140" height="56" class="h-auto w-[140px]"></a>
-                <p class="mt-2 max-w-[320px] opacity-80">Плетёная мебель ручной работы для дома, дачи и бизнеса. Каждое изделие — инвестиция в атмосферу.</p>
+                <p class="mt-2 max-w-[320px] opacity-80">Плетёная мебель ручной работы для дома, дачи и бизнеса. Своё производство в Тольятти.</p>
                 {% if footer.reviews %}
                 <p class="mt-4" data-reviews-summary>
                     <span class="font-extrabold">Оценка покупателей: {{ footer.reviews.avg|floatformat:1 }} из 5</span>

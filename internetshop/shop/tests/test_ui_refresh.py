@@ -135,14 +135,19 @@ class FoundationTests(SimpleTestCase):
                     continue
                 self.assertEqual(resolve(got_line or ''), line, f'{selector} line-height')
 
-    def test_e1_eyebrow_component(self):
-        d = merged('.eyebrow', [MAIN_CSS])
-        self.assertTrue(d, '.eyebrow не найден в main.css')
-        self.assertEqual(resolve(d.get('font-size', '')), '14px')
-        self.assertEqual(norm(d.get('font-weight', '')), '500')
-        self.assertEqual(norm(d.get('text-transform', '')), 'uppercase')
-        self.assertEqual(norm(d.get('letter-spacing', '')), '0.08em')
-        self.assertIn(norm(d.get('color', '')), ('var(--color-ink-muted)', '#6d6d6d'))
+    def test_e1_no_eyebrow_labels(self):
+        # 30.10.2026: подписи капсом над заголовками убраны как примета шаблонной вёрстки
+        found = [f.name for f in css_files() + template_files() if 'eyebrow' in read(f)]
+        self.assertEqual(found, [])
+
+    def test_e1_no_hairline_dividers(self):
+        # Разделители 1px заменены воздухом и сменой фона; рамки полей и контролов не в счёт
+        css = [f'{f.name}: {m.group(0)}' for f in css_files()
+               for m in re.finditer(r'border-(?:top|bottom)\s*:\s*1px[^;]*', read(f))]
+        self.assertEqual(css, [])
+        tpl_hits = [f.name for f in template_files() if re.search(r'class="[^"]*\bborder-[tb]\b', read(f))]
+        self.assertEqual(tpl_hits, [])
+        self.assertNotIn('border', render_to_string('partials/_cta_section.html', {'site_info': SITE_INFO}))
 
     def test_e1_buttons_use_weight_ui_and_body_regular(self):
         for selector in ('.btn', '.btn-primary'):
@@ -232,12 +237,24 @@ class HomeTests(World):
         for slug in ('rotang', 'roup'):
             self.assertIn(reverse('catalog_by_material', args=[slug]), hrefs)
 
-    def test_e2_h1_text_and_eyebrow_above(self):
+    def test_e2_h1_text_and_place_in_lead(self):
         h1 = self.root.find('h1')
         self.assertEqual(norm_space(h1.text), 'Плетёная мебель из ротанга и роупа')
-        above = eyebrow_before_h1(self.root)
-        self.assertTrue(any(norm_space(e.text) == 'Своё производство · Тольятти' for e in above),
-                        f'над h1 нет .eyebrow «Своё производство · Тольятти»: {[norm_space(e.text) for e in above]}')
+        self.assertEqual(eyebrow_before_h1(self.root), [])
+        hero = self.root.find(attrs={'data-section': 'hero'})
+        self.assertIn('Тольятти', norm_space(hero.find(cls='page-lead').text))
+
+    def test_e2_why_and_process_without_icons_and_numbers(self):
+        for name in ('why-estivo', 'process'):
+            section = self.root.find(attrs={'data-section': name})
+            self.assertIsNotNone(section, name)
+            self.assertEqual(section.find_all('svg'), [], f'{name}: иконки')
+            for h3 in section.find_all('h3'):
+                self.assertNotRegex(norm_space(h3.text), r'^\d+\.', f'{name}: нумерация «{h3.text}»')
+        self.assertEqual(len(self.root.find(attrs={'data-section': 'why-estivo'}).find_all('li')), 3)
+        process = self.root.find(attrs={'data-section': 'process'})
+        self.assertEqual(len(process.find('ol').find_all('li')), 4)
+        self.assertIsNotNone(process.find('img'), 'в «Как мы работаем» нет фото цеха')
 
     def test_e2_template_has_at_most_one_alt_and_no_dark(self):
         text = tpl('home.html')
@@ -266,14 +283,11 @@ class CatalogTests(World):
         self.assertEqual(root.find_all(cls='page-card'), [])
         self.assertIsNotNone(root.find(attrs={'data-facts-strip': True}))
 
-    def test_e3_banner_eyebrow_with_product_count(self):
+    def test_e3_banner_without_eyebrow_count_in_bar(self):
         for url in (reverse('catalog_by_category', args=['rotang', 'kresla']), reverse('catalog_by_material', args=['rotang'])):
             root = parse(self.client.get(url))
-            texts = [norm_space(e.text) for e in root.find_all(cls='eyebrow')]
-            self.assertTrue(any(re.search(r'(?<![\d.,])3\s+модел', t) for t in texts), f'{url}: подписи {texts}')
-        material_texts = [norm_space(e.text) for e in
-                          parse(self.client.get(reverse('catalog_by_material', args=['rotang']))).find_all(cls='eyebrow')]
-        self.assertTrue(any('Ротанг' in t for t in material_texts), material_texts)
+            self.assertEqual(eyebrow_before_h1(root), [], url)
+            self.assertRegex(norm_space(root.find(cls='catalog-bar__count').text), r'Товаров:\s*3\b', url)
 
     def test_e3_empty_catalog_primary_request_link(self):
         resp = self.client.get(reverse('catalog_by_category', args=['roup', 'kresla']))
@@ -310,11 +324,10 @@ class ProductTests(World):
             self.assertTrue(btn.has_class('btn-dark'), btn.classes())
             self.assertFalse(btn.has_class('btn-primary'))
 
-    def test_e4_eyebrow_above_h1_with_category_and_material(self):
+    def test_e4_no_eyebrow_and_trust_list_without_icons(self):
         root = self.get(self.product)
-        texts = [norm_space(e.text) for e in eyebrow_before_h1(root)]
-        self.assertTrue(any('Кресла' in t and 'Ротанг' in t and t.index('Кресла') < t.index('Ротанг') and '·' in t
-                            for t in texts), f'подписи над h1: {texts}')
+        self.assertEqual(eyebrow_before_h1(root), [])
+        self.assertEqual(root.find(cls='pdp-trust').find_all('svg'), [])
 
     def test_e4_facts_strip_instead_of_why_estivo(self):
         resp = self.client.get(self.product.get_absolute_url())
@@ -488,7 +501,7 @@ class DocsTests(SimpleTestCase):
         self.absent(r'--weight-body-regular`?[^\n]{0,20}300', self.ds)
 
     def test_e7_design_system_describes_new_contract(self):
-        for needle in ('1360', '--page-pad', '--weight-ui', '12 колон', '.eyebrow', '.btn-primary', '.btn-dark'):
+        for needle in ('1360', '--page-pad', '--weight-ui', '12 колон', '.btn-primary', '.btn-dark'):
             self.present(needle, self.ds)
         self.assertIsNotNone(re.search(r'(?i)строк[аиу] фактов', self.ds), 'нет описания строки фактов')
 

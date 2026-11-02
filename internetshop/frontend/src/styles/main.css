@@ -380,26 +380,13 @@
     border-radius: var(--radius-pill);
     padding: 10px 20px;
   }
-  /* Подпись над заголовком: добавляет сведения, которых нет в самом заголовке */
-  .eyebrow { /* taste-skill-ignore: подпись над заголовком из одобренного обновления 29.10.2026 */
-    margin: 0 0 var(--space-2);
-    font-family: var(--font-body);
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 1.4;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--color-ink-muted);
-  }
-
-  /* Строка фактов (partials/_facts_strip.html): линия сверху, пункты в ряд, на телефоне столбиком */
+  /* Строка фактов (partials/_facts_strip.html): пункты в ряд, на телефоне столбиком; отделена воздухом секции */
   .facts-strip {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2) var(--space-5);
     margin: 0;
-    padding: 20px 0 0;
-    border-top: 1px solid var(--color-ink); /* taste-skill-ignore: линия-разделитель из одобренного обновления 29.10.2026 */
+    padding: 0;
     list-style: none;
   }
   .facts-strip__item {
