@@ -25,6 +25,11 @@ load_dotenv(BASE_DIR / '.env')
 # при подключении через psycopg2.
 os.environ['PGCLIENTENCODING'] = 'UTF8'
 
+def env_list(name):
+    """Список из переменной окружения через запятую: пробелы и пустые элементы отбрасываются."""
+    return [item.strip() for item in os.environ.get(name, '').split(',') if item.strip()]
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
@@ -34,7 +39,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-change-me')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',') if os.environ.get('ALLOWED_HOSTS') else []
+ALLOWED_HOSTS = env_list('ALLOWED_HOSTS')
 
 # --- Демо через Cloudflare-туннель (trycloudflare.com) ---
 # Туннель выдаёт случайный поддомен *.trycloudflare.com. Разрешаем его,
@@ -47,7 +52,7 @@ if DEBUG:
     # POST-формы шлют CSRF-токен — домен туннеля должен быть доверенным, иначе 403.
     CSRF_TRUSTED_ORIGINS = ['https://*.trycloudflare.com']
 # Домены хостинга (https://my-shop.onrender.com и т.п.), через запятую
-CSRF_TRUSTED_ORIGINS += [o for o in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',') if o]
+CSRF_TRUSTED_ORIGINS += env_list('CSRF_TRUSTED_ORIGINS')
 
 # Application definition
 
@@ -128,7 +133,7 @@ DATABASES = {
 if os.environ.get('DATABASE_URL'):
     import dj_database_url
     DATABASES['default'] = dj_database_url.parse(
-        os.environ['DATABASE_URL'], conn_max_age=600, ssl_require=not DEBUG,
+        os.environ['DATABASE_URL'], conn_max_age=600, conn_health_checks=True, ssl_require=not DEBUG,
     )
 
 # Password validation
@@ -240,3 +245,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Лимит POST (shop.utils.throttle_post) считается в кэше; в тестах он выключен, иначе серии POST с одного IP упираются в 429.
 CACHES = {'default': {'BACKEND': 'django.core.cache.backends.dummy.DummyCache' if 'test' in sys.argv
                       else 'django.core.cache.backends.locmem.LocMemCache'}}
+
+# Логи в консоль: хостинг собирает stdout/stderr. Без этого сбои Telegram (logger 'shop') и 500 с трейсбэком не видны.
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {'plain': {'format': '%(levelname)s %(name)s: %(message)s'}},
+    'handlers': {'console': {'class': 'logging.StreamHandler', 'formatter': 'plain'}},
+    'loggers': {
+        'django': {'handlers': ['console'], 'level': 'WARNING'},
+        'shop': {'handlers': ['console'], 'level': 'WARNING'},
+    },
+}

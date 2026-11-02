@@ -44,17 +44,25 @@ class HoneypotMixin:
 
 
 class OrderForm(HoneypotMixin, AriaErrorsMixin, forms.ModelForm):
-    aria_error_fields = ('customer_name', 'customer_phone', 'customer_email')
+    aria_error_fields = ('customer_name', 'customer_phone', 'customer_email', 'delivery_address', 'comment')
+
+    # В модели это TextField без лимита; ограничиваем в форме, без миграции.
+    delivery_address = forms.CharField(
+        label='Адрес доставки', required=False, max_length=500,
+        widget=forms.Textarea(attrs={'class': 'form-input', 'rows': 2, 'placeholder': 'Адрес доставки'}))
+    comment = forms.CharField(
+        label='Комментарий', required=False, max_length=2000,
+        widget=forms.Textarea(attrs={'class': 'form-input', 'rows': 2, 'placeholder': 'Комментарий к заявке'}))
 
     class Meta:
         model = Order
         fields = ['customer_name', 'customer_phone', 'customer_email', 'delivery_address', 'comment']
         widgets = {
-            'customer_name': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Ваше имя'}),
-            'customer_phone': forms.TextInput(attrs={'class': 'form-input', 'placeholder': '+7 (___) ___-__-__'}),
-            'customer_email': forms.EmailInput(attrs={'class': 'form-input', 'placeholder': 'Email (необязательно)'}),
-            'delivery_address': forms.Textarea(attrs={'class': 'form-input', 'rows': 2, 'placeholder': 'Адрес доставки'}),
-            'comment': forms.Textarea(attrs={'class': 'form-input', 'rows': 2, 'placeholder': 'Комментарий к заявке'}),
+            'customer_name': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Ваше имя', 'autocomplete': 'name'}),
+            'customer_phone': forms.TextInput(attrs={
+                'class': 'form-input', 'placeholder': '+7 (___) ___-__-__', 'inputmode': 'tel', 'autocomplete': 'tel'}),
+            'customer_email': forms.EmailInput(attrs={
+                'class': 'form-input', 'placeholder': 'Email (необязательно)', 'autocomplete': 'email'}),
         }
 
     def clean_customer_phone(self):
@@ -67,15 +75,20 @@ class OrderForm(HoneypotMixin, AriaErrorsMixin, forms.ModelForm):
 class LeadForm(HoneypotMixin, AriaErrorsMixin, forms.ModelForm):
     aria_error_fields = ('name', 'phone', 'email', 'message')
 
+    message = forms.CharField(
+        label='Сообщение', required=False, max_length=2000,
+        widget=forms.Textarea(attrs={'class': 'form-input', 'rows': 3, 'placeholder': 'Расскажите о вашем проекте'}))
+
     class Meta:
         model = Lead
         fields = ['name', 'phone', 'email', 'lead_type', 'message']
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Ваше имя'}),
-            'phone': forms.TextInput(attrs={'class': 'form-input', 'placeholder': '+7 (___) ___-__-__'}),
-            'email': forms.EmailInput(attrs={'class': 'form-input', 'placeholder': 'Email (необязательно)'}),
+            'name': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Ваше имя', 'autocomplete': 'name'}),
+            'phone': forms.TextInput(attrs={
+                'class': 'form-input', 'placeholder': '+7 (___) ___-__-__', 'inputmode': 'tel', 'autocomplete': 'tel'}),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-input', 'placeholder': 'Email (необязательно)', 'autocomplete': 'email'}),
             'lead_type': forms.HiddenInput(),
-            'message': forms.Textarea(attrs={'class': 'form-input', 'rows': 3, 'placeholder': 'Расскажите о вашем проекте'}),
         }
 
     def clean_phone(self):
