@@ -131,6 +131,8 @@ class Cart:
                 'colors_display': colors_display,
                 'unit_price': product.price,
                 'line_total': product.price * quantity,
+                # Цену обнулили после добавления: строка остаётся, но суммы нет, итог её не включает.
+                'on_request': not product.price,
             }
 
     def __len__(self):

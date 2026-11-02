@@ -151,6 +151,11 @@
   font-weight: 600;
   white-space: nowrap;
 }
+.cart-line__total--request {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: var(--weight-ui);
+}
 .cart-line__remove {
   position: absolute;
   top: var(--space-2);
