@@ -12,6 +12,7 @@ class Wishlist:
         if not isinstance(ids, list):
             ids = []
         self._ids = [i for i in ids if isinstance(i, int)]
+        self._count = None
 
     def __contains__(self, product_id):
         try:
@@ -20,11 +21,16 @@ class Wishlist:
             return False
 
     def __len__(self):
-        return len(self._ids)
+        return self.count
 
     @property
     def count(self):
-        return len(self._ids)
+        """Сколько доступных товаров: снятые и удалённые не считаются, как и на /wishlist/."""
+        if not self._ids:
+            return 0
+        if self._count is None:
+            self._count = Product.objects.filter(id__in=self._ids, is_available=True).count()
+        return self._count
 
     def add(self, product_id):
         if product_id not in self._ids:
@@ -45,6 +51,7 @@ class Wishlist:
         return True
 
     def save(self):
+        self._count = None
         self.session[WISHLIST_SESSION_ID] = list(self._ids)
         self.session.modified = True
 

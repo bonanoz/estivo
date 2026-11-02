@@ -22,6 +22,7 @@ mimetypes.add_type('image/webp', '.webp')
 MAX_SIDE = 2000  # hero на всю ширину ретина-экрана
 THUMB_SIDE = 640  # карточка ≤ 275 CSS px на десктопе (×2 ретина) и ~170 px на телефоне (×3); ~40 КБ
 WEBP_QUALITY = 80
+MAX_PIXELS = 50_000_000  # ~150 МБ в памяти при декодировании; больше — сохраняем как есть, не пережимая
 
 
 def thumb_name(name):
@@ -33,6 +34,8 @@ def _open(content):
     content.seek(0)
     try:
         img = Image.open(content)
+        if img.width * img.height > MAX_PIXELS:
+            return None
         img.load()
     except (UnidentifiedImageError, OSError, Image.DecompressionBombError):
         return None

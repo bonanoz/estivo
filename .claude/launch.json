@@ -6,6 +6,12 @@
       "runtimeExecutable": "python",
       "runtimeArgs": ["internetshop/manage.py", "runserver", "8000", "--noreload"],
       "port": 8000
+    },
+    {
+      "name": "django-no-telegram",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-c", "import os, sys, runpy; os.environ['BOT_TOKEN'] = ''; os.environ['CHAT_ID'] = ''; sys.path.insert(0, 'internetshop'); sys.argv = ['manage.py', 'runserver', '8001', '--noreload']; runpy.run_path('internetshop/manage.py', run_name='__main__')"],
+      "port": 8001
     }
   ]
 }

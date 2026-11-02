@@ -95,6 +95,8 @@ class SessionTests(TestCase):
 
 class TelegramTests(TestCase):
     def test_long_message_is_truncated(self):
-        with mock.patch('shop.utils.bot.send_message') as send:
+        # Токен и чат подменяем: без них notify_telegram не доходит до отправки (CI, сервер без Telegram).
+        with mock.patch.multiple('shop.utils', BOT_TOKEN='1:x', CHAT_ID='1'), \
+                mock.patch('shop.utils.bot.send_message') as send:
             self.assertTrue(notify_telegram('я' * 10000))
         self.assertLessEqual(len(send.call_args.args[1]), TELEGRAM_MAX_LEN)

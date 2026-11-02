@@ -4,16 +4,18 @@
 (страница никогда не падает из-за мусора в URL).
 """
 
-from django.db.models import F, Q
+from django.db.models import Case, F, IntegerField, Q, Value, When
 
 from .models import Category, ColorOption, Material
 
 FLAGS = ('new', 'bestseller', 'sale')
 
 SORT_RECOMMENDED = 'recommended'
+# Товары «по запросу» (price=0) уходят в конец при сортировке по цене в обе стороны.
+_PRICE_ON_REQUEST_LAST = Case(When(price=0, then=Value(1)), default=Value(0), output_field=IntegerField())
 SORT_ORDERINGS = {
-    'price_asc': ('price', 'id'),
-    'price_desc': ('-price', 'id'),
+    'price_asc': (_PRICE_ON_REQUEST_LAST, 'price', 'id'),
+    'price_desc': (_PRICE_ON_REQUEST_LAST, '-price', 'id'),
     'new': ('-is_new', '-id'),
 }
 SORT_CHOICES = [
@@ -76,6 +78,8 @@ def apply_filters(queryset, params, skip=()):
     for field, column in (('price', 'price'), ('length', 'length_cm')):
         low = _int(params.get(f'{field}_min'))
         high = _int(params.get(f'{field}_max'))
+        if field == 'price' and (low is not None or high is not None):
+            queryset = queryset.filter(price__gt=0)  # «по запросу» не попадает ни в какие границы цены
         if low is not None:
             queryset = queryset.filter(**{f'{column}__gte': low})
             active[f'{field}_min'] = low

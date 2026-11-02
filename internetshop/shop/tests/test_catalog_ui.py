@@ -113,7 +113,7 @@ class E3FilterPanelTests(TestCase):
     def test_seo_text_and_faq_under_grid(self):
         root = self.get(reverse('catalog_by_material', args=['rotang']))
         self.assertIn('Эко-ротанг выдерживает десятилетия.', root.text)
-        self.assertIn('Как сделать заказ?', root.text)
+        self.assertIn('Как оставить заявку?', root.text)
 
 
 class E3PaginationNavTests(TestCase):

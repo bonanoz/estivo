@@ -7,23 +7,23 @@
         <div class="form-field">
             <label for="{{ review_form.author.id_for_label }}">Имя</label>
             {{ review_form.author }}
-            {% if review_form.author.errors %}<div class="form-error" role="alert">{{ review_form.author.errors|join:" " }}</div>{% endif %}
+            {% if review_form.author.errors %}<div class="form-error" id="{{ review_form.author.id_for_label }}-error" role="alert">{{ review_form.author.errors|join:" " }}</div>{% endif %}
         </div>
         <div class="form-field">
             <label for="{{ review_form.rating.id_for_label }}">Оценка от 1 до 5</label>
             {{ review_form.rating }}
-            {% if review_form.rating.errors %}<div class="form-error" role="alert">{{ review_form.rating.errors|join:" " }}</div>{% endif %}
+            {% if review_form.rating.errors %}<div class="form-error" id="{{ review_form.rating.id_for_label }}-error" role="alert">{{ review_form.rating.errors|join:" " }}</div>{% endif %}
         </div>
     </div>
     <div class="form-field">
         <label for="{{ review_form.usage_duration.id_for_label }}">Срок использования</label>
         {{ review_form.usage_duration }}
-        {% if review_form.usage_duration.errors %}<div class="form-error" role="alert">{{ review_form.usage_duration.errors|join:" " }}</div>{% endif %}
+        {% if review_form.usage_duration.errors %}<div class="form-error" id="{{ review_form.usage_duration.id_for_label }}-error" role="alert">{{ review_form.usage_duration.errors|join:" " }}</div>{% endif %}
     </div>
     <div class="form-field">
         <label for="{{ review_form.text.id_for_label }}">Отзыв</label>
         {{ review_form.text }}
-        {% if review_form.text.errors %}<div class="form-error" role="alert">{{ review_form.text.errors|join:" " }}</div>{% endif %}
+        {% if review_form.text.errors %}<div class="form-error" id="{{ review_form.text.id_for_label }}-error" role="alert">{{ review_form.text.errors|join:" " }}</div>{% endif %}
     </div>
     <div class="form-trap" aria-hidden="true">
         <label for="{{ review_form.website.id_for_label }}">Сайт</label>

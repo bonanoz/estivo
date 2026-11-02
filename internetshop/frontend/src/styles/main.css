@@ -475,7 +475,6 @@
   .alert {
     margin-bottom: var(--space-3);
     padding: var(--space-3) var(--space-4);
-    border: 1px solid var(--color-brand);
     border-radius: var(--radius-sm);
     background: var(--color-surface-alt);
     color: var(--color-brand);
@@ -810,6 +809,28 @@
   [data-reveal].is-in {
     opacity: 1;
     transform: none;
+  }
+  /* при печати недоскролленные блоки иначе выходят пустыми */
+  @media print {
+    [data-reveal] {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+
+  /* ошибка htmx-запроса (src/htmx-errors); тот же вид, что у тоста «Вернуть» в корзине */
+  .site-toast {
+    position: fixed;
+    left: 50%;
+    bottom: var(--space-4);
+    z-index: var(--z-toast);
+    width: min(480px, calc(100vw - 32px));
+    translate: -50% 0;
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    background: var(--color-graphite);
+    color: var(--color-on-dark);
   }
 
   .is-bumped {

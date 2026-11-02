@@ -31,7 +31,7 @@ python manage.py collectstatic --noinput   # required once — ManifestStaticFil
 python manage.py runserver
 ```
 
-- Run all tests: `python manage.py test` (from `internetshop/`; 179 tests in `shop/tests/`, one file per area,
+- Run all tests: `python manage.py test` (from `internetshop/`; ~600 tests in `shop/tests/`, one file per area,
   needs the Postgres from `.env`; `django_vite` runs in dev mode under `test`, so no built `dist/` is needed).
 - Run a single test: `python manage.py test shop.tests.test_smoke.<Class>.<test_method>`
 - No Python linter/formatter is configured. Frontend: `npm run build` runs `tsc --noEmit` + `vite build`.
@@ -84,10 +84,11 @@ otherwise cause `UnicodeDecodeError` in psycopg2. `LANGUAGE_CODE='ru'`, `TIME_ZO
 
 `Material` (роуп/ротанг/шпон/HPL) and `Category` (кресла/диваны/…) are independent lookup tables —
 a `Category` is not tied to one `Material` (tables come in HPL, veneer, etc.), so `Product` carries
-both FKs separately. `Collection` groups products for homepage/showcase curation (`is_featured`).
+both FKs separately. `Collection` (with `is_featured`) exists in the admin and `seed_demo` but no page renders it.
 
 `Product` uses a `slug` (auto-generated via `shop.utils.ru_slugify`, **not** Django's stock `slugify`
-with `allow_unicode` — URLs must stay ASCII like the old Tilda site's `/kreslo`, `/divan`) and
+with `allow_unicode` — URLs must stay ASCII like the old Tilda site's `/kreslo`, `/divan`; the admin has no
+`prepopulated_fields`, its `SlugFromNameForm` fills an empty slug with `ru_slugify(name)` before the uniqueness check) and
 `main_image`/`ProductImage` gallery (`ImageField`, not the old `image_url` string). Price fields:
 `price` ("от"), `old_price` (for sales), plus spec fields (`max_load_kg`, `warranty_years`,
 `temp_min_c`/`temp_max_c`, `length_cm`/`width_cm`/`height_cm`/`weight_kg` dimensions) used directly in
@@ -110,7 +111,13 @@ piece with no separate frame simply shows no "Каркас" group. Colors never 
 
 Both have a `telegram_notified` flag that is only set `True` when the Telegram send actually succeeds
 (`shop.utils.notify_telegram` returns a bool, never raises) — the DB write always happens regardless
-of Telegram outcome, so a bad token/blocked chat never loses a submission.
+of Telegram outcome, so a bad token/blocked chat never loses a submission. The bot is created with
+`validate_token=False`, so an empty or malformed `BOT_TOKEN` doesn't break imports or `migrate`; a failed send is
+logged as WARNING to the `shop` logger with a label like «заявка №N» and a scrubbed traceback (no message text,
+token or URL — they carry personal data). `LOGGING` sends `django` and `shop` WARNING+ to the console.
+`throttle_post` (5 POST / 10 min per IP) counts only successful responses: 3xx or `response.throttle_success = True`.
+The admin login is wrapped with `throttle_post(count_failures=True)` in `shop/admin.py`: 5 failed logins per IP per
+10 min, then 429.
 
 `Review` requires `is_published=True` to surface anywhere; nothing filters/moderates them automatically.
 
@@ -124,7 +131,7 @@ scraped from the original Tilda site). `product_detail` is slug-based.
 Cart flow (`shop/cart.py` + cart views): the `Cart` class wraps `request.session['cart']`. A line is
 keyed by product **plus chosen colors**, so the same product in different colors are separate lines
 (`shop/cart.py:_line_id`). Views: `cart_add` (validates colors against `available_colors` via
-`_valid_colors`, then HTMX drawer fragment, legacy AJAX-JSON, or redirect to a safe `next`), `cart_update`, `cart_remove`, `cart_detail`, and
+`_valid_colors`, then HTMX drawer fragment or redirect to a safe `next`), `cart_update`, `cart_remove`, `cart_detail`, and
 `checkout` (creates `Order` + `OrderItem`s, `recalc_total`, Telegram, clears cart → `order_success`).
 The product page's "В корзину" button posts via htmx and opens the cart drawer; removing a line without JS stores a
 session notice so `cart_detail` still offers «Вернуть» (`cart_undo`); "Оформить заявку" posts with `name=checkout` and
@@ -132,8 +139,7 @@ session notice so `cart_detail` still offers «Вернуть» (`cart_undo`); "
 
 Lead-capturing pages (`b2b_page`, `designers_page`, `contacts_page`) all funnel through
 `_lead_page(request, template_name, lead_type)` — same POST/validate/save/notify logic, differing
-only in template and default `lead_type`. `lead_create` is a separate POST-only endpoint for forms
-embedded on pages that don't render their own `LeadForm` context (e.g. a hero CTA elsewhere).
+only in template and default `lead_type`. There is no separate `lead_create` endpoint.
 
 `shop/context_processors.py` injects `site_info` (brand contact/socials/legal) **and** `cart` into
 every template — that's why `_header.html` shows the cart counter and `base.html`/`_footer.html`
@@ -156,7 +162,8 @@ get `breadcrumbs` (list of `(label, url|None)`) from their views and render `par
 tokens, `@layer base/components`; page CSS in `styles/{catalog,product,cart,pages,home,request}.css`), registers htmx and
 Alpine, and auto-imports every `src/<feature>/index.ts` (`cart` drawer, `catalog` filter panel/focus-trap,
 `product` gallery/variants/sticky bar, `forms` phone mask + `form[data-once]` double-submit guard, `lib`
-`$scrollLock` helper shared by overlays, `motion` scroll reveal + counter/heart bump; page view transitions and
+`$scrollLock` helper shared by overlays, `motion` scroll reveal + counter/heart bump, `htmx-errors` toast for failed
+htmx requests (429/403/network); page view transitions and
 accordion easing are CSS-only at the end of `main.css`, all off under `prefers-reduced-motion`). Output goes to `shop/static/dist/` (gitignored build artefact, read via
 the Vite manifest). The legacy hand-written CSS/JS were removed; only `shop/static/js/vendor/model-viewer.min.js`
 remains, loaded as an ES module on PDPs that have a `model_3d`.

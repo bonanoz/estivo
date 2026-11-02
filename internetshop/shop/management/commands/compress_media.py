@@ -25,7 +25,7 @@ class Command(BaseCommand):
                     continue
                 qs = (model.objects.exclude(**{f'{field.name}__isnull': True})
                       .exclude(**{field.name: ''}))
-                for obj in qs.iterator():
+                for obj in qs:  # без .iterator(): серверный курсор не работает через transaction pooler
                     f = getattr(obj, field.name)
                     try:
                         if f.name.endswith('.webp'):
