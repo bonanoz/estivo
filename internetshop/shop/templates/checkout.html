@@ -37,11 +37,11 @@
                             <div class="checkout-line__colors">{% for label, name in item.colors_display %}{{ label }}: {{ name }}{% if not forloop.last %} · {% endif %}{% endfor %}</div>
                             {% endif %}
                         </div>
-                        <div class="checkout-line__total">{{ item.line_total|intcomma }}&nbsp;₽</div>
+                        <div class="checkout-line__total">{% if item.on_request %}Цена по запросу{% else %}{{ item.line_total|intcomma }}&nbsp;₽{% endif %}</div>
                     </li>
                     {% endfor %}
                 </ul>
-                <div class="checkout-total"><span>Итого</span><span>{{ cart.total_price|intcomma }}&nbsp;₽</span></div>
+                <div class="checkout-total"><span>Итого</span><span>{% if cart.total_price %}{{ cart.total_price|intcomma }}&nbsp;₽{% else %}Цена по запросу{% endif %}</span></div>
                 <a href="{% url 'cart_detail' %}" class="checkout-summary__edit">Изменить состав заявки</a>
             </aside>
 
@@ -70,10 +70,12 @@
                 <div class="form-field">
                     <label for="{{ form.delivery_address.id_for_label }}">Адрес доставки <span class="checkout-form__opt">(необязательно)</span></label>
                     {{ form.delivery_address }}
+                    {% if form.delivery_address.errors %}<div class="form-errors" id="{{ form.delivery_address.id_for_label }}-error" role="alert">{{ form.delivery_address.errors|join:", " }}</div>{% endif %}
                 </div>
                 <div class="form-field">
                     <label for="{{ form.comment.id_for_label }}">Комментарий</label>
                     {{ form.comment }}
+                    {% if form.comment.errors %}<div class="form-errors" id="{{ form.comment.id_for_label }}-error" role="alert">{{ form.comment.errors|join:", " }}</div>{% endif %}
                 </div>
 
                 <div class="form-trap" aria-hidden="true">

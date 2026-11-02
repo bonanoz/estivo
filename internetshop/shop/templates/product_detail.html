@@ -3,8 +3,9 @@
 
 {% block meta_title %}{{ product.name }}{% if product.material and product.material.name|lower not in product.name|lower %} из {{ product.material.name|material_genitive }}{% endif %} | ESTIVO{% endblock %}
 {% block meta_description %}{{ product.short_description|default:product.description|truncatewords:24 }}{% endblock %}
-{% block body_class %}{% if not product.price %}chat-inline{% endif %}{% endblock %}
+{% block body_class %}{% if not product.price or not product.is_available %}chat-inline{% endif %}{% endblock %}
 {% block og_title %}{{ product.name }}{% if product.material and product.material.name|lower not in product.name|lower %} из {{ product.material.name|material_genitive }}{% endif %}{% endblock %}
+{% block extra_head %}{% if not product.is_available %}<meta name="robots" content="noindex, follow">{% endif %}{% endblock %}
 {% block og_image %}{% if product.main_image %}{{ product.main_image.url|absolute }}{% else %}{% static 'img/placeholders/product.svg' as og_ph %}{{ og_ph|absolute }}{% endif %}{% endblock %}
 
 
@@ -25,9 +26,9 @@
   "offers": {
     "@type": "Offer",
     "url": "{{ product.get_absolute_url|absolute|escapejs }}",
-    "price": "{{ product.price|unlocalize }}",
+    {% if product.price %}"price": "{{ product.price|unlocalize }}",{% endif %}
     "priceCurrency": "RUB",
-    "availability": "https://schema.org/{% if product.is_available %}InStock{% else %}PreOrder{% endif %}"
+    "availability": "https://schema.org/{% if product.is_available %}InStock{% else %}Discontinued{% endif %}"
   }
 }
 </script>
@@ -81,6 +82,7 @@
             </div>
             <div class="pdp-titlebar">
                 <h1 class="pdp-title">{{ product.name }}</h1>
+                {% if product.is_available %}
                 <div class="pdp-heart">
                     <button type="button" class="icon-btn product-card__heart"
                             hx-post="{% url 'wishlist_toggle' product.id %}" hx-swap="outerHTML"
@@ -89,6 +91,7 @@
                         <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg>
                     </button>
                 </div>
+                {% endif %}
             </div>
 
             <a href="#reviews" class="pdp-rating">
@@ -101,6 +104,9 @@
                 {% endif %}
             </a>
 
+            {% if not product.is_available %}
+            <p class="pdp-discontinued" role="status">Снят с производства</p>
+            {% else %}
             <p class="pdp-price">
                 {% if product.price %}
                 <span class="pdp-price__now"><small>от</small> {{ product.price|intcomma }}&nbsp;₽</span>
@@ -109,10 +115,15 @@
                 <span class="pdp-price__now">Цена по запросу</span>
                 {% endif %}
             </p>
+            {% endif %}
 
             {% if product.short_description %}<p class="pdp-lead">{{ product.short_description }}</p>{% endif %}
 
-            {% if not product.price %}
+            {% if not product.is_available %}
+            <div class="pdp-actions">
+                <a href="{% url 'contacts_page' %}?product={{ product.slug }}" class="btn btn-outline btn-lg btn-block">Подобрать аналог</a>
+            </div>
+            {% elif not product.price %}
             <div class="pdp-actions" data-buy-anchor>
                 <a href="{% url 'contacts_page' %}?product={{ product.slug }}" class="btn btn-dark btn-lg btn-block">Узнать цену</a>
             </div>
@@ -229,7 +240,7 @@
 </div>
 
 <!-- Липкая панель покупки (мобильные) -->
-{% if product.price %}
+{% if product.price and product.is_available %}
 <div class="pdp-sticky" data-sticky-bar inert>
     <button type="submit" form="pdp-form" class="btn btn-dark" data-add-to-cart
             hx-post="{% url 'cart_add' product.id %}" hx-include="#pdp-form"

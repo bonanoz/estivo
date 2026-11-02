@@ -9,7 +9,7 @@
     <title>{% block meta_title %}Дизайнерская мебель ручной работы | Производитель мебели из ротанга{% endblock %}</title>
     <meta name="description" content="{% block meta_description %}Плетёная мебель ручной работы из ротанга и роупа от производителя ESTIVO. Своё производство в Тольятти, гарантия 3 года, доставка по всей России.{% endblock %}">
     <meta name="keywords" content="{% block meta_keywords %}дизайнерская мебель, ручная мебель, плетеная мебель, мебель плетеная из ротанга, производитель мебели из ротанга, мебель ручной работы{% endblock %}">
-    <link rel="canonical" href="{{ request.path|absolute }}">
+    <link rel="canonical" href="{{ request.path|absolute }}{% if page_obj.number > 1 %}?page={{ page_obj.number }}{% endif %}">
 
     <meta property="og:type" content="website">
     <meta property="og:title" content="{% block og_title %}Плетеная мебель из ротанга и роупа ручной работы для дома и бизнеса{% endblock %}">

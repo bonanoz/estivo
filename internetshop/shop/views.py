@@ -95,7 +95,7 @@ PRODUCTION_STEPS = [
 ]
 
 FAQ_ITEMS = [
-    ('Как сделать заказ?', 'Оставьте заявку на сайте или позвоните нам — менеджер уточнит детали и поможет выбрать модель.'),
+    ('Как оставить заявку?', 'Оставьте заявку на сайте или позвоните нам — менеджер уточнит детали и поможет выбрать модель.'),
     ('Какой вес выдерживает плетёная мебель?', 'Конструкция выдерживает нагрузку до 120 кг на одно посадочное место.'),
     ('Для какого климата подходит мебель?', 'Материалы устойчивы к перепадам температур, не боятся влаги и солнца. Для искусственного ротанга (ПЭ) рабочий диапазон −50…+50°C.'),
     ('Из чего изготавливаются каркасы?', 'Из металла с порошковой окраской в любой цвет на ваш выбор.'),
@@ -319,7 +319,9 @@ def review_create(request, slug):
             review.save()
         # Бот с заполненным honeypot получает тот же ответ, что и человек.
         if request.htmx:
-            return render(request, 'partials/htmx/_review_success.html', {'product': product})
+            response = render(request, 'partials/htmx/_review_success.html', {'product': product})
+            response.throttle_success = True  # htmx-успех отвечает 200, а не редиректом: сообщаем лимиту
+            return response
         messages.success(request, 'Спасибо! Отзыв отправлен на модерацию.')
         return redirect(product.get_absolute_url())
     if request.htmx:
@@ -575,9 +577,8 @@ def checkout(request):
             for item in items:
                 colors_str = ', '.join(f'{label}: {name}' for label, name in item['colors_display'])
                 suffix = f' ({colors_str})' if colors_str else ''
-                lines.append(
-                    f'• {item["product"].name} × {item["quantity"]} — {item["line_total"]} ₽{suffix}'
-                )
+                price = 'цена по запросу' if item['on_request'] else f'{item["line_total"]} ₽'
+                lines.append(f'• {item["product"].name} × {item["quantity"]} — {price}{suffix}')
             sent = notify_telegram(
                 '🛒 Новая заявка из корзины\n'
                 + '\n'.join(lines)
