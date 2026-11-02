@@ -46,7 +46,7 @@ def notify_telegram(text, label=None):
     ``label`` («заявка №4») попадает в лог при сбое: текст сообщения в лог не пишем, в нём персональные данные.
     """
     if ':' not in BOT_TOKEN or not CHAT_ID:
-        logger.warning('Telegram не настроен (BOT_TOKEN или CHAT_ID пусты или неверны): %s не отправлено',
+        logger.warning('Telegram не настроен (BOT_TOKEN или CHAT_ID пусты или неверны), не отправлено: %s',
                        label or 'сообщение без номера')
         return False
     if len(text) > TELEGRAM_MAX_LEN:  # длиннее Telegram отклоняет целиком; полный текст есть в админке
