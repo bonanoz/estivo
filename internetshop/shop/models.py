@@ -19,7 +19,7 @@ class Material(models.Model):
     """Материал плетения: роуп, ротанг, шпон, HPL."""
 
     name = models.CharField(max_length=64)
-    slug = models.SlugField(max_length=64, unique=True)
+    slug = models.SlugField(max_length=64, unique=True, blank=True)
     description = models.TextField(blank=True)
     hero_image = models.ImageField(upload_to='materials/', blank=True, null=True)
     order = models.IntegerField(default=0)
@@ -108,7 +108,7 @@ class Category(models.Model):
     """
 
     name = models.CharField(max_length=64)
-    slug = models.SlugField(max_length=64, unique=True)
+    slug = models.SlugField(max_length=64, unique=True, blank=True)
     order = models.IntegerField(default=0)
 
     class Meta:
@@ -129,7 +129,7 @@ class Collection(models.Model):
     """Коллекция/серия для витрины и подборок на главной."""
 
     name = models.CharField(max_length=128)
-    slug = models.SlugField(max_length=128, unique=True)
+    slug = models.SlugField(max_length=128, unique=True, blank=True)
     description = models.TextField(blank=True)
     cover_image = models.ImageField(upload_to='collections/', blank=True, null=True)
     is_featured = models.BooleanField(default=False)
