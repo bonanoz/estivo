@@ -164,12 +164,14 @@
                 <li>
                     <span><a href="{% url 'warranty_page' %}" class="tap-area">Гарантия {{ product.warranty_years }} {% if product.warranty_years == 1 %}год{% elif product.warranty_years >= 2 and product.warranty_years <= 4 %}года{% else %}лет{% endif %}</a></span>
                 </li>
+                {% if product.is_available %}
                 <li>
                     <span>В наличии: Отгрузка в течение 3 дней</span>
                 </li>
                 <li>
                     <span>Под заказ: Изготовление от 4 недель</span>
                 </li>
+                {% endif %}
                 <li>
                     <span>Доставка ТК до двери</span>
                 </li>
@@ -193,8 +195,10 @@
                         <li><span>Габариты (Д×Ш×В)</span><span>{{ product.length_cm|default:"—" }} × {{ product.width_cm|default:"—" }} × {{ product.height_cm|default:"—" }} см</span></li>
                         {% endif %}
                         {% if product.weight_kg %}<li><span>Вес</span><span>{{ product.weight_kg }} кг</span></li>{% endif %}
+                        {% if product.is_available %}
                         <li><span>В наличии</span><span>Отгрузка в течение 3 дней</span></li>
                         <li><span>Под заказ</span><span>Изготовление от 4 недель</span></li>
+                        {% endif %}
                     </ul>
                 </details>
                 <details class="pdp-acc">

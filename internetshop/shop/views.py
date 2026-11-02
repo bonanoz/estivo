@@ -353,7 +353,8 @@ def _lead_page(request, template_name, lead_type, extra_context=None):
             sent = notify_telegram(
                 f'📩 Новая заявка ({lead.get_lead_type_display()})\n'
                 f'Имя: {lead.name}\nТелефон: {lead.phone}\nEmail: {lead.email}\n'
-                f'Сообщение: {lead.message}\n{_source_line(lead)}'
+                f'Сообщение: {lead.message}\n{_source_line(lead)}',
+                label=f'лид №{lead.id}',
             )
             if sent:
                 lead.telegram_notified = True
@@ -585,7 +586,8 @@ def checkout(request):
                 + f'\n\nИтого: {order.total_price} ₽\n'
                 + f'ФИО: {order.customer_name}\nТелефон: {order.customer_phone}\n'
                 + f'Email: {order.customer_email}\nАдрес доставки: {order.delivery_address}\n'
-                + f'Комментарий: {order.comment}\n{_source_line(order)}'
+                + f'Комментарий: {order.comment}\n{_source_line(order)}',
+                label=f'заявка №{order.id}',
             )
             if sent:
                 order.telegram_notified = True
