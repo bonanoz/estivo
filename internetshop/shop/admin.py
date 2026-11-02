@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib import admin
 from django.db.models import F
 from django.shortcuts import redirect
@@ -6,11 +7,22 @@ from .models import (
     Category, Collection, ColorOption, Lead, Material, Order, OrderItem,
     Product, ProductImage, Review, SiteSettings,
 )
+from .utils import ru_slugify
 
 ATTRIBUTION_FIELDS = (
     'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term',
     'yclid', 'ym_client_id', 'landing_page',
 )
+
+
+class SlugFromNameForm(forms.ModelForm):
+    """Пустой адрес берётся из названия до проверки уникальности: занятый адрес даёт ошибку у поля, а не IntegrityError."""
+
+    def clean(self):
+        data = super().clean()
+        if data.get('slug') == '' and data.get('name'):
+            data['slug'] = ru_slugify(data['name'])
+        return data
 
 
 @admin.register(SiteSettings)
@@ -44,14 +56,14 @@ class ColorOptionAdmin(admin.ModelAdmin):
 @admin.register(Material)
 class MaterialAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug', 'order')
-    prepopulated_fields = {'slug': ('name',)}
+    form = SlugFromNameForm
     ordering = ('order', 'name')
 
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug', 'order')
-    prepopulated_fields = {'slug': ('name',)}
+    form = SlugFromNameForm
     ordering = ('order', 'name')
 
 
@@ -59,7 +71,7 @@ class CategoryAdmin(admin.ModelAdmin):
 class CollectionAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug', 'is_featured', 'order')
     list_filter = ('is_featured',)
-    prepopulated_fields = {'slug': ('name',)}
+    form = SlugFromNameForm
     ordering = ('order', 'name')
 
 
@@ -74,7 +86,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_editable = ('is_new', 'is_bestseller')
     list_filter = ('material', 'category', 'collection', 'is_available', 'is_featured', 'is_new', 'is_bestseller')
     search_fields = ('name', 'sku', 'description', 'tilda_id')
-    prepopulated_fields = {'slug': ('name',)}
+    form = SlugFromNameForm
     filter_horizontal = ('available_colors',)
     inlines = [ProductImageInline]
     actions = ['enable_sale']
@@ -90,8 +102,13 @@ class ProductAdmin(admin.ModelAdmin):
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
     extra = 0
-    readonly_fields = ('product', 'quantity', 'unit_price', 'selected_colors')
+    readonly_fields = ('product', 'quantity', 'price_display', 'selected_colors')
     can_delete = False
+
+    @admin.display(description='Цена за шт.')
+    def price_display(self, obj):
+        # у шаблона пустой формы инлайна obj без pk и unit_price=0 — подпись ему не нужна
+        return 'Цена по запросу' if obj.pk and not obj.unit_price else obj.unit_price
 
 
 @admin.register(Order)
