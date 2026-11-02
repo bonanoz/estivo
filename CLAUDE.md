@@ -84,7 +84,7 @@ otherwise cause `UnicodeDecodeError` in psycopg2. `LANGUAGE_CODE='ru'`, `TIME_ZO
 
 `Material` (роуп/ротанг/шпон/HPL) and `Category` (кресла/диваны/…) are independent lookup tables —
 a `Category` is not tied to one `Material` (tables come in HPL, veneer, etc.), so `Product` carries
-both FKs separately. `Collection` groups products for homepage/showcase curation (`is_featured`).
+both FKs separately. `Collection` (with `is_featured`) exists in the admin and `seed_demo` but no page renders it.
 
 `Product` uses a `slug` (auto-generated via `shop.utils.ru_slugify`, **not** Django's stock `slugify`
 with `allow_unicode` — URLs must stay ASCII like the old Tilda site's `/kreslo`, `/divan`; the admin has no
@@ -116,6 +116,8 @@ of Telegram outcome, so a bad token/blocked chat never loses a submission. The b
 logged as WARNING to the `shop` logger with a label like «заявка №N» and a scrubbed traceback (no message text,
 token or URL — they carry personal data). `LOGGING` sends `django` and `shop` WARNING+ to the console.
 `throttle_post` (5 POST / 10 min per IP) counts only successful responses: 3xx or `response.throttle_success = True`.
+The admin login is wrapped with `throttle_post(count_failures=True)` in `shop/admin.py`: 5 failed logins per IP per
+10 min, then 429.
 
 `Review` requires `is_published=True` to surface anywhere; nothing filters/moderates them automatically.
 
@@ -160,7 +162,8 @@ get `breadcrumbs` (list of `(label, url|None)`) from their views and render `par
 tokens, `@layer base/components`; page CSS in `styles/{catalog,product,cart,pages,home,request}.css`), registers htmx and
 Alpine, and auto-imports every `src/<feature>/index.ts` (`cart` drawer, `catalog` filter panel/focus-trap,
 `product` gallery/variants/sticky bar, `forms` phone mask + `form[data-once]` double-submit guard, `lib`
-`$scrollLock` helper shared by overlays, `motion` scroll reveal + counter/heart bump; page view transitions and
+`$scrollLock` helper shared by overlays, `motion` scroll reveal + counter/heart bump, `htmx-errors` toast for failed
+htmx requests (429/403/network); page view transitions and
 accordion easing are CSS-only at the end of `main.css`, all off under `prefers-reduced-motion`). Output goes to `shop/static/dist/` (gitignored build artefact, read via
 the Vite manifest). The legacy hand-written CSS/JS were removed; only `shop/static/js/vendor/model-viewer.min.js`
 remains, loaded as an ES module on PDPs that have a `model_3d`.

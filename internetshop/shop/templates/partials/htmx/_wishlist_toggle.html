@@ -1,4 +1,4 @@
-<button type="button" class="icon-btn product-card__heart"
+<button type="submit" class="icon-btn product-card__heart"
         hx-post="{% url 'wishlist_toggle' product.id %}" hx-swap="outerHTML"
         aria-pressed="{% if in_wishlist %}true{% else %}false{% endif %}"
         aria-label="Избранное: {{ product.name }}">

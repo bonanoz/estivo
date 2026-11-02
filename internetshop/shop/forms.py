@@ -7,7 +7,7 @@ from .utils import clean_phone_number
 class AriaErrorsMixin:
     """Поля с ошибками получают aria-invalid и aria-describedby="<id поля>-error".
 
-    Элемент с таким id рисуют шаблоны (partials/_lead_form.html, checkout.html), поэтому
+    Элемент с таким id рисуют шаблоны (partials/_lead_form.html, checkout.html, htmx/_review_form.html), поэтому
     атрибуты ставятся только полям из ``aria_error_fields`` (у остальных нет элемента ошибки).
     """
 
@@ -98,8 +98,10 @@ class LeadForm(HoneypotMixin, AriaErrorsMixin, forms.ModelForm):
             raise forms.ValidationError(str(exc))
 
 
-class ReviewForm(HoneypotMixin, forms.ModelForm):
+class ReviewForm(HoneypotMixin, AriaErrorsMixin, forms.ModelForm):
     """Отзыв с PDP. Сохраняется неопубликованным (модерация в админке)."""
+
+    aria_error_fields = ('author', 'rating', 'usage_duration', 'text')
 
     class Meta:
         model = Review

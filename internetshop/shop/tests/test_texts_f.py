@@ -93,6 +93,9 @@ class FWorld(TestCase):
         self.add(self.p_roup)
         out['cart'] = self.get_text(reverse('cart_detail'))
         out['checkout'] = self.get_text(reverse('checkout'))
+        session = self.client.session  # без только что отправленной заявки страница уводит на главную
+        session['last_order_id'] = None
+        session.save()
         out['order_success'] = self.get_text(reverse('order_success'))
         return out
 
@@ -203,7 +206,7 @@ class FProductPageTests(FWorld):
     def test_f3_rotang_pdp_template(self):
         resp = self.client.get(self.p_rotang.get_absolute_url())
         text = text_of(resp)
-        self.assertIn('Отгрузка в течение 3 дней', text)
+        self.assertIn('Отгрузка за 3 дня', text)
         self.assertRegex(text, r'Гарантия\s*3 года')
         self.assertIn('50%', text)
         self.assertRegex(text, r'(?i)каркас\s*[—–-]\s*металл')
@@ -213,10 +216,10 @@ class FProductPageTests(FWorld):
         self.assertEqual(reverse('warranty_page'), '/garantiya/')
 
     def test_f3_pdp_shows_both_terms(self):
-        # решение 23.10.2026: is_available = «показан на сайте», не наличие → оба срока всегда
+        # решение 23.10.2026: is_available = «показан на сайте», не наличие → оба срока всегда;
+        # 02.11.2026 — одной строкой с условием, чтобы не читалось как «этот товар в наличии»
         text = self.get_text(self.p_rotang.get_absolute_url())
-        self.assertIn('Отгрузка в течение 3 дней', text)
-        self.assertIn('Изготовление от 4 недель', text)
+        self.assertIn('Отгрузка за 3 дня, если модель есть на складе, иначе изготовление от 4 недель', text)
 
     def test_f3_roup_does_not_show_temperature(self):
         resp = self.client.get(self.p_roup.get_absolute_url())
@@ -260,6 +263,9 @@ class FCartAndFormsTests(FWorld):
         self.assertNotIn('Отправить заявку', text)
 
     def test_f4_order_success(self):
+        session = self.client.session
+        session['last_order_id'] = None
+        session.save()
         text = self.get_text(reverse('order_success'))
         self.assertIn('Заявка принята', text)
         self.assertIn('+7 927 268-94-04', text)

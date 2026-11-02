@@ -151,16 +151,19 @@ def _catalog_context(request, products, skip=()):
     ``?{{ querystring }}&page=N``), чтобы фильтры не терялись при перелистывании.
     """
     products, active_filters = apply_filters(products, request.GET, skip=skip)
+    offers = []
+    if 'sale' in request.GET.getlist('flag'):
+        # Промо-карточки: скидка с датой окончания не раньше сегодня, из той же выдачи (раздел, фильтры);
+        # в сетке они не повторяются.
+        offers = list(products.filter(
+            price__gt=0, old_price__gt=F('price'), offer_ends_at__gte=timezone.localdate(),
+        ).order_by('offer_ends_at')[:3])
+        products = products.exclude(id__in=[p.id for p in offers])
     products, current_sort = apply_sort(products, request.GET)
     params = request.GET.copy()
     params.pop('page', None)
     page_obj = _paginate_products(request, products)
-    offers = []
-    if 'sale' in request.GET.getlist('flag'):
-        # Промо-карточки: только скидка с датой окончания не раньше сегодня.
-        offers = Product.objects.filter(
-            is_available=True, price__gt=0, old_price__gt=F('price'), offer_ends_at__gte=timezone.localdate(),
-        ).order_by('offer_ends_at')[:3]
+    total_count = page_obj.paginator.count + len(offers)
     return {
         'offers': offers,
         'page_obj': page_obj,
@@ -169,19 +172,19 @@ def _catalog_context(request, products, skip=()):
         'sort_choices': SORT_CHOICES,
         'faq_items': FAQ_ITEMS,
         'querystring': params.urlencode(),
-        'total_count': page_obj.paginator.count,
+        'total_count': total_count,
         'color_options': ColorOption.objects.all(),
-        'bestsellers': _bestsellers(4) if page_obj.paginator.count == 0 else [],
+        'bestsellers': _bestsellers(4) if total_count == 0 else [],
     }
 
 
 def _search_products(products, search):
-    return products.filter(Q(name__icontains=search) | Q(description__icontains=search))
+    return products.filter(Q(name__icontains=search) | Q(sku__icontains=search) | Q(description__icontains=search))
 
 
 def catalog_list(request):
     products = Product.objects.filter(is_available=True).select_related('material', 'category').prefetch_related(*CARD_PREFETCH)
-    search = request.GET.get('search')
+    search = (request.GET.get('search') or '').strip()
     if search:
         products = _search_products(products, search)
     context = _catalog_context(request, products)
@@ -199,7 +202,7 @@ def catalog_list(request):
 def catalog_count(request):
     """Фрагмент с числом товаров под текущие фильтры (живой счётчик панели фильтров)."""
     products = Product.objects.filter(is_available=True)
-    search = request.GET.get('search')
+    search = (request.GET.get('search') or '').strip()
     if search:
         products = _search_products(products, search)
     products, _active = apply_filters(products, request.GET)
@@ -340,12 +343,15 @@ def _lead_page(request, template_name, lead_type, extra_context=None):
             return redirect(request.path)
         if form.is_valid():
             lead = form.save(commit=False)
+            lead.lead_type = lead_type  # скрытое поле формы подменяется клиентом; тип задаёт страница
             lead.source_page = template_name
             for key, value in _attribution(request).items():
                 setattr(lead, key, value)
             if price_product:
                 lead.source_page = f'price-request:{price_product.slug}'
-                lead.message = f'Узнать цену: {price_product.name}\n{lead.message}'.strip()
+                prefix = f'Узнать цену: {price_product.name}'
+                if not lead.message.startswith(prefix):  # предзаполненный текст посетитель мог не стереть
+                    lead.message = f'{prefix}\n{lead.message}'.strip()
             lead.save()
             _add_goal(request, f'lead_submit_{lead.lead_type}')
             if price_product:
@@ -553,6 +559,7 @@ def checkout(request):
             if form.is_spam:
                 # Бот получает тот же ответ, что и человек, но заявка не создаётся.
                 cart.clear()
+                request.session['last_order_id'] = None
                 return redirect('order_success')
             items = list(cart)
             with transaction.atomic():
@@ -569,9 +576,13 @@ def checkout(request):
                         selected_colors=dict(item['colors_display']),
                     )
                 order.recalc_total()
-            # Чистим до Telegram: если отправка зависнет и воркер убьют, повторная отправка не создаст дубль.
+            # Чистим и сохраняем сессию до Telegram: если отправка зависнет и посетитель отправит форму снова,
+            # корзина уже пуста и дубля не будет.
+            # shortcut: два POST, пришедшие одновременно, оба создадут заявку; от двойного клика защищает
+            # data-once на клиенте, серверная блокировка понадобится, если дубли появятся в админке.
             cart.clear()
             request.session['last_order_id'] = order.id
+            request.session.save()
             _add_goal(request, 'checkout_submit')
 
             lines = []
@@ -600,8 +611,11 @@ def checkout(request):
 
 
 def order_success(request):
+    # Без только что отправленной заявки (старая ссылка, повторный заход) подтверждать нечего.
+    if 'last_order_id' not in request.session:
+        return redirect('home')
     context = {}
-    order = Order.objects.filter(id=request.session.pop('last_order_id', None)).prefetch_related(
+    order = Order.objects.filter(id=request.session.pop('last_order_id')).prefetch_related(
         'items__product__category').first()
     if order:
         products = [_dl_product(i.product, price=i.unit_price, quantity=i.quantity) for i in order.items.all()]

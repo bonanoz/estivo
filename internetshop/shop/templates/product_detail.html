@@ -83,14 +83,14 @@
             <div class="pdp-titlebar">
                 <h1 class="pdp-title">{{ product.name }}</h1>
                 {% if product.is_available %}
-                <div class="pdp-heart">
-                    <button type="button" class="icon-btn product-card__heart"
+                <form method="post" action="{% url 'wishlist_toggle' product.id %}" class="pdp-heart">{% csrf_token %}
+                    <button type="submit" class="icon-btn product-card__heart"
                             hx-post="{% url 'wishlist_toggle' product.id %}" hx-swap="outerHTML"
                             aria-pressed="{% if product.id in wishlist %}true{% else %}false{% endif %}"
                             aria-label="Избранное: {{ product.name }}">
                         <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg>
                     </button>
-                </div>
+                </form>
                 {% endif %}
             </div>
 
@@ -166,10 +166,7 @@
                 </li>
                 {% if product.is_available %}
                 <li>
-                    <span>В наличии: Отгрузка в течение 3 дней</span>
-                </li>
-                <li>
-                    <span>Под заказ: Изготовление от 4 недель</span>
+                    <span>Отгрузка за 3 дня, если модель есть на складе, иначе изготовление от 4 недель</span>
                 </li>
                 {% endif %}
                 <li>
@@ -196,8 +193,7 @@
                         {% endif %}
                         {% if product.weight_kg %}<li><span>Вес</span><span>{{ product.weight_kg }} кг</span></li>{% endif %}
                         {% if product.is_available %}
-                        <li><span>В наличии</span><span>Отгрузка в течение 3 дней</span></li>
-                        <li><span>Под заказ</span><span>Изготовление от 4 недель</span></li>
+                        <li><span>Срок</span><span>3 дня со склада, от 4 недель под заказ</span></li>
                         {% endif %}
                     </ul>
                 </details>

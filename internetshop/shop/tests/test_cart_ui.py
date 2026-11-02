@@ -6,6 +6,7 @@ from shop.context_processors import SITE_INFO
 from shop.models import Category
 
 from .helpers import make_product, parse, product_hrefs
+from .helpers_audit import just_ordered
 
 HX = {'HTTP_HX_REQUEST': 'true'}
 UNDO_URL = '/cart/undo/'
@@ -145,6 +146,7 @@ class E5CheckoutTests(TestCase):
 
 class E5OrderSuccessTests(TestCase):
     def test_next_step_link_to_catalog(self):
+        just_ordered(self.client)
         main = parse(self.client.get(reverse('order_success'))).find('main')
         self.assertIsNotNone(main.find('a', attrs={'href': reverse('catalog_list')}))
 

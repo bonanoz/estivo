@@ -427,6 +427,10 @@ class PagesTests(World):
             return 410, resp.status_code, resp.content.decode()
         if name == '500':
             return 500, 500, get_template('500.html').render({})
+        if name == 'order_success':  # без только что отправленной заявки страница уводит на главную
+            session = self.client.session
+            session['last_order_id'] = None
+            session.save()
         resp = self.client.get(reverse(name))
         return 200, resp.status_code, resp.content.decode()
 

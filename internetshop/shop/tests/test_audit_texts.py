@@ -9,7 +9,7 @@ from django.urls import reverse
 
 from shop.context_processors import SITE_INFO
 from shop.tests.helpers import make_product, norm_space, parse
-from shop.tests.helpers_audit import add_to_cart
+from shop.tests.helpers_audit import add_to_cart, just_ordered
 
 REPO_ROOT = Path(settings.BASE_DIR).parent
 DESIGN_SYSTEM = REPO_ROOT / 'docs' / 'design-system.md'
@@ -28,6 +28,9 @@ class E4CallbackNoteTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.product = make_product(name='Кресло Тест', price=42000)
+
+    def setUp(self):
+        just_ordered(self.client)
 
     def checkout_text(self):
         add_to_cart(self.client, self.product)

@@ -185,8 +185,7 @@ class E1ServerWithoutTelegramTests(TestCase):
         order = Order.objects.get()
         self.assertFalse(order.telegram_notified)
         self.assertEqual(order.items.count(), 1)
-        send.assert_not_called()
-        self.assertEqual(self.client.get(reverse('order_success')).status_code, 200)
+        send.assert_not_called()  # assertRedirects выше уже открыл страницу успеха и проверил 200
 
     def test_e1_order_saved_with_garbage_token(self):
         with telegram_env(BOT_TOKEN='garbage', CHAT_ID='42'):

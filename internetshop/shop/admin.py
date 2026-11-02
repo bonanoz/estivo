@@ -7,7 +7,7 @@ from .models import (
     Category, Collection, ColorOption, Lead, Material, Order, OrderItem,
     Product, ProductImage, Review, SiteSettings,
 )
-from .utils import ru_slugify
+from .utils import ru_slugify, throttle_post
 
 ATTRIBUTION_FIELDS = (
     'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term',
@@ -136,3 +136,7 @@ class ReviewAdmin(admin.ModelAdmin):
     list_display = ('product', 'author', 'rating', 'is_published', 'created_at')
     list_filter = ('is_published', 'rating')
     search_fields = ('author', 'product__name')
+
+
+# Перебор паролей: после 5 неудачных входов с одного IP за 10 минут — 429 до конца окна.
+admin.site.login = throttle_post(count_failures=True)(admin.site.login)

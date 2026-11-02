@@ -229,8 +229,8 @@ if not DEBUG:
     CSRF_COOKIE_SECURE = True
     SECURE_HSTS_SECONDS = 31536000  # shortcut: без preload/subdomains, расширить после проверки прода
     SECURE_CONTENT_TYPE_NOSNIFF = True
-    # SECRET_KEY по умолчанию небезопасный — на проде обязательно задать свой
-    if SECRET_KEY == 'django-insecure-change-me' and 'test' not in sys.argv:
+    # Ключ по умолчанию и заглушка из .env.example — не секрет; на проде нужен свой
+    if (SECRET_KEY.startswith('django-insecure') or 'change-me' in SECRET_KEY) and 'test' not in sys.argv:
         from django.core.exceptions import ImproperlyConfigured
         raise ImproperlyConfigured('Задай SECRET_KEY в переменных окружения')
     # При DEBUG=False Django не раздаёт media, а диск хостинга эфемерный: фото из админки молча пропадали бы.

@@ -47,3 +47,10 @@ def telegram_env(**env):
 def add_to_cart(client, product, **post):
     from django.urls import reverse
     return client.post(reverse('cart_add', args=[product.id]), post)
+
+
+def just_ordered(client):
+    """Сессия как сразу после отправки формы: без этого /order/success/ уводит на главную."""
+    session = client.session
+    session['last_order_id'] = None
+    session.save()

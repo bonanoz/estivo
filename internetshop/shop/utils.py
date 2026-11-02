@@ -74,8 +74,11 @@ def clean_phone_number(value):
     return value
 
 
-def throttle_post(limit=5, window=600):
+def throttle_post(limit=5, window=600, count_failures=False):
     """Не больше ``limit`` успешных POST с одного IP за ``window`` секунд; GET не считается.
+
+    ``count_failures=True`` считает, наоборот, неудачи (ответ без редиректа) — для формы входа,
+    где успех даёт 302, а перебор паролей — 200 с ошибкой.
 
     shortcut: кэш LocMem — счётчик отдельный у каждого воркера gunicorn; для общего лимита нужен Redis/DB-кэш.
     """
@@ -93,7 +96,8 @@ def throttle_post(limit=5, window=600):
             response = view(request, *args, **kwargs)
             # Считаем только успехи: ошибки в форме (200 с ошибками) бюджет не тратят.
             # View помечает успешный ответ без редиректа (htmx) атрибутом throttle_success.
-            if 300 <= response.status_code < 400 or getattr(response, 'throttle_success', False):
+            success = 300 <= response.status_code < 400 or getattr(response, 'throttle_success', False)
+            if success != count_failures:
                 cache.add(key, 0, window)
                 try:
                     cache.incr(key)
