@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-23 -23 146 146" fill="none" stroke="#281913" stroke-width="3.25" stroke-linejoin="miter">
+  <style>@media (prefers-color-scheme: dark) { svg { stroke: #fdfdfd; } }</style>
+  <g transform="rotate(45 50 50)">
+    <rect x="0" y="7" width="7" height="37"/>
+    <rect x="56" y="0" width="37" height="7"/>
+    <rect x="93" y="56" width="7" height="37"/>
+    <rect x="7" y="93" width="37" height="7"/>
+    <rect x="7" y="0" width="37" height="56"/>
+    <rect x="44" y="7" width="56" height="37"/>
+    <rect x="56" y="44" width="37" height="56"/>
+    <rect x="0" y="56" width="56" height="37"/>
+  </g>
+</svg>

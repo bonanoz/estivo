@@ -2,10 +2,11 @@
 {% load static shop_tags %}
 
 {% block meta_title %}Плетёная мебель из ротанга и роупа — производство в Тольятти | ESTIVO{% endblock %}
-{% block meta_description %}ESTIVO — плетёная мебель ручной работы из эко-ротанга и роупа. Своё производство в Тольятти, по каталогу и в ваш размер, гарантия {{ site_info.warranty }}, доставка ТК до двери по всей России.{% endblock %}
+{% block meta_description %}ESTIVO — плетёная мебель ручной работы из эко-ротанга и роупа. Своё производство в Тольятти, мебель в ваш размер, гарантия {{ site_info.warranty }}, доставка по России.{% endblock %}
 {% block og_image %}{% if site_settings.hero_image %}{{ site_settings.hero_image.url|absolute }}{% else %}{{ block.super }}{% endif %}{% endblock %}
 
 {% block content %}
+{% organization_ld site_settings.hero_image %}
 {# Строка фактов прижата к первому экрану (pb-0 здесь, малый pt у proof): без линии её держит близость, а не рамка #}
 <section data-section="hero" class="page-section home-hero pt-0 pb-0 lg:pt-16">
     <div class="page-container grid grid-cols-1 items-center gap-6 lg:grid-cols-12">

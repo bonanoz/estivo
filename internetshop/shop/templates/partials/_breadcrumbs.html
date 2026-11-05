@@ -1,4 +1,4 @@
-{% comment %} Ожидает `crumbs` — список кортежей (название, url|None). Последний пункт без url — текущая страница. {% endcomment %}
+{% load shop_tags %}{% comment %} Ожидает `crumbs` — список кортежей (название, url|None). Последний пункт без url — текущая страница. {% endcomment %}
 <nav class="breadcrumbs" aria-label="Хлебные крошки">
     <ol class="m-0 flex list-none flex-wrap items-center gap-x-2 p-0 text-[0.9rem] text-ink-soft">
         <li><a href="{% url 'home' %}" class="tap-area inline-flex min-h-6 items-center hover:opacity-85">Главная</a></li>
@@ -8,3 +8,4 @@
         {% endfor %}
     </ol>
 </nav>
+{% breadcrumbs_ld crumbs %}

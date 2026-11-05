@@ -83,6 +83,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_htmx.middleware.HtmxMiddleware',
     'shop.middleware.clear_prefetch_on_post',
+    'shop.middleware.noindex_header',
 ]
 
 ROOT_URLCONF = 'internetshop.urls'
@@ -221,6 +222,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # Публичный домен сайта — используется для sitemap.xml и абсолютных og:url/canonical
 SITE_URL = os.environ.get('SITE_URL', 'https://estivo63.ru')
+# Демо-стенд: X-Robots-Tag noindex на всех ответах (shop.middleware.noindex_header)
+SEO_NOINDEX = os.environ.get('SEO_NOINDEX', 'False') == 'True'
 
 # Прод за прокси хостинга (TLS терминируется на нём)
 if not DEBUG:

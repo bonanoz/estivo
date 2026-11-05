@@ -1,3 +1,7 @@
+# Город и улица отдельно — для разметки PostalAddress (shop_tags.organization_ld).
+ADDRESS_CITY = 'Тольятти'
+ADDRESS_STREET = 'б-р Туполева, 12А, офис 2-4'
+
 SITE_INFO = {
     'brand_name': 'ESTIVO',
     'phone': '+7 927 268-94-04',
@@ -6,7 +10,7 @@ SITE_INFO = {
     'warranty': '3 года',
     'production_term': 'от 4 недель',
     'email': 'esti-vo@mail.ru',
-    'address': 'г. Тольятти, б-р Туполева, 12А, офис 2-4',
+    'address': f'г. {ADDRESS_CITY}, {ADDRESS_STREET}',
     # долгота,широта дома для метки Яндекс Карт: поиск по тексту с «офис 2-4» ставит метку не туда
     'map_ll': '49.302885,53.521736',
     'work_hours': [

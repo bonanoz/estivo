@@ -14,6 +14,7 @@ services:
       - {key: ALLOWED_HOSTS, sync: false}
       - {key: CSRF_TRUSTED_ORIGINS, sync: false}
       - {key: SITE_URL, sync: false}
+      - {key: SEO_NOINDEX, value: "True"}  # демо на onrender.com; убрать при переезде на estivo63.ru
       - {key: DATABASE_URL, sync: false}
       - {key: BOT_TOKEN, sync: false}
       - {key: CHAT_ID, sync: false}

@@ -13,6 +13,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_GET, require_POST
 
 from .cart import Cart
+from .context_processors import SITE_INFO
 from .catalog_filters import SORT_CHOICES, apply_filters, apply_sort
 from .forms import LeadForm, OrderForm, ReviewForm
 from .models import Category, ColorOption, Material, Order, OrderItem, Product, Review
@@ -101,7 +102,21 @@ FAQ_ITEMS = [
     ('Из чего изготавливаются каркасы?', 'Из металла с порошковой окраской в любой цвет на ваш выбор.'),
     ('Как происходит покраска каркасов?', 'Каркасы красятся порошковым методом — это обеспечивает плотное и равномерное покрытие.'),
     ('Из чего изготавливаются мягкие элементы?', 'Из ткани под назначение: для улицы — прочные Оксфорд или олефин, для дома — более мягкая рогожка. Наполнитель — поролон. Материалы безопасны для взрослых и детей, гипоаллергенны.'),
+    # Дальше — только на /faq/: каталог показывает первые CATALOG_FAQ_COUNT, иначе 24 раздела повторяют один текст.
+    # Факты подтверждены владельцем 05.11.2026.
+    ('Можно ли оставлять мебель на улице зимой?', 'Да. Каркас и плетение зимуют на улице, а подушки на зиму уберите в помещение.'),
+    ('Чем роуп отличается от искусственного ротанга?', 'Роуп мягче на ощупь и выглядит современнее, но собирает больше грязи и требует больше ухода. Искусственный ротанг прочнее и лучше переносит интенсивную нагрузку, поэтому его чаще берут для кафе и отелей. Это разные коллекции, поэтому цены напрямую не сравниваются.'),
+    ('Снимаются ли чехлы с подушек?', 'Да, чехлы на молнии: их можно снять и постирать.'),
+    ('Сколько времени занимает изготовление?', f'Модели в наличии отгружаем в течение 3 дней. Изготовление в ваш размер и цвет — {SITE_INFO["production_term"]}.'),
+    ('Можно ли заказать мебель в свой размер и цвет?', 'Да. Меняем размеры и конструкцию под проект, красим каркас в любой цвет и подбираем ткань подушек. Можно сделать мебель по эскизу дизайнера.'),
+    ('Какая гарантия на мебель?', f'{SITE_INFO["warranty"].capitalize()} на каркас, плетение и подушки. Гарантия не покрывает механические повреждения, последствия неправильного ухода, естественный износ ткани и нагрузку больше 120 кг на место.'),
+    ('Как оплатить заказ?', 'По договору: 50% предоплата, остальные 50% — после фото- и видеоотчёта о готовой мебели. Онлайн-оплаты на сайте нет.'),
+    ('Как проходит доставка?', 'Доставляем транспортной компанией до двери по всей России. Стоимость считаем под регион и объём заказа. Мебель упаковываем в воздушно-пузырчатую и стрейч-плёнку.'),
+    ('Как увидеть готовую мебель до покупки?', 'Приезжайте в шоурум в Тольятти, там мебель можно посмотреть и посидеть на ней. Работаем по предварительной записи. Перед отгрузкой заказа присылаем фото и видео готового изделия.'),
+    ('Работаете ли вы с ресторанами и отелями?', 'Да. Оснащаем террасы и лаунж-зоны, делаем партии под проект, наносим логотип на подушки или крепим шильдик ESTIVO. Подготовим коммерческое предложение под ваш объект.'),
+    ('Работаете ли вы с дизайнерами и архитекторами?', 'Да. Изготавливаем мебель по вашему эскизу и платим агентское вознаграждение с заказов ваших клиентов. Условия расскажет менеджер.'),
 ]
+CATALOG_FAQ_COUNT = 6
 
 HOME_SEGMENTS = [
     {
@@ -170,11 +185,13 @@ def _catalog_context(request, products, skip=()):
         'active_filters': active_filters,
         'current_sort': current_sort,
         'sort_choices': SORT_CHOICES,
-        'faq_items': FAQ_ITEMS,
+        'faq_items': FAQ_ITEMS[:CATALOG_FAQ_COUNT],
         'querystring': params.urlencode(),
         'total_count': total_count,
         'color_options': ColorOption.objects.all(),
         'bestsellers': _bestsellers(4) if total_count == 0 else [],
+        # Превью ссылки в мессенджерах: фото первого товара раздела вместо SVG-заглушки, которую они не показывают.
+        'og_image': next((p.main_image for p in page_obj if p.main_image), None),
     }
 
 
@@ -236,7 +253,7 @@ def catalog_by_material(request, material_slug):
         'search': '',
         'current_material': material,
         'breadcrumbs': [('Каталог', reverse('catalog_list')), (material.name, None)],
-        'meta_title': f'{material.name} — каталог | ESTIVO',
+        'meta_title': f'Мебель из {material_genitive(material.name)} — купить в Тольятти и Самаре | ESTIVO',
         'meta_description': f'Мебель из {material_genitive(material.name)} ручной работы — ESTIVO. Гарантия 3 года, изготовление от 4 недель, доставка ТК до двери.',
     })
     return render(request, 'catalog_list.html', context)
@@ -399,6 +416,10 @@ def about_page(request):
 
 def delivery_payment_page(request):
     return render(request, 'delivery_payment.html', {'breadcrumbs': _crumbs('Доставка и оплата')})
+
+
+def materials_compare_page(request):
+    return render(request, 'materials_compare.html', {'breadcrumbs': _crumbs('Роуп или ротанг')})
 
 
 def warranty_page(request):

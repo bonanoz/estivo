@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block meta_title %}Контакты — ESTIVO, Тольятти{% endblock %}
-{% block meta_description %}Контакты ESTIVO: телефон {{ site_info.phone }}, {{ site_info.email }}, {{ site_info.address }}. Оставьте заявку — перезвоним или напишем в течение 5 минут в рабочее время.{% endblock %}
+{% block meta_description %}Контакты ESTIVO: телефон {{ site_info.phone }}, {{ site_info.email }}, шоурум в Тольятти. Перезвоним или напишем в течение 5 минут в рабочее время.{% endblock %}
 
 {% block body_class %}chat-inline{% endblock %}
 
@@ -11,6 +11,7 @@
         {% include 'partials/_breadcrumbs.html' with crumbs=breadcrumbs %}
         <div class="page-head mt-6">
             <h1 class="page-h1">Свяжитесь с нами</h1>
+            <p class="page-lead">В шоуруме в Тольятти готовую мебель можно посмотреть, потрогать и посидеть на ней. Приезжайте по предварительной записи: позвоните или оставьте заявку.</p>
         </div>
     </div>
 </section>
@@ -21,7 +22,7 @@
             <ul class="page-spec">
                 <li><span class="page-spec__label">Телефон</span><a data-goal="click_tel" href="tel:{{ site_info.phone_href }}" class="tap-area">{{ site_info.phone }}</a></li>
                 <li><span class="page-spec__label">Email</span><a href="mailto:{{ site_info.email }}" class="tap-area">{{ site_info.email }}</a></li>
-                <li><span class="page-spec__label">Адрес</span><span>{{ site_info.address }}</span></li>
+                <li><span class="page-spec__label">Шоурум</span><span>{{ site_info.address }}</span></li>
                 {% for label, hours in site_info.work_hours %}
                 <li><span class="page-spec__label">{{ label }}</span><span>{{ hours }}</span></li>
                 {% endfor %}

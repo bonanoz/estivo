@@ -4,6 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="format-detection" content="telephone=no">
+    <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="{% static 'img/apple-touch-icon.png' %}">
 
     {% block meta %}
     <title>{% block meta_title %}Дизайнерская мебель ручной работы | Производитель мебели из ротанга{% endblock %}</title>
@@ -26,6 +28,10 @@
     <style>.promo-dismissed [data-promo-bar]{display:none}</style>
     {% endif %}
 
+    {% media_origin as media_host %}{% if media_host %}<link rel="preconnect" href="{{ media_host }}">{% endif %}
+    {# Основные начертания Gilroy до первой отрисовки: иначе запасной шрифт переносит строки и макет сдвигается (CLS) #}
+    <link rel="preload" href="{% static 'fonts/gilroy/Gilroy-Regular.woff2' %}" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="{% static 'fonts/gilroy/Gilroy-SemiBold.woff2' %}" as="font" type="font/woff2" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&display=swap" rel="stylesheet">

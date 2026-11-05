@@ -21,9 +21,12 @@ from django.contrib.sitemaps.views import sitemap
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.shortcuts import redirect
+from django.templatetags.static import static as static_url
 from django.views.generic import TemplateView
 
 from shop.sitemaps import CatalogSitemap, ProductSitemap, StaticViewSitemap
+from shop.views import FAQ_ITEMS
 
 sitemaps = {
     'products': ProductSitemap,
@@ -35,7 +38,12 @@ urlpatterns = [
     path('', include('shop.urls')),
     path((os.environ.get('ADMIN_URL') or 'admin/'), admin.site.urls),
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='sitemap'),
+    # Боты и старые браузеры спрашивают /favicon.ico, не читая <link rel="icon">; 302 — имя файла хешируется при collectstatic.
+    path('favicon.ico', lambda request: redirect(static_url('img/favicon.svg'))),
     path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
+    # Выжимка о компании для ИИ-ассистентов (llmstxt.org)
+    path('llms.txt', TemplateView.as_view(template_name='llms.txt', content_type='text/plain; charset=utf-8',
+                                          extra_context={'faq_items': FAQ_ITEMS})),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
   + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

@@ -96,7 +96,8 @@ class E4ProductPageTests(TestCase):
         self.assertIsNotNone(ld, 'expected JSON-LD with @type Product')
         self.assertEqual(ld['name'], 'Кресло Витрина')
         offers = ld['offers'][0] if isinstance(ld['offers'], list) else ld['offers']
-        self.assertEqual(float(offers['price']), 45000)
+        self.assertEqual(offers['@type'], 'AggregateOffer')  # на сайте цена «от»
+        self.assertEqual(float(offers['lowPrice']), 45000)
         self.assertEqual(offers['priceCurrency'], 'RUB')
         self.assertNotIn('aggregateRating', ld)
 

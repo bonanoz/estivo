@@ -4,6 +4,9 @@
 {% block meta_title %}{{ meta_title|default:"Каталог плетёной мебели ручной работы | ESTIVO" }}{% endblock %}
 {% block meta_description %}{{ meta_description|default:"Каталог плетёной мебели ручной работы ESTIVO: кресла, диваны, столы, шезлонги и комплекты из роупа и ротанга. Гарантия 3 года." }}{% endblock %}
 
+{% block extra_head %}{% if search %}<meta name="robots" content="noindex, follow">{% endif %}{% endblock %}
+{% block og_image %}{% if og_image %}{{ og_image.url|absolute }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+
 {% block content %}
 <div class="catalog-page" x-data="catalogFilters"
      x-effect="$scrollLock('filters', open)"
@@ -15,7 +18,7 @@
             <div class="lg:col-span-7">
             <h1 class="catalog-banner__title">
                 {% if current_category %}{{ current_category.name }} из {{ current_material.name|material_genitive }}
-                {% elif current_material %}{{ current_material.name }}
+                {% elif current_material %}Мебель из {{ current_material.name|material_genitive }}
                 {% elif search %}Поиск: «{{ search }}»
                 {% else %}Вся мебель{% endif %}
             </h1>

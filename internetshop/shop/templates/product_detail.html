@@ -2,7 +2,8 @@
 {% load static humanize l10n shop_tags %}
 
 {% block meta_title %}{{ product.name }}{% if product.material and product.material.name|lower not in product.name|lower %} из {{ product.material.name|material_genitive }}{% endif %} | ESTIVO{% endblock %}
-{% block meta_description %}{{ product.short_description|default:product.description|truncatewords:24 }}{% endblock %}
+{% block meta_description %}{{ product|seo_description }}{% endblock %}
+{% block og_description %}{{ product|seo_description }}{% endblock %}
 {% block body_class %}{% if not product.price or not product.is_available %}chat-inline{% endif %}{% endblock %}
 {% block og_title %}{{ product.name }}{% if product.material and product.material.name|lower not in product.name|lower %} из {{ product.material.name|material_genitive }}{% endif %}{% endblock %}
 {% block extra_head %}{% if not product.is_available %}<meta name="robots" content="noindex, follow">{% endif %}{% endblock %}
@@ -17,16 +18,16 @@
   "@context": "https://schema.org",
   "@type": "Product",
   "name": "{{ product.name|escapejs }}",
-  "description": "{{ product.short_description|default:product.description|truncatewords:40|escapejs }}",
+  "description": "{{ product|seo_description|escapejs }}",
   {% if product.sku %}"sku": "{{ product.sku|escapejs }}",{% endif %}
   {% if product.main_image %}"image": "{{ product.main_image.url|absolute|escapejs }}",{% endif %}
   {% if product.material %}"material": "{{ product.material.name|escapejs }}",{% endif %}
   "brand": {"@type": "Brand", "name": "ESTIVO"},
   {% if stats %}"aggregateRating": {"@type": "AggregateRating", "ratingValue": "{{ stats.avg|floatformat:"1u" }}", "reviewCount": {{ stats.count|unlocalize }}},{% endif %}
   "offers": {
-    "@type": "Offer",
+    "@type": "AggregateOffer",
     "url": "{{ product.get_absolute_url|absolute|escapejs }}",
-    {% if product.price %}"price": "{{ product.price|unlocalize }}",{% endif %}
+    {% if product.price %}"lowPrice": "{{ product.price|unlocalize }}",{% endif %}
     "priceCurrency": "RUB",
     "availability": "https://schema.org/{% if product.is_available %}InStock{% else %}Discontinued{% endif %}"
   }

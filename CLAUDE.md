@@ -68,6 +68,9 @@ python manage.py runserver
 - `SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS` — standard Django settings, read via `os.environ` with dev-friendly defaults
 - `VITE_DEV_MODE=1` — optional, use the Vite dev server instead of the built manifest
 - `SITE_URL` — public domain, used for sitemap/canonical/OG absolute URLs (defaults to `https://estivo63.ru`)
+- `SEO_NOINDEX=True` — demo stand only (set in `render.yaml` for estivo.onrender.com): every response gets
+  `X-Robots-Tag: noindex, nofollow` (`shop.middleware.noindex_header`) so the demo isn't indexed as a duplicate of
+  the live site; robots.txt stays crawlable so bots can see the header. Remove when the real domain moves here.
 
 The project uses PostgreSQL (`psycopg2-binary`), not SQLite, despite a stray `db.sqlite3` in the tree.
 `settings.py` forces `PGCLIENTENCODING=UTF8` before connecting — Windows locales (e.g. `Russian_Russia.1251`)
@@ -76,7 +79,9 @@ otherwise cause `UnicodeDecodeError` in psycopg2. `LANGUAGE_CODE='ru'`, `TIME_ZO
 ## Architecture
 
 - `internetshop/internetshop/` — Django project config (`settings.py`, `urls.py`, `wsgi.py`/`asgi.py`).
-  `urls.py` wires `handler404`, `sitemap.xml` (`shop/sitemaps.py`), and `robots.txt`.
+  `urls.py` wires `handler404`, `sitemap.xml` (`shop/sitemaps.py`), `robots.txt`, `llms.txt` (company summary for AI
+  assistants: facts, catalog sections, FAQ — keep its facts in sync with the pages) and `/favicon.ico` (302 to
+  `static/img/favicon.svg`).
 - `internetshop/shop/` — the only app, flat structure (no sub-apps, no DRF). Models, views, forms,
   templates, and static assets all live here.
 
@@ -137,6 +142,10 @@ The product page's "В корзину" button posts via htmx and opens the cart 
 session notice so `cart_detail` still offers «Вернуть» (`cart_undo`); "Оформить заявку" posts with `name=checkout` and
 `data-no-ajax` so the server redirects straight to checkout. There is no more `order_create`.
 
+`FAQ_ITEMS` (views.py) feeds /faq/ in full (plus `FAQPage` JSON-LD) but the catalog shows only the first
+`CATALOG_FAQ_COUNT`, so 24 catalog pages don't repeat one text. `materials_compare_page` (/roup-ili-rotang/) is a
+roup-vs-rattan comparison table; its facts, like the extra FAQ answers, were confirmed by the owner on 05.11.2026.
+
 Lead-capturing pages (`b2b_page`, `designers_page`, `contacts_page`) all funnel through
 `_lead_page(request, template_name, lead_type)` — same POST/validate/save/notify logic, differing
 only in template and default `lead_type`. There is no separate `lead_create` endpoint.
@@ -154,7 +163,10 @@ shared building blocks; HTMX fragments live in `partials/htmx/`. Page templates 
 get `breadcrumbs` (list of `(label, url|None)`) from their views and render `partials/_breadcrumbs.html`.
 `base.html` sets the `html.js` flag and the promo-dismissed class in `<head>` before first paint.
 
-`shop/templatetags/shop_tags.py` provides `footer_data` and `review_stats`; context processors inject
+`shop/templatetags/shop_tags.py` provides `footer_data`, `catalog_sections`, `review_stats` and the JSON-LD tags
+`organization_ld` (home), `faq_ld` (/faq/), `breadcrumbs_ld` (inside `_breadcrumbs.html`) — `Product` JSON-LD stays
+inline in `product_detail.html`. Product meta/og/JSON-LD description comes from the `seo_description` filter
+(short_description or name + material + size, then price/warranty/term) — `description` often holds a Tilda price list. Cart, wishlist, checkout and catalog search results carry `noindex, follow`; context processors inject
 `site_info`, `site_settings` (singleton `SiteSettings`: hero/about images, promo bar with validated `promo_url`),
 `cart` and `wishlist` into every template.
 

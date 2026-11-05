@@ -129,17 +129,17 @@ class E3ProductMarkupPriceTests(TestCase):
         resp = self.client.get(product.get_absolute_url())
         self.assertEqual(resp.status_code, 200)
         content = resp.content.decode()
-        self.assertNotIn('"price": "0"', content)
+        self.assertNotIn('"lowPrice": "0"', content)
         for obj in json_ld_objects(parse(resp)):  # разметка остаётся валидным JSON
-            self.assertNotIn(obj.get('offers', {}).get('price'), ('0', 0))
+            self.assertNotIn(obj.get('offers', {}).get('lowPrice'), ('0', 0))
         self.assertContains(resp, 'Цена по запросу')
 
     def test_e3_priced_product_has_price_in_markup(self):
         product = make_product(name='Кресло Цена', slug='kreslo-cena', price=15000)
         resp = self.client.get(product.get_absolute_url())
-        self.assertIn('"price": "15000"', resp.content.decode())
+        self.assertIn('"lowPrice": "15000"', resp.content.decode())  # цена «от» -> AggregateOffer
         offer = next(o for o in json_ld_objects(parse(resp)) if o.get('@type') == 'Product')['offers']
-        self.assertEqual(offer['price'], '15000')
+        self.assertEqual(offer['lowPrice'], '15000')
         self.assertEqual(offer['priceCurrency'], 'RUB')
 
 

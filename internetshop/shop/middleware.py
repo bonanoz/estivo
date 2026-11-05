@@ -90,3 +90,14 @@ def clear_prefetch_on_post(get_response):
             response['Clear-Site-Data'] = '"prefetchCache"'
         return response
     return middleware
+
+
+def noindex_header(get_response):
+    """Демо-стенд (SEO_NOINDEX=True) не должен попасть в выдачу дублем estivo63.ru. Заголовок, а не
+    Disallow в robots.txt: заблокированную страницу бот не перечитает и уже проиндексированную не выкинет."""
+    def middleware(request):
+        response = get_response(request)
+        if settings.SEO_NOINDEX:
+            response['X-Robots-Tag'] = 'noindex, nofollow'
+        return response
+    return middleware

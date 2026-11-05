@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block meta_title %}Роуп или ротанг: какую плетёную мебель выбрать | ESTIVO{% endblock %}
+{% block meta_description %}Чем мебель из роупа отличается от мебели из искусственного ротанга: на ощупь, по виду, уходу и прочности. Сравнение от производителя ESTIVO.{% endblock %}
+
+{% block content %}
+<section class="page-section pt-6 md:pt-8">
+    <div class="page-container">
+        {% include 'partials/_breadcrumbs.html' with crumbs=breadcrumbs %}
+        <div class="page-head mt-6">
+            <h1 class="page-h1">Роуп или ротанг: что выбрать</h1>
+            <p class="page-lead">Роуп мягче на ощупь и выглядит современнее, но требует больше ухода. Искусственный ротанг прочнее и лучше переносит интенсивную нагрузку, поэтому его чаще берут для кафе и отелей. Оба материала плетём вручную на металлическом каркасе, и оба зимуют на улице.</p>
+        </div>
+
+        <table class="compare-table">
+            <caption class="sr-only">Сравнение мебели из роупа и искусственного ротанга</caption>
+            <thead>
+                <tr><th scope="col"><span class="sr-only">Параметр</span></th><th scope="col">Роуп</th><th scope="col">Ротанг</th></tr>
+            </thead>
+            <tbody>
+                <tr><th scope="row">На ощупь</th><td>Мягкий</td><td>Жёстче роупа</td></tr>
+                <tr><th scope="row">Внешний вид</th><td>Современный, крупное плетение</td><td>Классическая плетёная мебель</td></tr>
+                <tr><th scope="row">Уход</th><td>Собирает больше грязи, ухода нужно больше</td><td>Проще в уходе</td></tr>
+                <tr><th scope="row">Прочность</th><td>До 120 кг на посадочное место</td><td>До 120 кг на место, лучше переносит интенсивную нагрузку</td></tr>
+                <tr><th scope="row">Где чаще берут</th><td>Дом, дача, терраса</td><td>Кафе, рестораны, отели</td></tr>
+                <tr><th scope="row">Зимой</th><td colspan="2">Каркас и плетение остаются на улице, подушки убирают в помещение</td></tr>
+                <tr><th scope="row">Каркас</th><td colspan="2">Металл с порошковой окраской в любой цвет</td></tr>
+                <tr><th scope="row">Подушки</th><td colspan="2">Чехлы на молнии, снимаются и стираются</td></tr>
+                <tr><th scope="row">Гарантия</th><td colspan="2">{{ site_info.warranty }} на каркас, плетение и подушки</td></tr>
+                <tr><th scope="row">Цена</th><td colspan="2">Это разные коллекции, поэтому цены напрямую не сравниваются. Смотрите модели в каталоге</td></tr>
+            </tbody>
+        </table>
+
+        <div class="page-prose mt-8">
+            <h2>Что выбрать</h2>
+            <p>Для дома и террасы, где важен мягкий современный вид, подойдёт роуп. Для заведения, где мебелью пользуются каждый день, надёжнее искусственный ротанг. Если сомневаетесь, приезжайте в шоурум в Тольятти и посмотрите мебель вживую.</p>
+            <p><a href="{% url 'catalog_by_material' 'roup' %}">Мебель из роупа</a> · <a href="{% url 'catalog_by_material' 'rotang' %}">Мебель из ротанга</a></p>
+        </div>
+    </div>
+</section>
+
+{% include 'partials/_cta_section.html' %}
+{% endblock %}

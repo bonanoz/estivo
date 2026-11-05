@@ -24,6 +24,7 @@ urlpatterns = [
     path('privacy/', views.privacy_page, name='privacy_page'),
     path('garantiya/', views.warranty_page, name='warranty_page'),
     path('faq/', views.faq_page, name='faq_page'),
+    path('roup-ili-rotang/', views.materials_compare_page, name='materials_compare_page'),
     path('kontakty/', views.contacts_page, name='contacts_page'),
 
     path('cart/', views.cart_detail, name='cart_detail'),
