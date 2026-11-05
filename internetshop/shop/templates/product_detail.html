@@ -51,7 +51,7 @@
             {% else %}
             <div class="pdp-gallery__main">
                 {% if product.main_image %}
-                <img data-gallery-main src="{{ product.main_image.url }}" alt="{{ product.name }}" width="1200" height="900" fetchpriority="high">
+                <img data-gallery-main src="{{ product.main_image|thumb_url:1200 }}" srcset="{{ product.main_image|thumb_url }} 640w, {{ product.main_image|thumb_url:1200 }} 1200w, {{ product.main_image.url }} 2000w" sizes="(min-width: 1024px) 58vw, 100vw" alt="{{ product.name }}" width="1200" height="900" fetchpriority="high">
                 {% else %}
                 <img data-gallery-main src="{% static 'img/placeholders/product.svg' %}" alt="{{ product.name }}" width="1200" height="900">
                 {% endif %}
@@ -61,10 +61,10 @@
             <div class="pdp-gallery__thumbs">
                 <ul class="pdp-gallery__strip" data-gallery-strip>
                     {% if product.main_image %}
-                    <li><button type="button" data-full="{{ product.main_image.url }}" data-alt="{{ product.name }}" aria-current="true" aria-label="Показать фото 1"><img src="{{ product.main_image|thumb_url }}" alt="" width="96" height="72" loading="lazy" decoding="async"></button></li>
+                    <li><button type="button" data-full="{{ product.main_image|thumb_url:1200 }}" data-alt="{{ product.name }}" aria-current="true" aria-label="Показать фото 1"><img src="{{ product.main_image|thumb_url }}" alt="" width="96" height="72" loading="lazy" decoding="async"></button></li>
                     {% endif %}
                     {% for img in photos %}
-                    <li><button type="button" data-full="{{ img.image.url }}" data-alt="{{ product.name }} — фото {{ forloop.counter|add:1 }}" aria-current="false" aria-label="Показать фото {{ forloop.counter|add:1 }}"><img src="{{ img.image|thumb_url }}" alt="" width="96" height="72" loading="lazy" decoding="async"></button></li>
+                    <li><button type="button" data-full="{{ img.image|thumb_url:1200 }}" data-alt="{{ product.name }} — фото {{ forloop.counter|add:1 }}" aria-current="false" aria-label="Показать фото {{ forloop.counter|add:1 }}"><img src="{{ img.image|thumb_url }}" alt="" width="96" height="72" loading="lazy" decoding="async"></button></li>
                     {% endfor %}
                 </ul>
                 <div class="pdp-gallery__progress" aria-hidden="true"><span data-gallery-progress></span></div>

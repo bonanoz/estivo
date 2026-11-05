@@ -1,5 +1,5 @@
-"""Пережимает в WebP фото, загруженные до появления сжатия (shop/storage.py), и дорисовывает миниатюры
-карточек тем .webp, у которых их ещё нет.
+"""Пережимает в WebP фото, загруженные до появления сжатия (shop/storage.py), и дорисовывает уменьшенные
+копии (THUMB_SIDES) тем .webp, у которых каких-то из них ещё нет.
 
 Запуск: `python manage.py compress_media` (повторный запуск безопасен — готовое пропускается).
 Оригиналы в хранилище не удаляются: модель просто начинает ссылаться на новый файл.
@@ -11,7 +11,7 @@ from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand
 from django.db import models
 
-from shop.storage import compress_image, make_thumb, thumb_name
+from shop.storage import THUMB_SIDES, compress_image, make_thumbs, thumb_name
 
 
 class Command(BaseCommand):
@@ -29,10 +29,13 @@ class Command(BaseCommand):
                     f = getattr(obj, field.name)
                     try:
                         if f.name.endswith('.webp'):
-                            if not f.storage.exists(thumb_name(f.name)):
+                            missing = [s for s in THUMB_SIDES if not f.storage.exists(thumb_name(f.name, s))]
+                            if missing:
                                 with f.open('rb'):
-                                    f.storage.save_thumb(f.name, make_thumb(ContentFile(f.read())))
-                                thumbs += 1
+                                    made = make_thumbs(ContentFile(f.read()))
+                                for side in missing:
+                                    f.storage.save_thumb(f.name, made[side], side)
+                                thumbs += len(missing)
                             continue
                         with f.open('rb'):
                             content = ContentFile(f.read())

@@ -1,3 +1,9 @@
+// Cormorant Garamond (OFL) из своих файлов, а не с Google Fonts: их CSS блокировал отрисовку на 700+ мс
+// на мобильном. Только кириллица и латиница — других алфавитов на сайте нет.
+import '@fontsource/cormorant-garamond/cyrillic-500.css';
+import '@fontsource/cormorant-garamond/latin-500.css';
+import '@fontsource/cormorant-garamond/cyrillic-600.css';
+import '@fontsource/cormorant-garamond/latin-600.css';
 import './styles/main.css';
 import htmx from 'htmx.org';
 import Alpine from 'alpinejs';

@@ -192,7 +192,8 @@ The color swatch handling in `frontend/src/product/variants.ts` maps swatches to
 materials must be named `weave` / `cushion` / `frame` (same strings as `finish_type`). When re-vendoring
 model-viewer, strip its trailing `//# sourceMappingURL=` comment or `collectstatic` fails on the missing `.map`.
 
-Typography: headings use **Cormorant Garamond** (Google Fonts). Body/UI text uses **Gilroy**, which
+Typography: headings use **Cormorant Garamond** (npm `@fontsource/cormorant-garamond`, cyrillic+latin 500/600
+imported in `main.ts`, bundled by Vite — no Google Fonts request). Body/UI text uses **Gilroy**, which
 is a paid font; the owner has a license for weights 300–800 (confirmed 23.10.2026, files from their Tilda
 account). Tokens: `--weight-body-regular` 400 (body text), `--weight-ui` 600 (buttons, UI labels),
 `--weight-body-bold` 800 (prices); 300 only in the sale banner line. The `.woff2` files live in
@@ -215,9 +216,11 @@ each run).
 Media (uploaded photos, `.glb` models) lives under `MEDIA_ROOT` (`media/`), or in an S3 bucket when
 `AWS_STORAGE_BUCKET_NAME` is set. Both default storages are `shop.storage.Compressed*`: every saved image is
 converted to WebP (long side ≤2000 px, EXIF rotation applied) unless that would be larger; non-images pass through.
-Every `*.webp` also gets a card thumbnail next to it (`x.w640.webp`, `shop.storage.thumb_name`); templates use the
-`thumb_url` filter (falls back to the full file for non-WebP) and `srcset` on product/offer cards.
-Files uploaded before that are re-encoded and get thumbnails via `python manage.py compress_media` (idempotent, keeps originals). `settings.STORAGES` must
+Every `*.webp` also gets smaller copies next to it for each `storage.THUMB_SIDES` (`x.w400/w640/w1200.webp`,
+`shop.storage.thumb_name(name, side)`); templates use `thumb_url` / `thumb_url:1200` (falls back to the full file for
+non-WebP) in `srcset` on cards, the PDP main photo and the home hero. Missing copies (older uploads, a newly added size)
+are made by `python manage.py compress_media` (idempotent, keeps originals) — `build.sh` runs it before the new release
+goes live, so templates never point at a copy that isn't in the bucket yet. `settings.STORAGES` must
 define **both** `default` (FileSystemStorage) and `staticfiles` — omitting `default` makes any
 `<file>.url` raise `InvalidStorageError` (surfaces only once a real image/model is uploaded).
 

@@ -32,9 +32,6 @@
     {# Основные начертания Gilroy до первой отрисовки: иначе запасной шрифт переносит строки и макет сдвигается (CLS) #}
     <link rel="preload" href="{% static 'fonts/gilroy/Gilroy-Regular.woff2' %}" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="{% static 'fonts/gilroy/Gilroy-SemiBold.woff2' %}" as="font" type="font/woff2" crossorigin>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&display=swap" rel="stylesheet">
 
     <script>window.dataLayer=window.dataLayer||[]</script>
     {% if analytics_consent %}{% include 'partials/_metrika.html' %}{% endif %}

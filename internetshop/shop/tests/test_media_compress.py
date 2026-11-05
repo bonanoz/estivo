@@ -11,10 +11,10 @@ from django.test import TestCase, override_settings
 from PIL import Image
 
 from shop.models import Product
-from shop.storage import MAX_SIDE, THUMB_SIDE, thumb_name
+from shop.storage import MAX_SIDE, THUMB_SIDE, THUMB_SIDES, thumb_name
 from shop.templatetags.shop_tags import thumb_url
 
-from .helpers import make_product
+from .helpers import make_product, parse
 
 
 def image_bytes(size=(2400, 1600), fmt='JPEG', mode='RGB', **save_kw):
@@ -92,11 +92,11 @@ class MediaCompressTests(MediaTestBase):
 class ThumbTests(MediaTestBase):
     """Миниатюры карточек: лежат рядом с каждым .webp, шаблоны берут их через фильтр thumb_url."""
 
-    def test_upload_creates_thumb(self):
+    def test_upload_creates_all_thumb_sizes(self):
         p = make_product(main_image=SimpleUploadedFile('big.jpg', image_bytes()))
-        thumb = thumb_name(p.main_image.name)
-        with p.main_image.storage.open(thumb) as f:
-            self.assertEqual(max(Image.open(f).size), THUMB_SIDE)
+        for side in THUMB_SIDES:
+            with p.main_image.storage.open(thumb_name(p.main_image.name, side)) as f:
+                self.assertEqual(max(Image.open(f).size), side)
 
     def test_thumb_url_falls_back_to_file_without_thumb(self):
         p = make_product(main_image=SimpleUploadedFile('big.jpg', image_bytes()))
@@ -109,7 +109,15 @@ class ThumbTests(MediaTestBase):
     def test_catalog_card_uses_thumb_srcset(self):
         make_product(main_image=SimpleUploadedFile('big.jpg', image_bytes()))
         html = self.client.get('/catalog/').content.decode()
-        self.assertRegex(html, rf'srcset="[^"]+\.w{THUMB_SIDE}\.webp {THUMB_SIDE}w,[^"]+\.webp 2000w"')
+        # карточка не тянет оригинал 2000 px: хватает копий 400 и 640
+        self.assertRegex(html, r'srcset="[^"]+\.w400\.webp 400w, [^"]+\.w640\.webp 640w"')
+        self.assertNotIn(' 2000w', html)
+
+    def test_product_page_main_photo_is_1200_copy(self):
+        p = make_product(main_image=SimpleUploadedFile('big.jpg', image_bytes()))
+        main = parse(self.client.get(p.get_absolute_url())).find('img', attrs={'data-gallery-main': ''})
+        self.assertTrue(main.get('src').endswith('.w1200.webp'), main.get('src'))
+        self.assertIn('.w640.webp 640w', main.get('srcset'))
 
     def test_command_adds_missing_thumbs_once(self):
         name = FileSystemStorage().save('products/ready.webp', ContentFile(image_bytes(fmt='WEBP')))
@@ -118,11 +126,23 @@ class ThumbTests(MediaTestBase):
 
         out = io.StringIO()
         call_command('compress_media', stdout=out, stderr=io.StringIO())
-        self.assertIn('миниатюр дорисовано 1', out.getvalue())
+        self.assertIn(f'миниатюр дорисовано {len(THUMB_SIDES)}', out.getvalue())
         storage = FileSystemStorage()
-        self.assertTrue(storage.exists(thumb_name(name)))
+        self.assertTrue(all(storage.exists(thumb_name(name, side)) for side in THUMB_SIDES))
         self.assertFalse(storage.exists(thumb_name(thumb_name(name))))  # не миниатюра миниатюры
 
         out = io.StringIO()
         call_command('compress_media', stdout=out, stderr=io.StringIO())
         self.assertIn('миниатюр дорисовано 0', out.getvalue())
+
+    def test_command_adds_only_new_size_to_old_photos(self):
+        # фото, загруженное до появления размеров 400/1200: есть только w640
+        p = make_product(main_image=SimpleUploadedFile('big.jpg', image_bytes()))
+        storage = p.main_image.storage
+        for side in THUMB_SIDES:
+            if side != THUMB_SIDE:
+                storage.delete(thumb_name(p.main_image.name, side))
+        out = io.StringIO()
+        call_command('compress_media', stdout=out, stderr=io.StringIO())
+        self.assertIn(f'миниатюр дорисовано {len(THUMB_SIDES) - 1}', out.getvalue())
+        self.assertTrue(all(storage.exists(thumb_name(p.main_image.name, side)) for side in THUMB_SIDES))

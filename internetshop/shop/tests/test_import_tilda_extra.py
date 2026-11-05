@@ -53,3 +53,18 @@ class ExtraTests(TestCase):
         self.assertEqual(a.material.slug, 'hpl')
         self.assertIsNone(a.temp_min_c)
         self.assertEqual(b.material.slug, 'rotang')
+
+    def test_resolved_duplicates_get_site_names(self):
+        # решения владельца (RESOLVED_DUPLICATES): один кокон со скидкой, два комплекта №58 под разными именами
+        self.run_csv(
+            row(378404481692, 'Подвесные кресла-коконы', 'Кокон «Комо» из ротанга'),
+            row(517437746363, 'Sale ротанг', 'Кокон «Комо» из ротанга'),
+            row(387930922362, 'Sale ротанг', 'Комплект мебели из ротанга 58'),
+            row(759183152893, 'Sale ротанг', 'Комплект мебели из ротанга 58'),
+        )
+        names = dict(Product.objects.values_list('tilda_id', 'name'))
+        self.assertEqual(names, {
+            517437746363: 'Кокон «Комо» из ротанга',
+            387930922362: 'Комплект мебели из ротанга «№58»',
+            759183152893: 'Комплект мебели из ротанга «№58 угловой»',
+        })

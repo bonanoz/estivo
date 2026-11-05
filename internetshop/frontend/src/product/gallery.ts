@@ -14,7 +14,10 @@ export function initGallery(): void {
   thumbs.forEach((thumb) => {
     thumb.addEventListener('click', () => {
       const full = thumb.dataset.full;
-      if (full) main.src = full;
+      if (full) {
+        main.removeAttribute('srcset'); // srcset первого фото иначе перебил бы src выбранного
+        main.src = full;
+      }
       const alt = thumb.dataset.alt;
       if (alt) main.alt = alt;
       thumbs.forEach((t) => t.setAttribute('aria-current', t === thumb ? 'true' : 'false'));

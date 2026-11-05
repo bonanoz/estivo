@@ -10,7 +10,7 @@ from django.utils.safestring import mark_safe
 
 from shop.context_processors import ADDRESS_CITY, ADDRESS_STREET, SITE_INFO
 from shop.models import Product, Review
-from shop.storage import thumb_name
+from shop.storage import THUMB_SIDE, thumb_name
 
 register = template.Library()
 
@@ -27,9 +27,12 @@ def material_genitive(name):
 
 
 @register.filter
-def thumb_url(image):
-    """Миниатюра для карточек (shop/storage.py кладёт её рядом с каждым .webp); у прочих файлов — сам файл."""
-    return image.storage.url(thumb_name(image.name)) if image.name.endswith('.webp') else image.url
+def thumb_url(image, side=THUMB_SIDE):
+    """Уменьшенная копия (shop/storage.py кладёт её рядом с каждым .webp); у прочих файлов — сам файл.
+
+    ``{{ img|thumb_url:1200 }}`` — копия с длинной стороной 1200 px (размеры — storage.THUMB_SIDES).
+    """
+    return image.storage.url(thumb_name(image.name, side)) if image.name.endswith('.webp') else image.url
 
 
 @register.filter

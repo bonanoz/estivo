@@ -50,6 +50,13 @@ SECTIONS = {
 }
 COLORS_SECTION = 'цвета ротанга'
 R12_MANUAL = {'стол милан с hpl 180х110 см (роуп)'}
+# Дубли по названию, которые владелец разобрал 05.11.2026: tilda_id -> название на сайте, None — не импортировать.
+RESOLVED_DUPLICATES = {
+    517437746363: 'Кокон «Комо» из ротанга',  # распродажа: 25 000 вместо 38 000
+    378404481692: None,  # тот же кокон без скидки
+    387930922362: 'Комплект мебели из ротанга «№58»',  # диван 4х, стол Понте Люкс, 4 стула, 2 кресла
+    759183152893: 'Комплект мебели из ротанга «№58 угловой»',  # угловой диван, стол Турин
+}
 
 DIM_RE = re.compile(
     r'(?:Габариты|Размер)\s*:?\s*(\d+)\s*[хxX×Х]\s*(\d+)\s*[хxX×Х]\s*(\d+)\s*(мм|см)?', re.IGNORECASE,
@@ -142,9 +149,9 @@ class Command(BaseCommand):
         s = self.stats
         self.stdout.write(
             f"{'[dry-run] ' if opts['dry_run'] else ''}создано {s['created']}, обновлено {s['updated']}, "
-            f"без изменений {s['same']}, пропущено {s['demo'] + s['colors'] + s['skirts'] + s['copy'] + s['variants']} "
+            f"без изменений {s['same']}, пропущено {s['demo'] + s['colors'] + s['skirts'] + s['copy'] + s['variants'] + s['duplicates']} "
             f"(демо {s['demo']}, цвета {s['colors']}, юбки {s['skirts']}, Copy {s['copy']}, "
-            f"варианты {s['variants']}), ручная проверка {s['manual']}"
+            f"варианты {s['variants']}, дубли {s['duplicates']}), ручная проверка {s['manual']}"
         )
 
     def write_report(self, path):
@@ -209,7 +216,13 @@ class Command(BaseCommand):
         for r in items:
             n = norm(r['Title'])
             text = clean_text(r['Text'] or r['Description'])
-            if groups[n] > 1:
+            resolved = RESOLVED_DUPLICATES.get(int(r['Tilda UID']), '')
+            if resolved:
+                r['Title'] = resolved
+                self.import_row(r, text, variants.get(r['Tilda UID'].strip(), []))
+            elif resolved is None:
+                self.stats['duplicates'] += 1
+            elif groups[n] > 1:
                 self.skip_manual(r, 'то же название')
             elif n in R12_MANUAL:
                 self.skip_manual(r, 'расхождение цены (R12)')
