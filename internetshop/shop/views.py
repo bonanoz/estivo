@@ -64,6 +64,12 @@ def _dl_product(product, **extra):
             'category': product.category.name if product.category_id else '', **extra}
 
 
+def _dl_variant(variant):
+    if variant is None:
+        return {}
+    return {'variant': _variant_label(variant), 'price': variant.price}
+
+
 def _crumbs(*trail):
     """Хлебные крошки: последняя — текущая страница (без ссылки)."""
     return [(label, None) for label in trail]
@@ -297,6 +303,22 @@ def _valid_colors(product, data, prefix=''):
     return colors
 
 
+def _pick_variant(product, raw):
+    """Вариант товара по id из запроса; чужой, мусор и пусто дают первый, у товара без вариантов None."""
+    variants = list(product.variants.all())  # порядок: order, price (Meta); при prefetch запроса нет
+    if not variants:
+        return None
+    try:
+        wanted = int(raw)
+    except (TypeError, ValueError):
+        return variants[0]
+    return next((v for v in variants if v.id == wanted), variants[0])
+
+
+def _variant_label(variant):
+    return f'{variant.size}, {variant.tabletop.name}' if variant.tabletop_id else variant.size
+
+
 def _product_context(request, product, review_form=None):
     related_products = (
         Product.objects.filter(is_available=True, category=product.category)
@@ -307,21 +329,29 @@ def _product_context(request, product, review_form=None):
     if product.material:
         crumbs.append((product.material.name, reverse('catalog_by_material', args=[product.material.slug])))
     crumbs.append((product.name, None))
+    variants = list(product.variants.all())
+    selected_variant = _pick_variant(product, request.GET.get('variant'))
+    prices = [v.price for v in variants]
     return {
         'product': product,
+        'variants': variants,
+        'selected_variant': selected_variant,
+        'high_price': max(prices) if prices else None,
+        'collections': list(product.collections.all()) if product.is_available else [],
         'related_products': related_products,
         'reviews': reviews,
         'breadcrumbs': crumbs,
         'selected_colors': _valid_colors(product, request.GET),  # предвыбор из ?weave=&cushion=&frame=
         'review_form': review_form or ReviewForm(),
-        'datalayer': {'ecommerce': {'currencyCode': 'RUB', 'detail': {'products': [_dl_product(product)]}}},
+        'datalayer': {'ecommerce': {'currencyCode': 'RUB', 'detail': {'products': [_dl_product(product, **_dl_variant(selected_variant))]}}},
     }
 
 
 def product_detail(request, slug):
     # Цвета читают и _valid_colors, и colors_by_type в шаблоне — один запрос на двоих.
     product = get_object_or_404(
-        Product.objects.select_related('material', 'category').prefetch_related('available_colors'), slug=slug)
+        Product.objects.select_related('material', 'category')
+        .prefetch_related('available_colors', 'collections', 'variants__tabletop'), slug=slug)
     return render(request, 'product_detail.html', _product_context(request, product))
 
 
@@ -455,8 +485,9 @@ def cart_add(request, product_id):
         quantity = max(1, int(request.POST.get('quantity', 1)))
     except (TypeError, ValueError):
         quantity = 1
+    variant = _pick_variant(product, request.POST.get('variant'))
     cart = Cart(request)
-    cart.add(product, colors=colors, quantity=quantity)
+    cart.add(product, colors=colors, quantity=quantity, variant=variant)
     if request.htmx and 'checkout' not in request.POST:
         recommendations = (
             Product.objects.filter(is_available=True, category=product.category)
@@ -468,7 +499,7 @@ def cart_add(request, product_id):
             'recommendations': recommendations,
         })
         response['HX-Trigger'] = json.dumps(
-            {'ecommerce:add': {'products': [_dl_product(product, quantity=quantity)]}})
+            {'ecommerce:add': {'products': [_dl_product(product, quantity=quantity, **_dl_variant(variant))]}})
         return response
     if 'checkout' in request.POST:
         if request.htmx:

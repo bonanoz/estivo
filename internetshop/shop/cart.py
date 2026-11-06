@@ -5,7 +5,7 @@
 тот же товар с разными цветами попадает в корзину как две отдельные позиции.
 """
 
-from .models import ColorOption, Product
+from .models import ColorOption, Product, ProductVariant
 
 CART_SESSION_ID = 'cart'
 CART_UNDO_SESSION_ID = 'cart_undo'
@@ -17,14 +17,16 @@ def _clamp(quantity):
     return min(quantity, MAX_QUANTITY)
 
 
-def _line_id(product_id, colors):
-    """Детерминированный ключ позиции: товар + выбранные цвета.
+def _line_id(product_id, colors, variant_id=None):
+    """Детерминированный ключ позиции: товар + вариант + выбранные цвета.
 
     Один товар с одинаковым набором цветов всегда даёт один ключ (повторное
     добавление увеличивает количество), а другой набор цветов — новую позицию.
     """
     parts = [f'{ft}={cid}' for ft, cid in sorted(colors.items())]
-    return f'{product_id}:' + '-'.join(parts)
+    # Без варианта ключ прежний: строки, добавленные до обновления, остаются теми же.
+    prefix = f'{product_id}:v{variant_id}:' if variant_id else f'{product_id}:'
+    return prefix + '-'.join(parts)
 
 
 class Cart:
@@ -34,10 +36,11 @@ class Cart:
         self._cart = self.session.get(CART_SESSION_ID, {})
         self._lines = None
 
-    def add(self, product, colors=None, quantity=1):
-        """Добавить товар с выбранными цветами (``{finish_type: color_id}``)."""
+    def add(self, product, colors=None, quantity=1, variant=None):
+        """Добавить товар с вариантом и выбранными цветами (``{finish_type: color_id}``)."""
         colors = colors or {}
-        line_id = _line_id(product.id, colors)
+        variant_id = variant.id if variant else None
+        line_id = _line_id(product.id, colors, variant_id)
         if line_id in self._cart:
             self._cart[line_id]['quantity'] = _clamp(self._cart[line_id]['quantity'] + quantity)
         else:
@@ -45,6 +48,7 @@ class Cart:
                 'product_id': product.id,
                 'quantity': _clamp(quantity),
                 'colors': colors,
+                **({'variant_id': variant_id} if variant_id else {}),
             }
         self.save()
         return line_id
@@ -110,13 +114,27 @@ class Cart:
         for item in self._cart.values():
             color_ids.update(item.get('colors', {}).values())
         colors = ColorOption.objects.in_bulk(list(color_ids)) if color_ids else {}
+        variant_ids = [item['variant_id'] for item in self._cart.values() if item.get('variant_id')]
+        variants = (ProductVariant.objects.select_related('tabletop').in_bulk(variant_ids)
+                    if variant_ids else {})
 
         for line_id, item in self._cart.items():
             product = products.get(item['product_id'])
             if product is None or not product.is_available:
                 continue
+            variant = None
+            if item.get('variant_id'):
+                variant = variants.get(item['variant_id'])
+                # Вариант удалили или он чужой: строку не показываем, как снятый товар.
+                if variant is None or variant.product_id != product.id:
+                    continue
+            unit_price = variant.price if variant else product.price
             colors_map = item.get('colors', {})
             colors_display = []
+            if variant:
+                colors_display.append(('Размер', variant.size))
+                if variant.tabletop_id:
+                    colors_display.append(('Столешница', variant.tabletop.name))
             for finish_type, label in ColorOption.FINISH_TYPE_CHOICES:
                 color_id = colors_map.get(finish_type)
                 color = colors.get(color_id)
@@ -129,10 +147,11 @@ class Cart:
                 'quantity': quantity,
                 'colors': colors_map,
                 'colors_display': colors_display,
-                'unit_price': product.price,
-                'line_total': product.price * quantity,
+                'variant': variant,
+                'unit_price': unit_price,
+                'line_total': unit_price * quantity,
                 # Цену обнулили после добавления: строка остаётся, но суммы нет, итог её не включает.
-                'on_request': not product.price,
+                'on_request': not unit_price,
             }
 
     def __len__(self):

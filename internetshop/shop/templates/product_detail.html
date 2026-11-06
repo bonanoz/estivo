@@ -28,6 +28,7 @@
     "@type": "AggregateOffer",
     "url": "{{ product.get_absolute_url|absolute|escapejs }}",
     {% if product.price %}"lowPrice": "{{ product.price|unlocalize }}",{% endif %}
+    {% if high_price %}"highPrice": "{{ high_price|unlocalize }}", "offerCount": {{ variants|length|unlocalize }},{% endif %}
     "priceCurrency": "RUB",
     "availability": "https://schema.org/{% if product.is_available %}InStock{% else %}Discontinued{% endif %}"
   }
@@ -94,6 +95,9 @@
                 </form>
                 {% endif %}
             </div>
+            {% if collections %}
+            <p class="pdp-collections">{% if collections|length > 1 %}Коллекции:{% else %}Коллекция:{% endif %} {% for c in collections %}<a href="/kollekcii/{{ c.slug }}/" class="underline">{{ c.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+            {% endif %}
 
             <a href="#reviews" class="pdp-rating">
                 {% if stats %}
@@ -132,6 +136,23 @@
             <form method="post" action="{% url 'cart_add' product.id %}" id="pdp-form" data-pdp-form>
                 {% csrf_token %}
 
+                {% if variants %}
+                <fieldset class="pdp-variants" data-variant-list>
+                    <legend>Размер и столешница</legend>
+                    <ul class="pdp-variants__list">
+                        {% for v in variants %}
+                        <li>
+                            <label class="pdp-variant">
+                                <input type="radio" name="variant" value="{{ v.id|unlocalize }}" data-size="{{ v.size }}" data-top="{{ v.tabletop.name|default:'' }}" data-price="{{ v.price|unlocalize }}" data-label="{{ v.size }}{% if v.tabletop %}, {{ v.tabletop.name }}{% endif %}" {% if v.id == selected_variant.id %}checked{% endif %}>
+                                <span class="pdp-variant__name">{{ v.size }}{% if v.tabletop %}, {{ v.tabletop.name }}{% endif %}</span>
+                                <span class="pdp-variant__price">{{ v.price|intcomma }}&nbsp;₽</span>
+                            </label>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </fieldset>
+                {% endif %}
+
                 {% for label, finish_type, options in product.colors_by_type %}
                 <fieldset class="pdp-colors">
                     <legend>{{ label }}: <span data-color-label>{% for color in options %}{% if color.id in selected_colors.values %}{{ color.name }}{% elif finish_type not in selected_colors and forloop.first %}{{ color.name }}{% endif %}{% endfor %}</span></legend>
@@ -152,7 +173,7 @@
                     <button type="submit" class="btn btn-dark btn-lg btn-block" data-add-to-cart
                             hx-post="{% url 'cart_add' product.id %}" hx-include="#pdp-form"
                             hx-target="#cart-drawer-slot" hx-swap="innerHTML" hx-disabled-elt="this">
-                        В корзину — {{ product.price|intcomma }}&nbsp;₽
+                        В корзину — {% if selected_variant %}<span data-variant-price>{{ selected_variant.price|intcomma }}&nbsp;₽</span>{% else %}{{ product.price|intcomma }}&nbsp;₽{% endif %}
                     </button>
                     <button type="submit" name="checkout" value="1" class="btn btn-primary btn-lg btn-block" data-no-ajax>Оформить заявку</button>
                 </div>
@@ -245,7 +266,7 @@
 <div class="pdp-sticky" data-sticky-bar inert>
     <button type="submit" form="pdp-form" class="btn btn-dark" data-add-to-cart
             hx-post="{% url 'cart_add' product.id %}" hx-include="#pdp-form"
-            hx-target="#cart-drawer-slot" hx-swap="innerHTML" hx-disabled-elt="this">В корзину</button>
+            hx-target="#cart-drawer-slot" hx-swap="innerHTML" hx-disabled-elt="this">В корзину{% if selected_variant %} — <span data-variant-price>{{ selected_variant.price|intcomma }}&nbsp;₽</span>{% endif %}</button>
     <button type="submit" form="pdp-form" name="checkout" value="1" class="btn btn-primary" data-no-ajax>Оформить заявку</button>
 </div>
 {% endif %}
