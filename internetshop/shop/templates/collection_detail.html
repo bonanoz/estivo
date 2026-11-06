@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load shop_tags %}
+
+{% block meta_title %}Коллекция «{{ collection.name }}» — уличная мебель ESTIVO{% endblock %}
+{% block meta_description %}{{ meta_description }}{% endblock %}
+{% block og_image %}{% if collection.cover_image %}{{ collection.cover_image.url|absolute }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+
+{% block content %}
+<section class="page-section pt-6 md:pt-8">
+    <div class="page-container">
+        {% include 'partials/_breadcrumbs.html' with crumbs=breadcrumbs %}
+        <h1 class="mt-6">Коллекция «{{ collection.name }}»</h1>
+        {% if collection.description %}<p class="mt-4 max-w-[65ch]">{{ collection.description }}</p>{% endif %}
+
+        {% if sections|length > 1 %}
+        <nav class="mt-6 flex flex-wrap gap-x-6 gap-y-2" aria-label="Зоны коллекции">
+            {% for zone, products in sections %}
+            <a href="#{% if zone %}zone-{{ zone.slug }}{% else %}more{% endif %}" class="flex min-h-11 items-center underline">{% if zone %}{{ zone.name }}{% else %}Ещё в коллекции{% endif %}</a>
+            {% endfor %}
+        </nav>
+        {% endif %}
+
+        {% for zone, products in sections %}
+        <div class="mt-12">
+            <h2 id="{% if zone %}zone-{{ zone.slug }}{% else %}more{% endif %}">{% if zone %}{{ zone.name }}{% else %}Ещё в коллекции{% endif %}</h2>
+            <div class="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
+                {% for product in products %}
+                {% include 'partials/_product_card.html' with title_tag='p' %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
