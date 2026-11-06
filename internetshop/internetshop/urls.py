@@ -25,12 +25,13 @@ from django.shortcuts import redirect
 from django.templatetags.static import static as static_url
 from django.views.generic import TemplateView
 
-from shop.sitemaps import CatalogSitemap, ProductSitemap, StaticViewSitemap
+from shop.sitemaps import CatalogSitemap, CollectionSitemap, ProductSitemap, StaticViewSitemap
 from shop.views import FAQ_ITEMS
 
 sitemaps = {
     'products': ProductSitemap,
     'catalog': CatalogSitemap,
+    'collections': CollectionSitemap,
     'static': StaticViewSitemap,
 }
 

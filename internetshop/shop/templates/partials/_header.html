@@ -49,6 +49,7 @@
 
         <nav class="hidden items-center justify-center gap-6 lg:flex" aria-label="Основная навигация">
             <a href="{% url 'catalog_list' %}" class="flex min-h-11 items-center hover:opacity-85">Каталог</a>
+            <a href="{% url 'collection_list' %}" class="flex min-h-11 items-center hover:opacity-85">Коллекции</a>
             <a href="{% url 'b2b_page' %}" class="flex min-h-11 items-center hover:opacity-85">Бизнесу</a>
             <a href="{% url 'designers_page' %}" class="flex min-h-11 items-center hover:opacity-85">Дизайнерам</a>
             <a href="{% url 'about_page' %}" class="flex min-h-11 items-center hover:opacity-85">О нас</a>
@@ -80,6 +81,7 @@
          aria-label="Меню" x-show="menu" x-cloak x-transition.opacity.duration.200ms>
         <ul class="m-0 flex list-none flex-col p-0">
             <li><a href="{% url 'catalog_list' %}" class="flex min-h-12 items-center text-lg">Каталог</a></li>
+            <li><a href="{% url 'collection_list' %}" class="flex min-h-12 items-center text-lg">Коллекции</a></li>
             <li><a href="{% url 'b2b_page' %}" class="flex min-h-12 items-center text-lg">Бизнесу</a></li>
             <li><a href="{% url 'designers_page' %}" class="flex min-h-12 items-center text-lg">Дизайнерам</a></li>
             <li><a href="{% url 'about_page' %}" class="flex min-h-12 items-center text-lg">О нас</a></li>

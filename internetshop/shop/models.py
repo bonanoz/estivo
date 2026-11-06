@@ -1,6 +1,7 @@
 from django.core.cache import cache
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.db import models
+from django.db.models import Min, Q
 from django.urls import reverse
 
 from .utils import ru_slugify
@@ -149,6 +150,42 @@ class Collection(models.Model):
         super().save(*args, **kwargs)
 
 
+class Zone(models.Model):
+    """Зона внутри коллекции: обеденная группа, лаунж-зона и т.д. Справочник для владельца."""
+
+    name = models.CharField('Название', max_length=64)
+    slug = models.SlugField(max_length=64, unique=True, blank=True)
+    order = models.IntegerField('Порядок', default=0)
+
+    class Meta:
+        ordering = ['order', 'name']
+        verbose_name = 'Зона'
+        verbose_name_plural = 'Зоны'
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = ru_slugify(self.name)
+        super().save(*args, **kwargs)
+
+
+class TabletopType(models.Model):
+    """Вид столешницы для вариантов столов: стекло, HPL compact и т.д."""
+
+    name = models.CharField('Название', max_length=64)
+    order = models.IntegerField('Порядок', default=0)
+
+    class Meta:
+        ordering = ['order', 'name']
+        verbose_name = 'Вид столешницы'
+        verbose_name_plural = 'Виды столешниц'
+
+    def __str__(self):
+        return self.name
+
+
 class ColorOption(models.Model):
     """Цвет отделки для конфигуратора товара.
 
@@ -202,8 +239,11 @@ class Product(models.Model):
     category = models.ForeignKey(
         Category, on_delete=models.PROTECT, null=True, blank=True, related_name='products',
     )
-    collection = models.ForeignKey(
-        Collection, on_delete=models.SET_NULL, null=True, blank=True, related_name='products',
+    collections = models.ManyToManyField(
+        Collection, blank=True, related_name='products', verbose_name='Коллекции',
+    )
+    zone = models.ForeignKey(
+        Zone, on_delete=models.SET_NULL, null=True, blank=True, related_name='products', verbose_name='Зона',
     )
 
     price = models.IntegerField(help_text='Цена в рублях (или цена "от" для комплектов)')
@@ -286,6 +326,14 @@ class Product(models.Model):
             codes.append('sale')
         return codes
 
+    def sync_price_from_variants(self):
+        """Цена «от» = наименьшая цена вариантов. Без вариантов цену не трогаем."""
+        low = self.variants.aggregate(low=Min('price'))['low']
+        # Без сравнения с self.price: объект в памяти мог устареть, а в базе цена другая.
+        if low is not None:
+            Product.objects.filter(pk=self.pk).update(price=low)
+            self.price = low
+
     def colors_by_type(self):
         """Доступные цвета, сгруппированные по типу отделки, в порядке
         Плетение → Подушки → Каркас. Пустые группы не попадают в результат —
@@ -299,6 +347,44 @@ class Product(models.Model):
             if options:
                 groups.append((label, finish_type, options))
         return groups
+
+
+class ProductVariant(models.Model):
+    """Вариант товара: размер + столешница (необязательно) со своей ценой."""
+
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='variants')
+    size = models.CharField('Размер', max_length=64, help_text='Например: 160×90 см или Ø 55 см')
+    tabletop = models.ForeignKey(
+        TabletopType, on_delete=models.PROTECT, null=True, blank=True, related_name='variants',
+        verbose_name='Столешница',
+    )
+    price = models.IntegerField('Цена, ₽', validators=[MinValueValidator(1)])
+    order = models.IntegerField('Порядок', default=0)
+
+    class Meta:
+        ordering = ['order', 'price']
+        verbose_name = 'Вариант'
+        verbose_name_plural = 'Варианты'
+        constraints = [
+            models.UniqueConstraint(fields=['product', 'size', 'tabletop'], name='uniq_variant_product_size_top'),
+            # в Postgres NULL != NULL: без этого два варианта без столешницы не считались бы дублем
+            models.UniqueConstraint(
+                fields=['product', 'size'], condition=Q(tabletop__isnull=True),
+                name='uniq_variant_product_size_no_top',
+            ),
+        ]
+
+    def __str__(self):
+        return f'{self.size}, {self.tabletop}' if self.tabletop_id else self.size
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.product.sync_price_from_variants()
+
+    def delete(self, *args, **kwargs):
+        result = super().delete(*args, **kwargs)
+        self.product.sync_price_from_variants()
+        return result
 
 
 class ProductImage(models.Model):
@@ -413,8 +499,8 @@ class OrderItem(models.Model):
     quantity = models.PositiveIntegerField('Количество', default=1)
     unit_price = models.IntegerField('Цена за штуку', help_text='Снимок цены на момент заявки')
     selected_colors = models.JSONField(
-        'Выбранные цвета', default=dict, blank=True,
-        help_text='Снимок вида {"Плетение": "Графит", "Подушки": "Беж"}',
+        'Выбор покупателя', default=dict, blank=True,
+        help_text='Снимок вида {"Размер": "160×90 см", "Столешница": "Стекло", "Плетение": "Графит"}',
     )
 
     class Meta:
@@ -423,6 +509,18 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f'{self.product.name} × {self.quantity}'
+
+    @classmethod
+    def from_db(cls, db, field_names, values):
+        # jsonb в Postgres хранит ключи по длине, а не по порядку записи: возвращаем «Размер», «Столешница», цвета.
+        obj = super().from_db(db, field_names, values)
+        # При .only()/.defer() поля нет в __dict__: чтение дало бы лишний запрос на каждую строку.
+        choice = obj.__dict__.get('selected_colors')
+        if isinstance(choice, dict):
+            order = ['Размер', 'Столешница', *(label for _, label in ColorOption.FINISH_TYPE_CHOICES)]
+            rank = {key: i for i, key in enumerate(order)}
+            obj.selected_colors = dict(sorted(choice.items(), key=lambda kv: rank.get(kv[0], len(rank))))
+        return obj
 
     @property
     def line_total(self):

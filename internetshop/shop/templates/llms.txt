@@ -19,6 +19,7 @@
 ## Каталог
 
 - [Весь каталог]({{ '/catalog/'|absolute }}): цены «от», размеры, материалы и цвета каждой модели
+- [Коллекции]({% url 'collection_list' as u %}{{ u|absolute }}): серии мебели из роупа, разложенные по зонам — обеденная группа и лаунж-зона; у столов в карточке выбираются размер и столешница
 {% for c in sections %}- [{{ c.label }}]({% url 'catalog_by_category' c.material_slug c.category_slug as u %}{{ u|absolute }})
 {% endfor %}
 ## Покупателям

@@ -89,7 +89,18 @@ otherwise cause `UnicodeDecodeError` in psycopg2. `LANGUAGE_CODE='ru'`, `TIME_ZO
 
 `Material` (роуп/ротанг/шпон/HPL) and `Category` (кресла/диваны/…) are independent lookup tables —
 a `Category` is not tied to one `Material` (tables come in HPL, veneer, etc.), so `Product` carries
-both FKs separately. `Collection` (with `is_featured`) exists in the admin and `seed_demo` but no page renders it.
+both FKs separately.
+
+Collections (Милан/Бари/Асти…) group products for `/kollekcii/` and `/kollekcii/<slug>/`: `Product.collections` is M2M
+(one table can sit in several collections), `Product.zone` is an FK to the `Zone` lookup (Обеденная группа, Лаунж-зона,
+editable in the admin) — a collection page renders one section per zone, products without a zone go last under
+«Ещё в коллекции»; collections without shown products are hidden and 404. `Collection.is_featured` is unused.
+Migration `0018_collections_data` seeded the zones, `TabletopType` and the three collections from product names.
+
+`ProductVariant` (size text + optional `TabletopType` + price) is the per-product price variant (tables: size ×
+tabletop). With variants, `Product.price` is the cheapest variant, kept in sync by `Product.sync_price_from_variants()`
+from `ProductVariant.save()/delete()` and `ProductAdmin.save_related` (a manual price is overwritten); «Включить
+скидку» skips products with variants.
 
 `Product` uses a `slug` (auto-generated via `shop.utils.ru_slugify`, **not** Django's stock `slugify`
 with `allow_unicode` — URLs must stay ASCII like the old Tilda site's `/kreslo`, `/divan`; the admin has no
@@ -108,7 +119,8 @@ piece with no separate frame simply shows no "Каркас" group. Colors never 
 `Order`/`OrderItem` and `Lead` are the write paths from the public site:
 - `Order` is a multi-item request built at `checkout` from the session cart. Its `product` FK is now
   nullable/legacy; new orders keep items in `OrderItem` (product + quantity + `unit_price` snapshot +
-  `selected_colors` JSON snapshot like `{"Плетение": "Графит"}`). `Order.total_price` is set by
+  `selected_colors` JSON snapshot like `{"Размер": "160×90 см", "Столешница": "Стекло", "Плетение": "Графит"}`;
+  `OrderItem.from_db` restores that key order because Postgres jsonb sorts keys). `Order.total_price` is set by
   `recalc_total()` (sum of line totals) after items are created — snapshots so historical orders don't
   drift when prices change.
 - `Lead` — the shared model behind every contact form (`lead_type`: private/designer/b2b),
@@ -134,9 +146,11 @@ Catalog browsing nests by material then category: `catalog_list` → `catalog_by
 scraped from the original Tilda site). `product_detail` is slug-based.
 
 Cart flow (`shop/cart.py` + cart views): the `Cart` class wraps `request.session['cart']`. A line is
-keyed by product **plus chosen colors**, so the same product in different colors are separate lines
-(`shop/cart.py:_line_id`). Views: `cart_add` (validates colors against `available_colors` via
-`_valid_colors`, then HTMX drawer fragment or redirect to a safe `next`), `cart_update`, `cart_remove`, `cart_detail`, and
+keyed by product **plus variant plus chosen colors**, so the same product in different colors or sizes are separate
+lines (`shop/cart.py:_line_id`; lines without a variant keep the old `<pid>:<colors>` key). The line price is read
+from the DB variant on every render, never from the client; a deleted variant drops its line. Views: `cart_add`
+(validates colors against `available_colors` via `_valid_colors` and the `variant` field via `_pick_variant` — a
+foreign/missing id falls back to the first variant — then HTMX drawer fragment or redirect to a safe `next`), `cart_update`, `cart_remove`, `cart_detail`, and
 `checkout` (creates `Order` + `OrderItem`s, `recalc_total`, Telegram, clears cart → `order_success`).
 The product page's "В корзину" button posts via htmx and opens the cart drawer; removing a line without JS stores a
 session notice so `cart_detail` still offers «Вернуть» (`cart_undo`); "Оформить заявку" posts with `name=checkout` and
@@ -173,7 +187,8 @@ inline in `product_detail.html`. Product meta/og/JSON-LD description comes from 
 **Frontend (`internetshop/frontend/`)**: Vite entry `src/main.ts` imports `styles/main.css` (Tailwind v4: `@theme`
 tokens, `@layer base/components`; page CSS in `styles/{catalog,product,cart,pages,home,request}.css`), registers htmx and
 Alpine, and auto-imports every `src/<feature>/index.ts` (`cart` drawer, `catalog` filter panel/focus-trap,
-`product` gallery/variants/sticky bar, `forms` phone mask + `form[data-once]` double-submit guard, `lib`
+`product` gallery/variants (colors)/options (size × tabletop two-step picker over the no-JS `[data-variant-list]`;
+its radios use `form="variant-ui"` so only the original `variant` radio is submitted)/sticky bar, `forms` phone mask + `form[data-once]` double-submit guard, `lib`
 `$scrollLock` helper shared by overlays, `motion` scroll reveal + counter/heart bump, `htmx-errors` toast for failed
 htmx requests (429/403/network); page view transitions and
 accordion easing are CSS-only at the end of `main.css`, all off under `prefers-reduced-motion`). Output goes to `shop/static/dist/` (gitignored build artefact, read via
