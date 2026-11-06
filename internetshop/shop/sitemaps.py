@@ -4,7 +4,8 @@ from django.conf import settings
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
 
-from .models import Collection, Product
+from .models import Product
+from .views import _shown_collections
 
 
 class SiteUrlSitemap(Sitemap):
@@ -57,7 +58,7 @@ class CollectionSitemap(SiteUrlSitemap):
     priority = 0.7
 
     def items(self):
-        return Collection.objects.filter(products__is_available=True).distinct().order_by('order', 'name')
+        return _shown_collections().order_by('order', 'name')  # то же правило видимости, что у страниц
 
     def location(self, item):
         return reverse('collection_detail', args=[item.slug])
