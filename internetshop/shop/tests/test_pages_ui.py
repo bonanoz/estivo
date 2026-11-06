@@ -20,8 +20,8 @@ class E6HomeTests(TestCase):
         material = Material.objects.create(name='Ротанг', slug='rotang')
         category = Category.objects.create(name='Кресла', slug='kresla')
         collection = Collection.objects.create(name='Терраса', slug='terrasa', is_featured=True)
-        product = make_product(name='Кресло Главное', material=material, category=category,
-                               collection=collection, is_featured=True)
+        product = make_product(name='Кресло Главное', material=material, category=category, is_featured=True)
+        product.collections.set([collection])
         Review.objects.create(product=product, author='Мария', rating=5, text='Чудесно', is_published=True)
 
     def setUp(self):

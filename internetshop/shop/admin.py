@@ -1,11 +1,13 @@
 from django import forms
 from django.contrib import admin
+from django.core.exceptions import ValidationError
 from django.db.models import F
+from django.forms import BaseInlineFormSet
 from django.shortcuts import redirect
 
 from .models import (
     Category, Collection, ColorOption, Lead, Material, Order, OrderItem,
-    Product, ProductImage, Review, SiteSettings,
+    Product, ProductImage, ProductVariant, Review, SiteSettings, TabletopType, Zone,
 )
 from .utils import ru_slugify, throttle_post
 
@@ -75,25 +77,65 @@ class CollectionAdmin(admin.ModelAdmin):
     ordering = ('order', 'name')
 
 
+@admin.register(Zone)
+class ZoneAdmin(admin.ModelAdmin):
+    list_display = ('name', 'slug', 'order')
+    form = SlugFromNameForm
+    ordering = ('order', 'name')
+
+
+@admin.register(TabletopType)
+class TabletopTypeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'order')
+    ordering = ('order', 'name')
+
+
 class ProductImageInline(admin.TabularInline):
     model = ProductImage
     extra = 1
+
+
+class VariantFormSet(BaseInlineFormSet):
+    def clean(self):
+        # Дубль «размер + столешница» внутри одной отправки: БД без столешницы (NULL) его не поймает.
+        super().clean()
+        seen = set()
+        for form in self.forms:
+            if not hasattr(form, 'cleaned_data') or form.cleaned_data.get('DELETE') or not form.cleaned_data.get('size'):
+                continue
+            key = (form.cleaned_data['size'], form.cleaned_data.get('tabletop'))
+            if key in seen:
+                raise ValidationError('Вариант с таким размером и столешницей уже есть.')
+            seen.add(key)
+
+
+class ProductVariantInline(admin.TabularInline):
+    model = ProductVariant
+    formset = VariantFormSet
+    extra = 1
+    fields = ('size', 'tabletop', 'price', 'order')
 
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('name', 'material', 'category', 'price', 'is_available', 'is_featured', 'is_new', 'is_bestseller')
     list_editable = ('is_new', 'is_bestseller')
-    list_filter = ('material', 'category', 'collection', 'is_available', 'is_featured', 'is_new', 'is_bestseller')
+    list_filter = ('material', 'category', 'collections', 'zone', 'is_available', 'is_featured', 'is_new', 'is_bestseller')
     search_fields = ('name', 'sku', 'description', 'tilda_id')
     form = SlugFromNameForm
-    filter_horizontal = ('available_colors',)
-    inlines = [ProductImageInline]
+    filter_horizontal = ('available_colors', 'collections')
+    inlines = [ProductVariantInline, ProductImageInline]
     actions = ['enable_sale']
+
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+        # цена «от» по вариантам перезаписывает вписанную вручную, даже если сами варианты не менялись
+        form.instance.sync_price_from_variants()
 
     @admin.action(description='Включить скидку')
     def enable_sale(self, request, queryset):
-        n = queryset.filter(sale_price__isnull=False).update(
+        # у товаров с вариантами цена считается из вариантов, скидок на них нет
+        n = queryset.filter(sale_price__isnull=False, variants__isnull=True).update(
             old_price=F('price'), price=F('sale_price'), sale_price=None,
         )
         self.message_user(request, f'Скидка включена у товаров: {n}')

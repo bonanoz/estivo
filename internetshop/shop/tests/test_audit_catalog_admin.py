@@ -133,6 +133,8 @@ class E2AdminSlugTests(AdminTestCase):
         'price': '15000', 'max_load_kg': '120', 'warranty_years': '3', 'is_available': 'on',
         'gallery-TOTAL_FORMS': '0', 'gallery-INITIAL_FORMS': '0',
         'gallery-MIN_NUM_FORMS': '0', 'gallery-MAX_NUM_FORMS': '1000',
+        'variants-TOTAL_FORMS': '0', 'variants-INITIAL_FORMS': '0',
+        'variants-MIN_NUM_FORMS': '0', 'variants-MAX_NUM_FORMS': '1000',
     }
 
     def test_e2_no_prepopulated_slug_in_any_admin(self):
@@ -174,7 +176,7 @@ class E2AdminSlugTests(AdminTestCase):
         resp = self.client.post(reverse('admin:shop_collection_add'),
                                 {'name': 'Летняя серия', 'slug': '', 'description': '', 'order': '0'})
         self.assertEqual(resp.status_code, 302, getattr(resp, 'context', None) and resp.context['adminform'].form.errors)
-        self.assertEqual(Collection.objects.get().slug, ru_slugify('Летняя серия'))
+        self.assertEqual(Collection.objects.get(name='Летняя серия').slug, ru_slugify('Летняя серия'))
 
     def test_e2_manual_slug_is_kept(self):
         resp = self.client.post(reverse('admin:shop_product_add'), {**self.PRODUCT_FORM, 'slug': 'moy-adres'})
