@@ -514,7 +514,8 @@ class OrderItem(models.Model):
     def from_db(cls, db, field_names, values):
         # jsonb в Postgres хранит ключи по длине, а не по порядку записи: возвращаем «Размер», «Столешница», цвета.
         obj = super().from_db(db, field_names, values)
-        choice = obj.selected_colors
+        # При .only()/.defer() поля нет в __dict__: чтение дало бы лишний запрос на каждую строку.
+        choice = obj.__dict__.get('selected_colors')
         if isinstance(choice, dict):
             order = ['Размер', 'Столешница', *(label for _, label in ColorOption.FINISH_TYPE_CHOICES)]
             rank = {key: i for i, key in enumerate(order)}

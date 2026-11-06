@@ -80,8 +80,8 @@
 | ID | Эпик | Волна | Зависит от | Зона файлов | Модель | Статус | Ветка |
 |---|---|---|---|---|---|---|---|
 | E1 | Модель, админка, начальные данные | 1 | — | `shop/models.py`, `shop/migrations/0015_*`…, `shop/admin.py`, `shop/management/commands/seed_demo.py`, `shop/tests/test_pages_ui.py` (только фикстура с `collection=`) | sonnet | done | merged fbaa692 |
-| E2 | Страницы коллекций, меню, sitemap | 2 | E1 | новые функции в конце `shop/views.py`, `shop/templates/collection_list.html`, `shop/templates/collection_detail.html`, `shop/templates/partials/_header.html`, `shop/sitemaps.py`, `shop/urls.py` (маршруты коллекций), `internetshop/urls.py` (только sitemap), `frontend/src/styles/collections.css` (если нужен) + импорт в `main.css` | sonnet | in_progress | |
-| E3 | Варианты: карточка без JS, корзина, заявка, разметка | 2 | E1 | `shop/cart.py`, `shop/views.py` (только `_dl_product`, `_product_context`, `product_detail`, `cart_add`, `checkout`, новый хелпер выбора варианта), `shop/templates/product_detail.html`, `shop/templates/partials/htmx/*` и шаблоны корзины, если нужны правки показа | sonnet | in_progress | |
+| E2 | Страницы коллекций, меню, sitemap | 2 | E1 | новые функции в конце `shop/views.py`, `shop/templates/collection_list.html`, `shop/templates/collection_detail.html`, `shop/templates/partials/_header.html`, `shop/sitemaps.py`, `shop/urls.py` (маршруты коллекций), `internetshop/urls.py` (только sitemap), `frontend/src/styles/collections.css` (если нужен) + импорт в `main.css` | sonnet | done | merged a1e5644 |
+| E3 | Варианты: карточка без JS, корзина, заявка, разметка | 2 | E1 | `shop/cart.py`, `shop/views.py` (только `_dl_product`, `_product_context`, `product_detail`, `cart_add`, `checkout`, новый хелпер выбора варианта), `shop/templates/product_detail.html`, `shop/templates/partials/htmx/*` и шаблоны корзины, если нужны правки показа | sonnet | done | merged 9d46cfd |
 | E4 | Выбор в два шага (JS) | 3 | E3 | `frontend/src/product/options.ts` (новый), `frontend/src/product/index.ts`, `frontend/src/styles/product.css` | sonnet | todo | |
 
 Статусы: `todo` → `in_progress` → `review` → `done` (или `blocked` + причина в журнале).
@@ -258,3 +258,5 @@ E2 и E3 в одной волне оба правят `shop/views.py`, но ра
   - Telegram и `OrderItem.selected_colors` идут из `colors_display`, `checkout` правок не потребовал.
   - Вне зоны: `models.py` — `OrderItem.from_db` раскладывает ключи снимка в порядке «Размер», «Столешница», цвета (jsonb в Postgres хранит ключи по длине, а не по порядку записи); `frontend/src/styles/product.css` (зона E4, E4 ещё не начат) — стили `.pdp-variants`, `.pdp-variant`, `.pdp-collections`. Принято оркестратором.
   - Ссылки на коллекции в карточке — литерал `/kollekcii/<slug>/`, потому что маршрут добавляет E2. На сведении заменить на `{% url 'collection_detail' %}`.
+- 2026-11-06 E2 ревью: APPROVE с первой попытки, смержено (a1e5644); после merge красные только тесты E3.
+- 2026-11-06 E3 ревью: APPROVE с первой попытки, смержено (9d46cfd) без конфликтов. Оркестратор закрыл ниты: `OrderItem.from_db` читает снимок из `__dict__` (без лишнего запроса при `.only()`/`.defer()`), ссылка на коллекцию в карточке — `{% url 'collection_detail' %}`. Нит «двойной `variants.all()` в `_product_context`» не трогали: запроса не добавляет (prefetch).

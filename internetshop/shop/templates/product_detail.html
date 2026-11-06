@@ -96,7 +96,7 @@
                 {% endif %}
             </div>
             {% if collections %}
-            <p class="pdp-collections">{% if collections|length > 1 %}Коллекции:{% else %}Коллекция:{% endif %} {% for c in collections %}<a href="/kollekcii/{{ c.slug }}/" class="underline">{{ c.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+            <p class="pdp-collections">{% if collections|length > 1 %}Коллекции:{% else %}Коллекция:{% endif %} {% for c in collections %}<a href="{% url 'collection_detail' c.slug %}" class="underline">{{ c.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</p>
             {% endif %}
 
             <a href="#reviews" class="pdp-rating">
