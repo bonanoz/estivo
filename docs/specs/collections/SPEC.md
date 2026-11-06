@@ -79,14 +79,14 @@
 
 | ID | Эпик | Волна | Зависит от | Зона файлов | Модель | Статус | Ветка |
 |---|---|---|---|---|---|---|---|
-| E1 | Модель, админка, начальные данные | 1 | — | `shop/models.py`, `shop/migrations/0015_*`…, `shop/admin.py`, `shop/management/commands/seed_demo.py`, `shop/tests/test_pages_ui.py` (только фикстура с `collection=`) | sonnet | in_progress | |
-| E2 | Страницы коллекций, меню, sitemap | 2 | E1 | новые функции в конце `shop/views.py`, `shop/templates/collection_list.html`, `shop/templates/collection_detail.html`, `shop/templates/partials/_header.html`, `shop/sitemaps.py`, `internetshop/urls.py` (только sitemap), `frontend/src/styles/collections.css` (если нужен) + импорт в `main.css` | sonnet | todo | |
-| E3 | Варианты: карточка без JS, корзина, заявка, разметка | 2 | E1 | `shop/cart.py`, `shop/views.py` (только `_dl_product`, `_product_context`, `product_detail`, `cart_add`, `checkout`, новый хелпер выбора варианта), `shop/templates/product_detail.html`, `shop/templates/partials/htmx/*` и шаблоны корзины, если нужны правки показа | sonnet | todo | |
+| E1 | Модель, админка, начальные данные | 1 | — | `shop/models.py`, `shop/migrations/0015_*`…, `shop/admin.py`, `shop/management/commands/seed_demo.py`, `shop/tests/test_pages_ui.py` (только фикстура с `collection=`) | sonnet | done | merged fbaa692 |
+| E2 | Страницы коллекций, меню, sitemap | 2 | E1 | новые функции в конце `shop/views.py`, `shop/templates/collection_list.html`, `shop/templates/collection_detail.html`, `shop/templates/partials/_header.html`, `shop/sitemaps.py`, `shop/urls.py` (маршруты коллекций), `internetshop/urls.py` (только sitemap), `frontend/src/styles/collections.css` (если нужен) + импорт в `main.css` | sonnet | in_progress | |
+| E3 | Варианты: карточка без JS, корзина, заявка, разметка | 2 | E1 | `shop/cart.py`, `shop/views.py` (только `_dl_product`, `_product_context`, `product_detail`, `cart_add`, `checkout`, новый хелпер выбора варианта), `shop/templates/product_detail.html`, `shop/templates/partials/htmx/*` и шаблоны корзины, если нужны правки показа | sonnet | in_progress | |
 | E4 | Выбор в два шага (JS) | 3 | E3 | `frontend/src/product/options.ts` (новый), `frontend/src/product/index.ts`, `frontend/src/styles/product.css` | sonnet | todo | |
 
 Статусы: `todo` → `in_progress` → `review` → `done` (или `blocked` + причина в журнале).
 
-E2 и E3 в одной волне оба правят `shop/views.py`, но разные функции: E2 только дописывает новые функции в конец файла, E3 меняет только перечисленные существующие. Конфликт при merge, если будет, — построчный, решает оркестратор. `shop/urls.py` (маршруты коллекций) — на сведении.
+E2 и E3 в одной волне оба правят `shop/views.py`, но разные функции: E2 только дописывает новые функции в конец файла, E3 меняет только перечисленные существующие. Конфликт при merge, если будет, — построчный, решает оркестратор. `shop/urls.py` (маршруты коллекций) — в зоне E2: без маршрутов его тесты не позеленеют, E3 этот файл не трогает.
 
 ### E1. Модель, админка, начальные данные
 
@@ -210,7 +210,6 @@ E2 и E3 в одной волне оба правят `shop/views.py`, но ра
 
 ## Оставлено на сведение (делает оркестратор)
 
-- `shop/urls.py`: маршруты `kollekcii/` (`collection_list`) и `kollekcii/<slug:slug>/` (`collection_detail`).
 - Импорт новой CSS (если E2 её создаст) и проверка, что `collectstatic` проходит.
 - `templates/llms.txt` — строка о коллекциях; `CLAUDE.md` — абзац о `Zone`, `ProductVariant`, `Product.collections`.
 - Обновление `docs/specs/_system/` (новая `collections.md`, правки `product`, `cart`, `checkout`, `admin`, `seo`, `site-shell`).
@@ -245,3 +244,5 @@ E2 и E3 в одной волне оба правят `shop/views.py`, но ра
   - Порядок: зоны 10/20, столешницы 10…50, коллекции 10/20/30. `seed_demo` раскладывает демо-товары по Милан/Бари/Асти и добавляет «Стол «Новара»» с 3 вариантами, не затирая правки из админки.
   - Пересчёт цены: `Product.sync_price_from_variants()` (queryset.update, без updated_at и сигналов) из `ProductVariant.save()/delete()` и `ProductAdmin.save_related`.
   - Вне зоны: `test_audit_catalog_admin.py` — management form инлайна `variants-*` в PRODUCT_FORM и `get(name=...)` вместо `get()` (миграция создаёт Милан/Бари/Асти). Проверки не ослаблены. Принято оркестратором.
+- 2026-11-06 E1 ревью: APPROVE с первой попытки, контракт не тронут; смержено (fbaa692). Оркестратор закрыл нит ревьюера: `sync_price_from_variants` обновляет цену без сравнения с `self.price` в памяти (объект мог устареть). Второй нит (повторный `seed_collections` вернёт снятую вручную коллекцию) принят как есть: миграция на проде идёт один раз.
+- 2026-11-06 план: `shop/urls.py` (маршруты коллекций) перенесён из сведения в зону E2 — без маршрутов тесты E2 не позеленеют.

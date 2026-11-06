@@ -329,7 +329,8 @@ class Product(models.Model):
     def sync_price_from_variants(self):
         """Цена «от» = наименьшая цена вариантов. Без вариантов цену не трогаем."""
         low = self.variants.aggregate(low=Min('price'))['low']
-        if low is not None and low != self.price:
+        # Без сравнения с self.price: объект в памяти мог устареть, а в базе цена другая.
+        if low is not None:
             Product.objects.filter(pk=self.pk).update(price=low)
             self.price = low
 
