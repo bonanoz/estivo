@@ -1,5 +1,6 @@
 // Выбор варианта в два шага: группы «Размер» и «Столешница» поверх нативного списка вариантов.
 // Источник правды — исходные радиокнопки input[name="variant"]: форма отправляет именно их.
+import { formatPrice } from '../lib/format';
 
 interface Variant {
   input: HTMLInputElement;
@@ -7,9 +8,6 @@ interface Variant {
   top: string;
   price: string;
 }
-
-const formatPrice = (value: string): string =>
-  `${Number(value).toLocaleString('ru-RU').replace(/\s/g, ' ')} ₽`;
 
 function buildGroup(title: string, name: string, values: string[]): HTMLFieldSetElement {
   const fieldset = document.createElement('fieldset');

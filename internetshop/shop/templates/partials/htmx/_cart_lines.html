@@ -1,4 +1,4 @@
-{% load humanize %}{% comment %}
+{% load humanize l10n %}{% comment %}
 Строки корзины, итог и действия - общий блок для страницы /cart/ и выезжающей корзины.
 Режим: параметр `mode` ('drawer' | 'page') при include; в ответах HTMX на cart_update/cart_remove/cart_undo
 приходит скрытым полем `ctx` формы. `full` - блок вставлен в полную страницу (а не пришёл фрагментом);
@@ -49,7 +49,7 @@
         <div class="cart-summary">
             {% if ctx != 'drawer' %}<h2 class="cart-summary__title">Ваша заявка</h2>{% endif %}
             <div class="cart-summary__row"><span>Товаров</span><span>{{ cart.count }}</span></div>
-            <div class="cart-summary__row cart-summary__total"><span>Итого</span><span>{% if cart.total_price %}{{ cart.total_price|intcomma }}&nbsp;₽{% else %}Цена по запросу{% endif %}</span></div>
+            <div class="cart-summary__row cart-summary__total"><span>Итого</span><span{% if cart.total_price %} data-cart-total="{{ cart.total_price|unlocalize }}"{% endif %}>{% if cart.total_price %}{{ cart.total_price|intcomma }}&nbsp;₽{% else %}Цена по запросу{% endif %}</span></div>
             <p class="cart-summary__note">Это предварительный расчёт. Оплаты на сайте нет: менеджер перезвонит, уточнит цвет, сроки и стоимость доставки.</p>
             <ul class="es-facts">
                 <li><b>Срок: в наличии</b>Отгрузка в течение 3 дней</li>

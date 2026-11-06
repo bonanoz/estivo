@@ -1,6 +1,8 @@
 // Restrained site-wide motion: blocks fade up on scroll, header counters and the wishlist heart bump on change.
 // Progressive enhancement: without JS or with reduced motion nothing is hidden and nothing moves.
 
+import { formatPrice } from '../lib/format';
+
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // Card grids reveal card by card; their wrapper stays put so opacity does not stack.
@@ -41,6 +43,34 @@ function bump(el: Element): void {
   el.classList.add('is-bumped');
   el.addEventListener('animationend', () => el.classList.remove('is-bumped'), { once: true });
 }
+
+// The cart total runs from the old sum to the new one, then shows the server's own text again.
+function countTo(el: HTMLElement, from: number): void {
+  const to = Number(el.dataset.cartTotal);
+  if (reduced || !from || from === to) return;
+  const final = el.textContent;
+  el.textContent = formatPrice(from); // the swapped-in fragment must not flash the new sum first
+  const start = performance.now();
+  const frame = (now: number) => {
+    const t = Math.min((now - start) / 400, 1);
+    el.textContent = t < 1 ? formatPrice(Math.round(from + (to - from) * (1 - (1 - t) ** 3))) : final;
+    if (t < 1) requestAnimationFrame(frame);
+  };
+  requestAnimationFrame(frame);
+}
+
+// #cart-lines is swapped whole (outerHTML): read the old total before it is gone, start right after the swap
+// (htmx:load waits for settle, and the new sum would show for a frame).
+let prevTotal = 0;
+document.addEventListener('htmx:beforeSwap', (event) => {
+  const target = (event as CustomEvent<{ target?: Element }>).detail?.target;
+  prevTotal = Number(target?.querySelector<HTMLElement>('[data-cart-total]')?.dataset.cartTotal ?? 0);
+});
+document.addEventListener('htmx:afterSwap', (event) => {
+  if ((event as CustomEvent<{ target?: Element }>).detail?.target?.id !== 'cart-lines') return;
+  const total = document.querySelector<HTMLElement>('#cart-lines [data-cart-total]');
+  if (total) countTo(total, prevTotal);
+});
 
 const COUNTERS = '[data-cart-count], [data-wishlist-count]';
 document.querySelectorAll<HTMLElement>(COUNTERS).forEach((el) => {

@@ -85,6 +85,13 @@ class E5CartPageTests(TestCase):
         self.assertTrue(resp['Content-Type'].startswith('text/html'))
         self.assertEqual(self.client.session['cart'][line_id]['quantity'], 3)
 
+    def test_total_carries_raw_sum_for_animation(self):
+        line_id = self.add()
+        resp = self.client.post(reverse('cart_update'), {'line_id': line_id, 'quantity': 3}, **HX)
+        total = parse(resp).find(attrs={'data-cart-total': True})
+        self.assertIsNotNone(total, 'motion/index.ts animates [data-cart-total]')
+        self.assertEqual(total.get('data-cart-total'), '60000')
+
     def test_remove_shows_undo_toast(self):
         line_id = self.add()
         resp = self.client.post(reverse('cart_remove'), {'line_id': line_id}, **HX)
