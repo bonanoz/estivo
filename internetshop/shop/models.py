@@ -510,6 +510,17 @@ class OrderItem(models.Model):
     def __str__(self):
         return f'{self.product.name} × {self.quantity}'
 
+    @classmethod
+    def from_db(cls, db, field_names, values):
+        # jsonb в Postgres хранит ключи по длине, а не по порядку записи: возвращаем «Размер», «Столешница», цвета.
+        obj = super().from_db(db, field_names, values)
+        choice = obj.selected_colors
+        if isinstance(choice, dict):
+            order = ['Размер', 'Столешница', *(label for _, label in ColorOption.FINISH_TYPE_CHOICES)]
+            rank = {key: i for i, key in enumerate(order)}
+            obj.selected_colors = dict(sorted(choice.items(), key=lambda kv: rank.get(kv[0], len(rank))))
+        return obj
+
     @property
     def line_total(self):
         return self.unit_price * self.quantity
