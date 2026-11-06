@@ -348,3 +348,77 @@ class E_A_LogoTests(TestCase):
     def test_home_renders_logo_in_header_and_footer(self):
         html = self.client.get('/').content.decode()
         self.assertGreaterEqual(len(re.findall(r'estivo-logo\.svg', html)), 2)
+
+
+def _hex_channels(h):
+    h = h.lstrip('#')
+    return [int(h[i:i + 2], 16) / 255 for i in (0, 2, 4)]
+
+
+def wcag_ratio(fg, bg):
+    def lum(h):
+        r, g, b = [c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4 for c in _hex_channels(h)]
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b
+    hi, lo = sorted((lum(fg), lum(bg)), reverse=True)
+    return (hi + 0.05) / (lo + 0.05)
+
+
+def apca_lc(fg, bg):
+    """APCA-W3 0.0.98G-4g; знак: + тёмный текст на светлом, - светлый на тёмном."""
+    def y(h):
+        r, g, b = _hex_channels(h)
+        v = 0.2126729 * r ** 2.4 + 0.7151522 * g ** 2.4 + 0.0721750 * b ** 2.4
+        return v + (0.022 - v) ** 1.414 if v < 0.022 else v
+    yt, yb = y(fg), y(bg)
+    if abs(yb - yt) < 0.0005:
+        return 0.0
+    if yb > yt:
+        s = (yb ** 0.56 - yt ** 0.57) * 1.14
+        return 0.0 if s < 0.1 else (s - 0.027) * 100
+    s = (yb ** 0.65 - yt ** 0.62) * 1.14
+    return 0.0 if s > -0.1 else (s + 0.027) * 100
+
+
+class ContrastTests(SimpleTestCase):
+    """Контраст пар токенов: WCAG 2 AA (основная цель) и APCA Bronze (вторая проверка), docs/design-system.md §2.1."""
+
+    BODY, CONTENT = 75, 60  # APCA Bronze: основной текст / прочий текст (подписи, кнопки, бейджи)
+    # (текст, фон, порог APCA)
+    PAIRS = [
+        ('ink', 'bg', BODY), ('ink', 'surface', BODY), ('ink-soft', 'bg', BODY), ('ink-soft', 'surface', BODY),
+        ('ink-black', 'surface', BODY),
+        ('ink-muted', 'bg', CONTENT), ('ink-muted', 'surface', CONTENT), ('ink-muted', 'surface-alt', CONTENT),
+        ('brand', 'bg', CONTENT), ('brand', 'surface-alt', CONTENT), ('white', 'brand', CONTENT),
+        ('on-dark', 'graphite', CONTENT), ('bg', 'ink', CONTENT), ('on-accent', 'accent', CONTENT),
+    ]
+    # Осознанные отступления по APCA, см. §2.1: на средне-оранжевом WCAG 2 и APCA требуют противоположный цвет текста.
+    APCA_EXCEPTIONS = {('on-accent', 'accent')}
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        raw = theme_tokens()
+
+        def color(name):
+            v = raw[f'--color-{name}']
+            m = re.fullmatch(r'var\((--color-[\w-]+)\)', v)
+            return raw[m.group(1)] if m else v
+        cls.color = staticmethod(color)
+
+    def test_apca_reference_values(self):
+        # контрольные значения из эталонной реализации apca-w3
+        self.assertAlmostEqual(apca_lc('#000000', '#ffffff'), 106.04, places=1)
+        self.assertAlmostEqual(apca_lc('#888888', '#ffffff'), 63.06, places=1)
+        self.assertAlmostEqual(apca_lc('#ffffff', '#888888'), -68.54, places=1)
+
+    def test_wcag_aa(self):
+        for fg, bg, _ in self.PAIRS:
+            with self.subTest(f'{fg} на {bg}'):
+                self.assertGreaterEqual(wcag_ratio(self.color(fg), self.color(bg)), 4.5)
+
+    def test_apca(self):
+        for fg, bg, need in self.PAIRS:
+            if (fg, bg) in self.APCA_EXCEPTIONS:
+                continue
+            with self.subTest(f'{fg} на {bg}'):
+                self.assertGreaterEqual(abs(apca_lc(self.color(fg), self.color(bg))), need)
