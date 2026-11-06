@@ -187,7 +187,8 @@ inline in `product_detail.html`. Product meta/og/JSON-LD description comes from 
 **Frontend (`internetshop/frontend/`)**: Vite entry `src/main.ts` imports `styles/main.css` (Tailwind v4: `@theme`
 tokens, `@layer base/components`; page CSS in `styles/{catalog,product,cart,pages,home,request}.css`), registers htmx and
 Alpine, and auto-imports every `src/<feature>/index.ts` (`cart` drawer, `catalog` filter panel/focus-trap,
-`product` gallery/variants/sticky bar, `forms` phone mask + `form[data-once]` double-submit guard, `lib`
+`product` gallery/variants (colors)/options (size × tabletop two-step picker over the no-JS `[data-variant-list]`;
+its radios use `form="variant-ui"` so only the original `variant` radio is submitted)/sticky bar, `forms` phone mask + `form[data-once]` double-submit guard, `lib`
 `$scrollLock` helper shared by overlays, `motion` scroll reveal + counter/heart bump, `htmx-errors` toast for failed
 htmx requests (429/403/network); page view transitions and
 accordion easing are CSS-only at the end of `main.css`, all off under `prefers-reduced-motion`). Output goes to `shop/static/dist/` (gitignored build artefact, read via
