@@ -12,6 +12,13 @@
       "runtimeExecutable": "python",
       "runtimeArgs": ["-c", "import os, sys, runpy; os.environ['BOT_TOKEN'] = ''; os.environ['CHAT_ID'] = ''; sys.path.insert(0, 'internetshop'); sys.argv = ['manage.py', 'runserver', '8001', '--noreload']; runpy.run_path('internetshop/manage.py', run_name='__main__')"],
       "port": 8001
+    },
+    {
+      "name": "django-no-telegram-8003",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-c", "import os, sys, runpy; os.environ['BOT_TOKEN'] = ''; os.environ['CHAT_ID'] = ''; sys.path.insert(0, 'internetshop'); sys.argv = ['manage.py', 'runserver', '8003', '--noreload']; runpy.run_path('internetshop/manage.py', run_name='__main__')"],
+      "port": 8003,
+      "autoPort": false
     }
   ]
 }
