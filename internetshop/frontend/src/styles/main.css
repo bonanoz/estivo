@@ -43,7 +43,7 @@
   --color-border-input: #c9c9c9;
   --color-scrim: rgba(0, 0, 0, 0.6);
 
-  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-display: 'Estivo Ruble', 'Cormorant Garamond', Georgia, serif;
   --font-body: 'Gilroy', 'Helvetica Neue', Arial, sans-serif;
 
   /* Gilroy is licensed 300-800; the two base weights below stay the design default. */
@@ -123,6 +123,16 @@
   font-style: normal;
   font-display: swap;
 }
+/* Cormorant Garamond has no ₽, the system fallback draws it heavy. Gilroy Regular matches Cormorant 600 strokes;
+   declared as 600 so 500/600 prices take this one face without synthetic bold. */
+@font-face {
+  font-family: 'Estivo Ruble';
+  src: url('/static/fonts/gilroy/Gilroy-Regular.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+20BD;
+}
 
 @layer base {
   /* Reset + base typography (ported from the removed legacy base.css; Tailwind preflight is not imported). */
@@ -146,6 +156,7 @@
     font-size: 16px;
     line-height: 24px;
     font-weight: var(--weight-body-regular);
+    font-variant-numeric: lining-nums; /* Cormorant defaults to old-style figures that jump above and below the line */
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
