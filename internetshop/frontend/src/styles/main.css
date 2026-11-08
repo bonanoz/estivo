@@ -23,7 +23,7 @@
 
 /*
  * Tokens: values come from docs/design-system/estivo-tilda/tokens.css (see MAPPING.md there). Usage rules: README.md of
- * that folder. Body font is Gilroy 300-800 (licensed, owner 23.10.2026); headings are Cormorant Garamond.
+ * that folder. Body font is Onest, headings are Literata (both OFL, variable; owner chose them 08.11.2026).
  */
 @theme {
   --color-*: initial;
@@ -43,10 +43,9 @@
   --color-border-input: #c9c9c9;
   --color-scrim: rgba(0, 0, 0, 0.6);
 
-  --font-display: 'Estivo Ruble', 'Cormorant Garamond', Georgia, serif;
-  --font-body: 'Gilroy', 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Literata Variable', Georgia, serif;
+  --font-body: 'Onest', 'Helvetica Neue', Arial, sans-serif;
 
-  /* Gilroy is licensed 300-800; the two base weights below stay the design default. */
   --weight-body-regular: 400;
   --weight-body-bold: 800;
   --weight-ui: 600; /* buttons and small labels */
@@ -81,57 +80,31 @@
   --dur-fast: 200ms;
 }
 
+/* Onest lives in static/ (not imported via Vite) so base.html can preload it by a stable URL: a late body font
+   rewraps lines and shifts the layout (CLS). Subsets and ranges are from @fontsource-variable/onest; ₽ is in latin-ext. */
 @font-face {
-  font-family: 'Gilroy';
-  src: url('/static/fonts/gilroy/Gilroy-Light.woff2') format('woff2');
-  font-weight: 300;
+  font-family: 'Onest';
+  src: url('/static/fonts/onest/onest-cyrillic-wght-normal.woff2') format('woff2-variations');
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;
 }
 @font-face {
-  font-family: 'Gilroy';
-  src: url('/static/fonts/gilroy/Gilroy-Regular.woff2') format('woff2');
-  font-weight: 400;
+  font-family: 'Onest';
+  src: url('/static/fonts/onest/onest-latin-wght-normal.woff2') format('woff2-variations');
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
 @font-face {
-  font-family: 'Gilroy';
-  src: url('/static/fonts/gilroy/Gilroy-Medium.woff2') format('woff2');
-  font-weight: 500;
+  font-family: 'Onest';
+  src: url('/static/fonts/onest/onest-latin-ext-wght-normal.woff2') format('woff2-variations');
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
-}
-@font-face {
-  font-family: 'Gilroy';
-  src: url('/static/fonts/gilroy/Gilroy-SemiBold.woff2') format('woff2');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Gilroy';
-  src: url('/static/fonts/gilroy/Gilroy-Bold.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Gilroy';
-  src: url('/static/fonts/gilroy/Gilroy-ExtraBold.woff2') format('woff2');
-  font-weight: 800;
-  font-style: normal;
-  font-display: swap;
-}
-/* Cormorant Garamond has no ₽, the system fallback draws it heavy. Gilroy Regular matches Cormorant 600 strokes;
-   declared as 600 so 500/600 prices take this one face without synthetic bold. */
-@font-face {
-  font-family: 'Estivo Ruble';
-  src: url('/static/fonts/gilroy/Gilroy-Regular.woff2') format('woff2');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-  unicode-range: U+20BD;
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
 }
 
 @layer base {
@@ -158,7 +131,7 @@
     font-size: 1rem; /* rem, not px: follows the reader's browser font-size setting */
     line-height: 1.5rem; /* = 24px at default size; rem keeps the old inherited rhythm for children */
     font-weight: var(--weight-body-regular);
-    font-variant-numeric: lining-nums; /* Cormorant defaults to old-style figures that jump above and below the line */
+    font-variant-numeric: lining-nums; /* old-style figures in a serif jump above and below the line in prices */
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }

@@ -1,9 +1,7 @@
-// Cormorant Garamond (OFL) из своих файлов, а не с Google Fonts: их CSS блокировал отрисовку на 700+ мс
-// на мобильном. Только кириллица и латиница — других алфавитов на сайте нет.
-import '@fontsource/cormorant-garamond/cyrillic-500.css';
-import '@fontsource/cormorant-garamond/latin-500.css';
-import '@fontsource/cormorant-garamond/cyrillic-600.css';
-import '@fontsource/cormorant-garamond/latin-600.css';
+// Literata (OFL) из своих файлов, а не с Google Fonts: их CSS блокировал отрисовку на 700+ мс на мобильном.
+// Вариативный файл с осью opsz: в крупных заголовках буквы тоньше, в названиях товаров плотнее.
+// Браузер скачивает только подмножества, символы которых есть на странице (₽ лежит в latin-ext).
+import '@fontsource-variable/literata/opsz.css';
 import './styles/main.css';
 import htmx from 'htmx.org';
 import Alpine from 'alpinejs';

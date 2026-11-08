@@ -9,9 +9,9 @@ docs/design-system/estivo-tilda/MAPPING.md (таблицы 1 и 2, пробел�
 Допущения парсера:
 - CSS разбирается регулярками по «листовым» блокам `селектор { объявления }` (без вложенных
   скобок); @layer/@media-обёртки игнорируются, комментарии вырезаются.
-- font-weight: в CSS разрешены var(--weight-body-regular|bold|ui) и 300-800 (лицензия Gilroy 300-800,
-  владелец 23.10.2026). 100/200/900 допустимы только в правиле с font-family: var(--font-display)
-  (Cormorant Garamond), иначе это Gilroy без файла начертания.
+- font-weight: в CSS разрешены var(--weight-body-regular|bold|ui) и 300-800 — шкала весов основного шрифта
+  (Onest вариативный 100-900, но крайние веса в дизайн-системе запрещены). 100/200/900 допустимы только в правиле
+  с font-family: var(--font-display) (Literata).
 - font-size: px < 14 и rem/em < 0.875 запрещены (em считается как rem - допущение);
   в clamp(...) проверяется первый (минимальный) аргумент.
 """
@@ -229,6 +229,8 @@ class E_A_ForbiddenPatternsTests(SimpleTestCase):
             if w is None or re.sub(r'\s*!important', '', w).strip() in ok_values:
                 continue
             if 'var(--font-display)' in d.get('font-family', ''):
+                continue
+            if sel.strip() == '@font-face':  # диапазон весов вариативного файла, а не вес текста
                 continue
             bad.append(f'{name}: {sel} {{ font-weight: {w} }}')
         self.assertEqual(bad, [])

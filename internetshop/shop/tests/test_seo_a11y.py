@@ -249,7 +249,7 @@ class MediaPreconnectTests(TestCase):
     def test_fonts_preloaded_and_banner_role_valid(self):
         root = parse(self.client.get('/'))
         preloads = [l.get('href') for l in root.find_all('link', attrs={'rel': 'preload'})]
-        self.assertTrue(any('Gilroy-Regular' in h for h in preloads) and any('Gilroy-SemiBold' in h for h in preloads), preloads)
+        self.assertTrue(any('onest-cyrillic' in h for h in preloads) and any('onest-latin-wght' in h for h in preloads), preloads)
         banner = root.find('form', attrs={'data-cookie-banner': ''})
         self.assertIsNotNone(banner)
         self.assertIsNone(banner.get('role'))  # role="region" на <form> — недопустимая роль ARIA

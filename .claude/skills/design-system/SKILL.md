@@ -21,7 +21,7 @@ Style source is `docs/design-system/estivo-tilda/` (README, tokens, components; 
 project); values in code are the `@theme` block in `internetshop/frontend/src/styles/main.css`; the applied guide is
 `docs/design-system.md`. Read them before writing guidance — never invent token values, never copy them here.
 - Visual style: quiet, light, editorial — near-white ground, dark-brown text, big uppercase serif headings, `brand` rust for small signals, `accent` terracotta only for the request button and the sale strip
-- Fonts: headings Cormorant Garamond 400; body Gilroy ONLY 300/800 via `--weight-body-regular`/`--weight-body-bold` (font license); nothing below 14px
+- Fonts: headings Literata 400; body Onest via `--weight-body-regular` (400) / `--weight-ui` (600) / `--weight-body-bold` (800), 300 only in the sale strip; nothing below 14px
 - No shadows, no gradients, square photos and cards, controls `--radius-md`, hover = opacity 0.85, focus 2px `--color-brand`, tap targets ≥ `--tap-min` (44px)
 
 ## Accessibility

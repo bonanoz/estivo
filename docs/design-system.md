@@ -86,29 +86,32 @@
 
 | Роль | Шрифт | Насыщенность | Размер |
 |---|---|---|---|
-| display: `h1`, `.page-h1` | `--font-display` (Cormorant Garamond) | 400 | `clamp(44px, 6vw, 76px)` / 1.02 |
+| display: `h1`, `.page-h1` | `--font-display` (Literata) | 400 | `clamp(44px, 6vw, 76px)` / 1.02 |
 | `h2`, `.page-h2` | `--font-display` | 400 | `clamp(32px, 3.6vw, 48px)` / 1.05 |
 | `h3`, `.page-h3`, заголовки в узких колонках и панелях | `--font-display` | 400 | 24px / 1.2 |
 | названия товаров в карточках, строках корзины и поиске | `--font-display` | 400 | 19–22px / 1.15 |
 | `.lead` | `--font-body` | `--weight-body-regular` (400) | 20/31 |
 | основной текст | `--font-body` | `--weight-body-regular` (400) | 16/24 |
 | кнопки, подписи интерфейса | `--font-body` | `--weight-ui` (600) | `.btn` 14px, `.btn-lg` и `.btn-primary` 16px |
-| цены | `--font-body` или `--font-display` | `--weight-body-bold` (800) у Gilroy | по месту |
+| цены | `--font-body` или `--font-display` | `--weight-body-bold` (800) у Onest, 600 у Literata | по месту |
 | строка полосы распродажи | `--font-body` | 300, прописные | `clamp(40px, …, 100px)` |
 
-- ОБЯЗАТЕЛЬНО: у Gilroy есть лицензия на 300–800 (владелец, 23.10.2026). Токены: `--weight-body-regular` (400),
-  `--weight-ui` (600), `--weight-body-bold` (800). 100/200/900 и классы `font-thin/extralight/black` запрещены.
-- ОБЯЗАТЕЛЬНО: цифры выключные (`font-variant-numeric: lining-nums` на `body`): у Cormorant по умолчанию
-  старостильные, они прыгают выше и ниже строки. В Cormorant нет `₽`, знак в `--font-display` берётся из Gilroy
-  Regular (`@font-face 'Estivo Ruble'`, `unicode-range: U+20BD`), иначе его рисует жирный системный шрифт.
+- Шрифты выбрал владелец 08.11.2026 (образец `docs/design-system/proposals/2026-11-08-font-pairs.html`): заголовки
+  Literata, текст и интерфейс Onest. Оба под OFL, оба вариативные: у Literata есть ось оптического размера, крупные
+  заголовки она рисует тоньше, названия товаров плотнее.
+- ОБЯЗАТЕЛЬНО: веса основного шрифта — токены `--weight-body-regular` (400), `--weight-ui` (600),
+  `--weight-body-bold` (800) и 300 в полосе распродажи. 100/200/900 и классы `font-thin/extralight/black` запрещены.
+- ОБЯЗАТЕЛЬНО: цифры выключные (`font-variant-numeric: lining-nums` на `body`): старостильные цифры антиквы
+  прыгают выше и ниже строки в ценах. Знак `₽` есть в обоих шрифтах, он лежит в подмножестве latin-ext.
 - ОБЯЗАТЕЛЬНО: ничего мельче **14px** (`0.875rem`), включая бейджи, счётчик, подписи; `text-xs` запрещён (R22).
 - ОБЯЗАТЕЛЬНО: заголовки строчные, как в предложении; `text-transform: uppercase` у `h1`/`h2` запрещён. Прописные —
   только у полосы распродажи.
 - ОБЯЗАТЕЛЬНО: подписей над заголовками (eyebrow, мелкий капс с разрядкой) нет — убраны 30.10.2026 как примета
   шаблонной вёрстки. Сведения из них идут в заголовок или первую фразу («в своём цеху в Тольятти» в подзаголовке
   главной), число товаров — в строку «Товаров: N» каталога, категория и материал — в хлебные крошки.
-- Файлы `Gilroy-{Light,Regular,Medium,SemiBold,Bold,ExtraBold}.woff2` лежат в `shop/static/fonts/gilroy/`; без них — fallback
-  `"Helvetica Neue", Arial, sans-serif`.
+- Literata подключена из npm (`@fontsource-variable/literata/opsz.css` в `main.ts`). Файлы Onest
+  (`onest-{cyrillic,latin,latin-ext}-wght-normal.woff2`) лежат в `shop/static/fonts/onest/`, кириллица и латиница
+  предзагружаются в `base.html`; без них — fallback `"Helvetica Neue", Arial, sans-serif`.
 
 ### 2.3 Сетка и отступы
 
@@ -250,7 +253,7 @@ SVG в шаблон (без npm-пакета) и ставить `stroke-width="1
 ## 6. Антипаттерны
 
 - Сырые hex/rgb и одноразовые отступы вне токенов.
-- Gilroy вне 300–800; текст мельче 14px.
+- Основной шрифт вне 300–800; текст мельче 14px.
 - `accent` где-либо, кроме кнопки заявки и полосы распродажи; `brand` как фон блока.
 - Тени, градиенты, скругления у фото и карточек, `transform` на hover/active.
 - Тёмные секции и тёмный футер; больше одной серой секции на странице.

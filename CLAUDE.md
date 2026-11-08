@@ -41,13 +41,13 @@ python manage.py runserver
   `python manage.py collectstatic --noinput` before they show up under `CompressedManifestStaticFilesStorage` —
   templates reference the manifest, not raw files.
 - `CompressedManifestStaticFilesStorage` **fails collectstatic hard** if a CSS `url()` points at a
-  missing file (e.g. a font). `shop/static/fonts/gilroy/` holds the real `Gilroy-{Light,Regular,Medium,SemiBold,Bold,ExtraBold}.woff2`
-  referenced by `@font-face` — don't delete or rename them.
+  missing file (e.g. a font). `shop/static/fonts/onest/onest-{cyrillic,latin,latin-ext}-wght-normal.woff2` are
+  referenced by `@font-face` in `main.css` and preloaded in `base.html` — don't delete or rename them.
 - Design QA gates before merging UI work: `node ~/.claude/skills/design-taste-frontend/scripts/lint.mjs
   internetshop/shop/templates internetshop/frontend/src` must show no FAIL outside the allow-list
   (palette-claude/terracotta/cream, card-rows, few-pictures, no-real-pictures, no-footage, still-page; stored in
   `.taste-skill/direction.json`, see `docs/design-system.md` §7), plus the ui-ux-pro-max pre-delivery checklist;
-  `shop/tests/test_design_tokens.py` guards the tokens and bans (shadows, gradients, <14px, Gilroy weights outside 300–800).
+  `shop/tests/test_design_tokens.py` guards the tokens and bans (shadows, gradients, <14px, body weights outside 300–800).
   The design is described in `docs/design-system.md` alone (owner approved the grid/typography/button refresh
   2026-10-29, `docs/design-system/proposals/2026-10-28-ui-refresh.md`): content width `--container` 1360px on 12
   columns, side padding `--page-pad` outside it (`.page-container`), one sentence-case heading scale, `.btn-primary`
@@ -207,12 +207,13 @@ The color swatch handling in `frontend/src/product/variants.ts` maps swatches to
 materials must be named `weave` / `cushion` / `frame` (same strings as `finish_type`). When re-vendoring
 model-viewer, strip its trailing `//# sourceMappingURL=` comment or `collectstatic` fails on the missing `.map`.
 
-Typography: headings use **Cormorant Garamond** (npm `@fontsource/cormorant-garamond`, cyrillic+latin 500/600
-imported in `main.ts`, bundled by Vite — no Google Fonts request). Body/UI text uses **Gilroy**, which
-is a paid font; the owner has a license for weights 300–800 (confirmed 23.10.2026, files from their Tilda
-account). Tokens: `--weight-body-regular` 400 (body text), `--weight-ui` 600 (buttons, UI labels),
-`--weight-body-bold` 800 (prices); 300 only in the sale banner line. The `.woff2` files live in
-`shop/static/fonts/gilroy/`; if they fail to load, `--font-body` falls back to `"Helvetica Neue", Arial`.
+Typography (owner chose the pair 08.11.2026, specimen `docs/design-system/proposals/2026-11-08-font-pairs.html`):
+headings use **Literata** (npm `@fontsource-variable/literata/opsz.css` imported in `main.ts`, variable weight + optical
+size, bundled by Vite — no Google Fonts request). Body/UI text uses **Onest** (OFL, variable 100–900): its cyrillic, latin
+and latin-ext files are copied into `shop/static/fonts/onest/` and declared in `main.css` by hand so `base.html` can
+preload them by a stable URL. Both fonts have `₽` (in the latin-ext subset). Tokens: `--weight-body-regular` 400 (body
+text), `--weight-ui` 600 (buttons, UI labels), `--weight-body-bold` 800 (prices); 300 only in the sale banner line.
+If Onest fails to load, `--font-body` falls back to `"Helvetica Neue", Arial`.
 
 Product/collection images are placeholders (`shop/static/img/placeholders/*.svg`) until real photos
 are uploaded through the admin — `main_image`/`cover_image` are `blank=True`, and templates always
