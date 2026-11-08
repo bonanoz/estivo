@@ -47,6 +47,7 @@
   background: var(--color-bg);
 }
 .catalog-bar__inner {
+  flex-wrap: wrap; /* enlarged browser text: sort drops to its own line instead of overflowing */
   min-height: 52px;
 }
 .catalog-bar__count {

@@ -289,8 +289,8 @@ class E_A_BaseStylesTests(SimpleTestCase):
         d = {}
         for x in bodies:
             d.update(x)
-        self.assertEqual(norm(d.get('font-size', '')), '16px')
-        self.assertIn(norm(d.get('line-height', '')), ('24px', '1.5'))
+        self.assertIn(norm(d.get('font-size', '')), ('16px', '1rem'))
+        self.assertIn(norm(d.get('line-height', '')), ('24px', '1.5', '1.5rem'))
 
     def test_focus_visible_2px_brand(self):
         ok = [b for sel, b in rules(read(MAIN_CSS))
